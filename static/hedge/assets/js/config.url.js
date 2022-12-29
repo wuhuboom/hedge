@@ -1,0 +1,329 @@
+//
+global_requestAddress = "http://127.0.0.1:8080";
+//登录接口
+global_requestloginAddress_js="/admin/v1/login";
+
+//商户号管理
+global_requestAddress_js_merchant="/admin/v1/merchant";
+
+//支付管理-支付订单
+global_requestAddress_js_payOperation="/admin/v1/payOperation";
+
+//代付管理-代付订单
+global_requestAddress_js_paidOperation="/admin/v1/paidOperation";
+
+
+// 获取系统配置
+global_requestAddress_js_configOperation="/admin/v1/configOperation";
+
+
+
+
+
+
+//
+// //会员列表请求接口 + 会员状态禁用-开启接口
+// global_requestAddress_js_user="/management/v1/user/user";
+//
+// //获取vip列表接口
+// global_requestAddress_js_vip="/management/v1/user/vip";
+//
+// //获取顶级会员列表接口
+// global_requestAddress_js_topUser="/management/v1/user/topUser";
+//
+// //获取任务图片列表接口
+// global_requestAddress_js_goods="/management/v1/task/goods";
+//
+// //获取任务订单列表接口
+// global_requestAddress_js_taskOrder="/management/v1/task/taskOrder";
+//
+// //获取任务订单列表接口/任务分组
+// global_requestAddress_js_group="/management/v1/task/group";
+//
+// //支付管理列表接口
+// global_requestAddress_js_pay="/management/v1/money/modelPay";
+//
+// //代付管理列表接口
+// global_requestAddress_js_anotherPay="/management/v1/money/anotherPay";
+//
+// //线上充值列表接口
+// global_requestAddress_js_onLineRecharge="/management/v1/money/onLineRecharge";
+//
+// //提现管理列表接口
+// global_requestAddress_js_withdraw="/management/v1/money/withdraw";
+//
+// //获取银行列表接口
+// global_requestAddress_js_bank="/management/v1/money/bank";
+//
+// //登录日志
+// global_requestAddress_js_login="/management/v1/log/login";
+//
+// //管理操作登录日志
+// global_requestAddress_js_adminOperation="/management/v1/log/adminOperation";
+//
+// //每日数据
+// global_requestAddress_js_everyday="/management/v1/data/everyday";
+//
+// //数据分析
+// global_requestAddress_js_firstPage="/management/v1/data/firstPage";
+//
+// //用户角色接口
+// global_requestAddress_js_admin="/management/v1/system/admin";
+//
+// //角色管理接口
+// global_requestAddress_js_role="/management/v1/system/role";
+//
+// //国家接口
+// global_requestAddress_js_country="/management/v1/system/country";
+//
+// //轮播图接口
+// global_requestAddress_js_slideshow="/management/v1/system/slideshow";
+//
+// //系统配置接口接口
+// global_requestAddress_js_systemParameter="/management/v1/system/systemParameter";
+
+const timeArr = [{
+	name:'Asia/Shanghai',
+	value:+8,
+},{
+	name:'Asia/Kolkata',
+	value:+5.5,
+},{
+	name:'America/Mexico_City',
+	value:-6,
+},{
+	name:'America/Bogota',
+	value:-5,
+}]
+
+var rechargeWithdrawTypeList = [{
+	name:'USDT',
+	value:1
+},{
+	name:'BPAY',
+	value:2
+},{
+	name:'lrPay',
+	value:3
+},{
+	name:'wowPay',
+	value:4
+},]
+
+var anotherPayTypeList = [{
+	name:'本地代付',
+	value:1
+},{
+	name:'BPAY',
+	value:2
+},{
+	name:'lrPay',
+	value:3
+},{
+	name:'wowPay',
+	value:4
+},]
+
+
+var param={};
+var currTimeZoneValue = "Asia/Shanghai"
+let currTimeZoneNameStr
+// //获取配置数据
+// $.ajax({
+// 	url: global_requestAddress + global_requestAddress_js_systemParameter+"?action=select",
+// 	headers:{
+// 		token:$.cookie('tokenMyb')
+// 	},
+// 	dataType: 'json',
+// 	type: 'post',
+// 	data: param,
+// 	success: function (dataArray) {
+// 		if (dataArray.code != 2000) {
+// 			return false;
+// 		}
+// 		var returnDataArray = dataArray.result
+// 		let currTimeZoneName = returnDataArray.TimeZone
+// 		currTimeZoneNameStr = returnDataArray.TimeZone
+//
+// 		if(returnDataArray.TimeZone){
+// 			// console.log("currTimeZoneValue111",currTimeZoneNameStr,returnDataArray)
+// 			timeArr.forEach((item)=>{
+// 				if(item.name === currTimeZoneName){
+// 					currTimeZoneValue = item.value
+// 				}
+// 			})
+// 		}
+//
+// 	}
+// })
+//
+
+
+
+//-------------
+
+
+var getRootPath_webStr = getRootPath_web();
+
+//获取目录路径方法
+function getRootPath_web() {
+
+		//获取当前网址，如： http://localhost:8888/eeeeeee/aaaa/vvvv.html
+		var curWwwPath = window.document.location.href;
+		//获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
+		var pathName = window.document.location.pathname;
+		var pos = curWwwPath.indexOf(pathName);
+		//获取主机地址，如： http://localhost:8888
+		var localhostPaht = curWwwPath.substring(0, pos);
+		//获取带"/"的项目名，如：/abcd
+		var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
+
+		// return (localhostPaht + projectName);
+
+
+		// console.log("当前网址:"+curWwwPath);
+		// console.log("主机地址后的目录:"+pos+"----"+pathName);
+		// console.log("主机地址:"+localhostPaht);
+		// console.log("项目名:"+projectName);
+
+
+		return projectName;
+}
+
+
+
+//时间戳转日期时间型工具类
+function formatDateTime(inputTime) {
+	var date = new Date(inputTime);
+	var y = date.getFullYear();
+	var m = date.getMonth() + 1;
+	m = m < 10 ? ('0' + m) : m;
+	var d = date.getDate();
+	d = d < 10 ? ('0' + d) : d;
+	var h = date.getHours();
+	h = h < 10 ? ('0' + h) : h;
+	var minute = date.getMinutes();
+	var second = date.getSeconds();
+	minute = minute < 10 ? ('0' + minute) : minute;
+	second = second < 10 ? ('0' + second) : second;
+	return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+}
+
+
+function toDecimal2(x) {//金额处理两位小数点
+	var f = parseFloat(x);
+	if (isNaN(f)) {
+		return false;
+	}
+	var f = Math.round(x*100)/100;
+	var s = f.toString();
+	var rs = s.indexOf('.');
+	if (rs < 0) {
+		rs = s.length;
+		s += '.';
+	}
+	while (s.length <= rs + 2) {
+		s += '0';
+	}
+	return s;
+}
+
+
+/**
+ * 数字转整数 如 100000 转为10万
+ * @param {需要转化的数} num
+ * @param {需要保留的小数位数} point
+ */
+function tranNumber(num, point) {
+
+
+
+	let numStr = num.toString()
+
+	// console.log(numStr.length);
+	// 一万以内直接返回
+	if (numStr.length <=4) {
+		return numStr;
+	}
+	//大于6位数是十万 (以10W分割 10W以下全部显示)
+	else if (numStr.length > 4) {
+		let decimal = numStr.substring(numStr.length - 4, numStr.length - 4 + point)
+		// return parseFloat(parseInt(num / 10000) + ‘.’ + decimal) + ‘万’;
+		return parseFloat(parseInt(num / 10000) + '.' + decimal) + '万';
+	}
+}
+
+
+
+
+//验证是否为数字
+function isNumber(value) { //验证是否为数字
+
+	var patrn = /^(-)?\d+(\.\d+)?$/;
+
+	if (patrn.exec(value) == null || value == "") {
+		return false
+
+	} else {
+		return true
+
+	}
+
+}
+
+
+
+// 北京是getZoneTime(8),纽约是getZoneTime(-5),班加罗尔是getZoneTime(5.5). 偏移值是本时区相对于格林尼治所在时区的时区差值
+function getZoneTime(offset){
+	// 取本地时间
+	var localtime = new Date();
+	// 取本地毫秒数
+	var localmesc = localtime.getTime();
+	// 取本地时区与格林尼治所在时区的偏差毫秒数
+	var localOffset = localtime.getTimezoneOffset() * 60000;
+	// 反推得到格林尼治时间
+	var utc = localOffset + localmesc;
+	// 得到指定时区时间
+	var calctime = utc + (3600000*offset);
+	var nd = new Date(calctime);
+	return nd.toDateString()+" "+nd.getHours()+":"+nd.getMinutes()+":"+nd.getSeconds();
+}
+
+
+// 我们从后台拿到时区与时间戳，要转换为对应的时区时间。
+// 可以在全局过滤器中写一个方法：
+function getLocalTime(i,time){
+	// i为传入的时区，东八区传8，东七传7
+	// time为传入的时间戳,如1619712000000，这两都是从后台拿到的数据
+	// 如果需要当前的时间戳（1970年一月一日到现在的秒数）
+	// let date = new Date().getTime()
+
+	// 得到本地时间与GMT时间的时间偏移差
+	let offset = new Date().getTimezoneOffset() * 60 * 1000
+	// 后台给的时间戳与offset相加得到现在的格林尼治时间
+	let utcTime = time + offset
+	// 得到正确的时间 如果要转成时间戳就加getTime()方法
+	return new Date(utcTime + 60 * 60 * 1000 * i)
+}
+
+/**
+ * 获得当前日期（年-月-日）
+ */
+function getCurrDate() {
+	var date = new Date();
+	var sep = "-";
+	var year = date.getFullYear(); //获取完整的年份(4位)
+	var month = date.getMonth() + 1; //获取当前月份(0-11,0代表1月)
+	var day = date.getDate(); //获取当前日
+	if (month <= 9) {
+		month = "0" + month;
+	}
+	if (day <= 9) {
+		day = "0" + day;
+	}
+	var currentdate = year + sep + month + sep + day;
+	return currentdate;
+}
+
+
+
