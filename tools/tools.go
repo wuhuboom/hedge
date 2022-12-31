@@ -152,7 +152,10 @@ func AsciiKey(unSortedMap map[string]string) string {
 	str := ""
 	keys := make([]string, 0, len(unSortedMap))
 	for k := range unSortedMap {
-		keys = append(keys, k)
+		if k != "sign" {
+			keys = append(keys, k)
+		}
+
 	}
 	sort.Strings(keys)
 	for v, k := range keys {
@@ -180,7 +183,6 @@ func HttpJsonPost(postUrl string, jsonData []byte) {
 		if error != nil {
 			continue
 		}
-
 		body, _ := ioutil.ReadAll(response.Body)
 		fmt.Println("response Body:", string(body))
 		if string(body) == "SUCCESS" {
@@ -189,6 +191,23 @@ func HttpJsonPost(postUrl string, jsonData []byte) {
 		time.Sleep(1 * time.Second)
 	}
 
+}
+
+func HttpJsonPostOne(postUrl string, jsonData []byte) string {
+	request, error := http.NewRequest("POST", postUrl, bytes.NewBuffer(jsonData))
+	defer request.Body.Close()
+	if error != nil {
+		return error.Error()
+	}
+	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	client := &http.Client{}
+	response, error := client.Do(request)
+	if error != nil {
+		return error.Error()
+	}
+	body, _ := ioutil.ReadAll(response.Body)
+	fmt.Println("response Body:", string(body))
+	return string(body)
 }
 
 // CheckImageFile 检查  图片校验

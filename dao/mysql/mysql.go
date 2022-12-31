@@ -52,6 +52,8 @@ func Init() error {
 	modelPay.CheckIsExistModelBank(DB)
 	modelPay.CheckIsExistModelChannel(DB)
 	modelPay.CheckIsExistModelChannelBank(DB)
+	modelPay.CheckIsExistModelCollection(DB)
+	modelPay.CheckIsExistModelAmountChange(DB)
 	////////////////////////////////////////////////////////////////////////模型初始化
 	return err
 }

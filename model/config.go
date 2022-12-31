@@ -6,9 +6,10 @@ import (
 )
 
 type Config struct {
-	ID              int   `gorm:"primaryKey"`
-	IfUseGoogleCode int   //是否使用谷歌验证码  ?  1是  2不
-	ExpireTime      int64 //  过期时间    单位分钟
+	ID              int    `gorm:"primaryKey"`
+	IfUseGoogleCode int    //是否使用谷歌验证码  ?  1是  2不
+	ExpireTime      int64  //  过期时间    单位分钟
+	IndiaUrl        string //印度  api网关
 }
 
 func CheckIsExistModelConfig(db *gorm.DB) {

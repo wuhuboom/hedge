@@ -15,6 +15,7 @@ type Bank struct {
 	Remark            string
 	Status            int
 	Created           int64
+	Upi               string //UPI地址
 	BankCoding        string `gorm:"-"`
 	BankName          string `gorm:"-"`
 }

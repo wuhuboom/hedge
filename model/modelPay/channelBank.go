@@ -12,6 +12,7 @@ type ChannelBank struct {
 	ChannelId int //通道id
 	BankId    int //   银行卡 id
 	Created   int64
+	Frequency int     //  使用次数
 	Channel   Channel `gorm:"-"`
 	Bank      Bank    `gorm:"-"`
 }

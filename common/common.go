@@ -26,4 +26,7 @@ var (
 	StaticDirPath      string       = ""  //自动获取，程序运行根路径/static/
 	UploadDirPath      string       = ""  //自动获取，程序运行根路径/static/upload/
 	OrderLuck          sync.RWMutex       //读写锁
+	
+	MerchantChangeMoneyLock sync.RWMutex //商家账变锁
+
 )

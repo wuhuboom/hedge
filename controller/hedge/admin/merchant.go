@@ -32,7 +32,6 @@ func MerchantOperation(c *gin.Context) {
 
 	if action == "add" {
 		mer := model.Merchant{}
-
 		mer.MerchantNum = c.PostForm("merchant")
 		mer.WhiteIps = c.PostForm("ips")
 		mer.MinMoney, _ = strconv.ParseFloat(c.PostForm("min_money"), 64)
@@ -40,11 +39,12 @@ func MerchantOperation(c *gin.Context) {
 		mer.PayChannel = c.PostForm("pay_channel")
 		mer.PaidChannel = c.PostForm("paid_channel")
 		mer.Kinds, _ = strconv.Atoi(c.PostForm("kinds"))
+		mer.Gateway = c.PostForm("gateway")
+		//通道币种
 		if mer.MerchantNum == "" {
-			tools.ReturnErr101Code(c, "The parameter cannot be empty\n\n")
+			tools.ReturnErr101Code(c, "The parameter cannot be empty")
 			return
 		}
-
 		_, err := mer.Add(mysql.DB)
 		if err != nil {
 			tools.ReturnErr101Code(c, err)
@@ -97,7 +97,9 @@ func MerchantOperation(c *gin.Context) {
 		if status, isExist := c.GetPostForm("paid_channel"); isExist == true {
 			updated["PaidChannel"] = status
 		}
-
+		if status, isExist := c.GetPostForm("gateway"); isExist == true {
+			updated["Gateway"] = status
+		}
 		mysql.DB.Model(&model.Merchant{}).Where("id=?", id).Update(updated)
 		tools.ReturnSuccess2000Code(c, "ok")
 		return

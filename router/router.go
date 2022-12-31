@@ -15,6 +15,8 @@ import (
 	"github.com/wangyi/GinTemplate/controller/hedge/h5"
 	"github.com/wangyi/GinTemplate/controller/hedge/three"
 	"github.com/wangyi/GinTemplate/controller/pay/management"
+	"github.com/wangyi/GinTemplate/controller/pay/merchant"
+	"github.com/wangyi/GinTemplate/controller/pay/tripartiteTerminal"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
 	eeor "github.com/wangyi/GinTemplate/error"
@@ -80,6 +82,24 @@ func Setup() *gin.Engine {
 
 	}
 
+	//印度支付 拉起订单
+	tripartite := r.Group("/tripartiteTerminal/v2")
+	{
+		tripartite.POST("/createCollection", tripartiteTerminal.CollectionAmount)
+
+	}
+	//CollectionAmount
+
+	//Login
+	mer := r.Group("/merchant/v2")
+	{
+		//登录
+		mer.POST("/login", merchant.Login)
+		//代收订单  collection
+		mer.POST("/collection", merchant.CollectionAmount)
+
+	}
+
 	r.Run(fmt.Sprintf(":%d", viper.GetInt("app.port")))
 	return r
 }
@@ -127,7 +147,9 @@ func PermissionToCheck() gin.HandlerFunc {
 		"/paid/v1/paid",
 		"/modelPay/v1/modelPay",
 		"/paid/v1/orderInquiry",
-		"/paid/v1/noticeUseOtherPaid", "/modelPay/v1/uploadPayCertificate", "/modelPay/v1/checkImageForUpload"}
+		"/paid/v1/noticeUseOtherPaid",
+		"/modelPay/v1/uploadPayCertificate",
+		"/modelPay/v1/checkImageForUpload", "/tripartiteTerminal/v2/createCollection", "/merchant/v2/login"}
 
 	return func(c *gin.Context) {
 		if !tools.IsArray(whiteUrl, c.Request.RequestURI) {
@@ -135,21 +157,22 @@ func PermissionToCheck() gin.HandlerFunc {
 			//判断是用户还是管理员
 			fmt.Println(c.Request.URL.Path)
 			token := c.Request.Header.Get("token")
-			//用户
+			//商户号
 			if len(token) == 36 {
-				//ad := model.User{}
-				//err := mysql.DB.Where("token=?", token).First(&ad).Error
-				//if err != nil {
-				//	tools.JsonWrite(c, client.IllegalityCode, nil, client.IllegalityMsg)
-				//	c.Abort()
-				//}
-				////判断token 是否过期?
-				//if redis.Rdb.Get("UserToken_"+token).Val() == "" {
-				//	tools.JsonWrite(c, client.TokenExpire, nil, client.LoginExpire)
-				//	c.Abort()
-				//}
-				//c.Set("who", ad)
-				//c.Next()
+				ad := model.Merchant{}
+				err := mysql.DB.Where("token=?", token).First(&ad).Error
+				if err != nil {
+					tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
+
+					c.Abort()
+				}
+				//判断token 是否过期?
+				if redis.Rdb.Get("MerchantToken_"+token).Val() == "" {
+					tools.JsonWrite(c, tools.TokenExpire, nil, "An unlawful request")
+					c.Abort()
+				}
+				c.Set("who", ad)
+				c.Next()
 			} else if len(token) == 32 {
 				//管理员
 				ad := model.Admin{}
