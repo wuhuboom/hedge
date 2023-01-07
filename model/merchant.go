@@ -31,8 +31,12 @@ type Merchant struct {
 	FreezeAmount         float64 `gorm:"type:decimal(10,2)"` //冻结的金额
 	CollectionCommission float64 `gorm:"type:decimal(10,2)"` //代收手续费
 	PayCommission        float64 `gorm:"type:decimal(10,2)"` //代付手续费
-	Created              int64
-	Updated              int64
+
+	MinPay float64 `gorm:"type:decimal(10,2)"` //最小代付
+	MaxPay float64 `gorm:"type:decimal(10,2)"` //最大代付
+
+	Created int64
+	Updated int64
 }
 
 func CheckIsExistModelMerchant(db *gorm.DB) {

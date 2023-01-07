@@ -57,9 +57,8 @@ func ChannelBank(c *gin.Context) {
 		tools.ReturnSuccess2000Code(c, "OK")
 		return
 	}
-
 	if action == "del" {
-		err := mysql.DB.Where("id=?", c.PostForm("id")).Delete(&modelPay.ChannelBank{}).Error
+		err := mysql.DB.Model(&modelPay.ChannelBank{}).Where("id=?", c.PostForm("id")).Delete(&modelPay.ChannelBank{}).Error
 		if err != nil {
 			tools.ReturnErr101Code(c, err.Error())
 			return

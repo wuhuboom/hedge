@@ -35,9 +35,9 @@ func Setup() *gin.Engine {
 	r.NoMethod(eeor.HandleNotFound)
 	r.NoRoute(eeor.HandleNotFound)
 	r.Static("/static", "./static")
-	r.Use(PermissionToCheck())
+	//r.Use(PermissionToCheck())
 
-	ad := r.Group("/admin/v1")
+	ad := r.Group("/admin/v1", PermissionToCheckForAdmin())
 	{
 		//管理登录
 		ad.POST("/login", admin2.Login)
@@ -60,6 +60,8 @@ func Setup() *gin.Engine {
 		ad.POST("/channel", management.Channel)
 		//ChannelBank
 		ad.POST("/channelBank", management.ChannelBank)
+		//CollectionOperation    //  获取代收 或者代付 订单
+		ad.POST("/collectionOperation", management.CollectionOperation)
 
 	}
 
@@ -85,13 +87,17 @@ func Setup() *gin.Engine {
 	//印度支付 拉起订单
 	tripartite := r.Group("/tripartiteTerminal/v2")
 	{
+		//   来气代收
 		tripartite.POST("/createCollection", tripartiteTerminal.CollectionAmount)
+
+		//  拉起 代付 PayAmount
+		tripartite.POST("/payAmount", tripartiteTerminal.PayAmount)
 
 	}
 	//CollectionAmount
 
 	//Login
-	mer := r.Group("/merchant/v2")
+	mer := r.Group("/merchant/v2").Use(PermissionToCheckForMerchant())
 	{
 		//登录
 		mer.POST("/login", merchant.Login)
@@ -163,7 +169,6 @@ func PermissionToCheck() gin.HandlerFunc {
 				err := mysql.DB.Where("token=?", token).First(&ad).Error
 				if err != nil {
 					tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
-
 					c.Abort()
 				}
 				//判断token 是否过期?
@@ -186,7 +191,6 @@ func PermissionToCheck() gin.HandlerFunc {
 					tools.JsonWrite(c, tools.TokenExpire, nil, "An unlawful request")
 					c.Abort()
 				}
-
 				//设置who
 				c.Set("who", ad)
 				c.Next()
@@ -196,8 +200,7 @@ func PermissionToCheck() gin.HandlerFunc {
 			}
 
 		}
-
-		c.Next()
+		//c.Next()
 
 	}
 
@@ -230,5 +233,71 @@ func LimitIpRequestSameUrlForUser() gin.HandlerFunc {
 
 		context.Next()
 
+	}
+}
+
+// PermissionToCheckForAdmin 管理控制
+func PermissionToCheckForAdmin() gin.HandlerFunc {
+	whiteUrl := []string{
+		"/admin/v1/login",
+	}
+	return func(c *gin.Context) {
+		if !tools.IsArray(whiteUrl, c.Request.RequestURI) {
+			token := c.Request.Header.Get("token")
+			if len(token) == 32 {
+				tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
+				c.Abort()
+				return
+			}
+			ad := model.Admin{}
+			err := mysql.DB.Where("token=?", token).First(&ad).Error
+			if err != nil {
+				tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
+				c.Abort()
+				return
+			}
+			//判断token 是否过期?
+			if redis.Rdb.Get("AdminToken_"+token).Val() == "" {
+				tools.JsonWrite(c, tools.TokenExpire, nil, "An unlawful request")
+				c.Abort()
+				return
+			}
+			//设置who
+			c.Set("who", ad)
+			c.Next()
+		}
+	}
+}
+
+// PermissionToCheckForMerchant 商户 控制
+func PermissionToCheckForMerchant() gin.HandlerFunc {
+	whiteUrl := []string{
+		"/merchant/v2/login"}
+	return func(c *gin.Context) {
+		if !tools.IsArray(whiteUrl, c.Request.RequestURI) {
+			token := c.Request.Header.Get("token")
+			//商户号
+			if len(token) == 36 {
+				tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
+				c.Abort()
+				return
+			}
+
+			ad := model.Merchant{}
+			err := mysql.DB.Where("token=?", token).First(&ad).Error
+			if err != nil {
+				tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
+				c.Abort()
+				return
+			}
+			//判断token 是否过期?
+			if redis.Rdb.Get("MerchantToken_"+token).Val() == "" {
+				tools.JsonWrite(c, tools.TokenExpire, nil, "An unlawful request")
+				c.Abort()
+				return
+			}
+			c.Set("who", ad)
+			c.Next()
+		}
 	}
 }

@@ -40,11 +40,17 @@ func MerchantOperation(c *gin.Context) {
 		mer.PaidChannel = c.PostForm("paid_channel")
 		mer.Kinds, _ = strconv.Atoi(c.PostForm("kinds"))
 		mer.Gateway = c.PostForm("gateway")
+		mer.LoginPassword = c.PostForm("login_password")
+
+		mer.MaxPay, _ = strconv.ParseFloat(c.PostForm("max_pay"), 64)
+		mer.MinPay, _ = strconv.ParseFloat(c.PostForm("min_pay"), 64)
+
 		//通道币种
 		if mer.MerchantNum == "" {
 			tools.ReturnErr101Code(c, "The parameter cannot be empty")
 			return
 		}
+		mer.ApiKey = tools.RandStringRunes(48) + mer.MerchantNum
 		_, err := mer.Add(mysql.DB)
 		if err != nil {
 			tools.ReturnErr101Code(c, err)
@@ -84,6 +90,21 @@ func MerchantOperation(c *gin.Context) {
 				}
 				updated["MinMoney"] = Min
 				updated["MaxMoney"] = Max
+			}
+		}
+
+		//max   min  pay
+
+		if minMoney, isExist := c.GetPostForm("min_pay"); isExist == true {
+			if maxMoney, isExist := c.GetPostForm("max_pay"); isExist == true {
+				Min, _ := strconv.ParseFloat(minMoney, 64)
+				Max, _ := strconv.ParseFloat(maxMoney, 64)
+				if Min >= Max {
+					tools.ReturnErr101Code(c, "sorry ,min_pay must  < max_pay")
+					return
+				}
+				updated["MinPay"] = Min
+				updated["MaxPay"] = Max
 			}
 		}
 

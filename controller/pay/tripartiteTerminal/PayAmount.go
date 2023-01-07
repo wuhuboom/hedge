@@ -1,9 +1,7 @@
 package tripartiteTerminal
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/model/modelPay"
@@ -14,10 +12,10 @@ import (
 	"time"
 )
 
-//代收
+//代付
 
-func CollectionAmount(c *gin.Context) {
-	var cpd CheckPayData
+func PayAmount(c *gin.Context) {
+	var cpd CheckPayDataTwo
 	if err := c.BindJSON(&cpd); err != nil {
 		tools.ReturnVerifyErrCode(c, err)
 		return
@@ -27,21 +25,21 @@ func CollectionAmount(c *gin.Context) {
 		tools.ReturnErr101Code(c, "Illegal request")
 		return
 	}
-	if err := SignatureCollectionAmount(cpd, mer.ApiKey); err != nil {
+	if err := SignatureCollectionAmountTwo(cpd, mer.ApiKey); err != nil {
 		tools.ReturnErr101Code(c, err.Error())
 		return
 	}
 
 	//签名通过  校验 金额大小
 	amountFlot, _ := strconv.ParseFloat(cpd.Amount, 64)
-	if amountFlot < mer.MinMoney || amountFlot > mer.MaxMoney {
+	if amountFlot < mer.MinPay || amountFlot > mer.MaxPay {
 		tools.ReturnErr101Code(c, "Amount out of range")
 		return
 	}
 
 	//检查 通道id是否开通  或者存在
 	ChannelId, _ := strconv.Atoi(cpd.ChannelId)
-	payChannelArray := strings.Split(mer.PayChannel, "@")
+	payChannelArray := strings.Split(mer.PaidChannel, "@")
 	if tools.IsArray(payChannelArray, cpd.ChannelId) == false {
 		tools.ReturnErr101Code(c, "Illegal channel")
 		return
@@ -55,7 +53,6 @@ func CollectionAmount(c *gin.Context) {
 	}
 
 	//判断币种是否正确
-
 	if ch.Currency != cpd.Currency {
 		tools.ReturnErr101Code(c, "Currency  is  fail")
 		return
@@ -74,30 +71,17 @@ func CollectionAmount(c *gin.Context) {
 	collection.ChannelId = ChannelId
 	collection.Currency = cpd.Currency
 	collection.Callback = 1
+	collection.BankName = cpd.BankName
+	collection.BankCode = cpd.BankCode
+	collection.IFSC = cpd.IFSC
+	collection.Name = cpd.Name
 	collection.OwnOrder = "Mer" + time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(1000))
 	err := collection.Add(mysql.DB)
 	if err != nil {
 		tools.ReturnErr101Code(c, err.Error())
 		return
 	}
-	// 获取upi
-	CB := modelPay.ChannelBank{}
-	err = mysql.DB.Where("channel_id=?", ch.ID).Order("frequency asc").First(&CB).Error
-	if err != nil {
-		tools.ReturnErr101Code(c, err.Error())
-		return
-	}
-
-	//
-	bank := modelPay.Bank{}
-	err = mysql.DB.Where("id=?", CB.BankId).First(&bank).Error
-	if err != nil {
-		tools.ReturnErr101Code(c, err.Error())
-		return
-	}
-	//次数+1
-	mysql.DB.Model(&modelPay.ChannelBank{}).Where("id=?", CB.ID).UpdateColumn("frequency", gorm.Expr("frequency + ?", 1))
-
-	tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"?upi=%s&amount=%s", bank.Upi, cpd.Amount), "ok")
+	tools.ReturnSuccess2000Code(c, "OK")
 	return
+
 }

@@ -21,7 +21,7 @@ func CollectionAmount(c *gin.Context) {
 		limit, _ := strconv.Atoi(c.PostForm("limit"))
 		page, _ := strconv.Atoi(c.PostForm("page"))
 		sl := make([]modelPay.Collection, 0)
-		db := mysql.DB.Where("mer_chant_num=?", whoMap.MerchantNum)
+		db := mysql.DB.Where("mer_chant_num=?", whoMap.MerchantNum).Where("kinds=?", c.PostForm("kinds"))
 		var total int
 		//条件
 		if status, IsE := c.GetPostForm("status"); IsE == true {
@@ -30,6 +30,7 @@ func CollectionAmount(c *gin.Context) {
 		if status, IsE := c.GetPostForm("callback"); IsE == true {
 			db = db.Where("callback=?", status)
 		}
+
 		if start, IsE := c.GetPostForm("start"); IsE == true {
 			if end, IsE := c.GetPostForm("end"); IsE == true {
 				db = db.Where("created  <=  ? and created >=  ?", end, start)

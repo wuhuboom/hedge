@@ -7,6 +7,8 @@ import (
 	"strconv"
 )
 
+//日志处理
+
 func LogOperation(c *gin.Context) {
 	action := c.Query("action")
 	if action == "check" {

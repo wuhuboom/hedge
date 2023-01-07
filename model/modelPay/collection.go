@@ -23,6 +23,11 @@ type Collection struct {
 	NoticeUrl        string  //通知地址
 	Currency         string  //币种
 	OwnOrder         string  `gorm:"unique_index"` //我方平台订单
+	Kinds            int     `gorm:"default:1" `   //1 代收 2代付
+	BankName         string
+	BankCode         string
+	IFSC             string
+	Name             string
 	Created          int64
 	Updated          int64
 }
