@@ -17,6 +17,7 @@ import (
 	"github.com/wangyi/GinTemplate/controller/pay/management"
 	"github.com/wangyi/GinTemplate/controller/pay/merchant"
 	"github.com/wangyi/GinTemplate/controller/pay/tripartiteTerminal"
+	"github.com/wangyi/GinTemplate/controller/pay/user"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
 	eeor "github.com/wangyi/GinTemplate/error"
@@ -106,6 +107,12 @@ func Setup() *gin.Engine {
 
 	}
 
+	//UploadCertificate
+	us := r.Group("/user/v2", LimitIpRequestSameUrlForUser())
+	{
+		us.POST("/uploadCertificate", user.UploadCertificate)
+	}
+
 	r.Run(fmt.Sprintf(":%d", viper.GetInt("app.port")))
 	return r
 }
@@ -146,66 +153,6 @@ func Cors() gin.HandlerFunc {
 	}
 }
 
-// PermissionToCheck 权限校验
-func PermissionToCheck() gin.HandlerFunc {
-	whiteUrl := []string{
-		"/admin/v1/login",
-		"/paid/v1/paid",
-		"/modelPay/v1/modelPay",
-		"/paid/v1/orderInquiry",
-		"/paid/v1/noticeUseOtherPaid",
-		"/modelPay/v1/uploadPayCertificate",
-		"/modelPay/v1/checkImageForUpload", "/tripartiteTerminal/v2/createCollection", "/merchant/v2/login"}
-
-	return func(c *gin.Context) {
-		if !tools.IsArray(whiteUrl, c.Request.RequestURI) {
-			//token  校验
-			//判断是用户还是管理员
-			fmt.Println(c.Request.URL.Path)
-			token := c.Request.Header.Get("token")
-			//商户号
-			if len(token) == 36 {
-				ad := model.Merchant{}
-				err := mysql.DB.Where("token=?", token).First(&ad).Error
-				if err != nil {
-					tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
-					c.Abort()
-				}
-				//判断token 是否过期?
-				if redis.Rdb.Get("MerchantToken_"+token).Val() == "" {
-					tools.JsonWrite(c, tools.TokenExpire, nil, "An unlawful request")
-					c.Abort()
-				}
-				c.Set("who", ad)
-				c.Next()
-			} else if len(token) == 32 {
-				//管理员
-				ad := model.Admin{}
-				err := mysql.DB.Where("token=?", token).First(&ad).Error
-				if err != nil {
-					tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
-					c.Abort()
-				}
-				//判断token 是否过期?
-				if redis.Rdb.Get("AdminToken_"+token).Val() == "" {
-					tools.JsonWrite(c, tools.TokenExpire, nil, "An unlawful request")
-					c.Abort()
-				}
-				//设置who
-				c.Set("who", ad)
-				c.Next()
-			} else {
-				tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
-				c.Abort()
-			}
-
-		}
-		//c.Next()
-
-	}
-
-}
-
 func LimitIpRequestSameUrlForUser() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		//获取请求的地址
@@ -213,7 +160,7 @@ func LimitIpRequestSameUrlForUser() gin.HandlerFunc {
 		ip := context.ClientIP()
 		//回去系统设置的ip限制次数
 		var LimitTimes int
-		LimitTimes = 2
+		LimitTimes = 3
 		key := ip + urlPath
 		curr := redis.Rdb.LLen(key).Val()
 		if int(curr) >= LimitTimes {
@@ -244,7 +191,7 @@ func PermissionToCheckForAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !tools.IsArray(whiteUrl, c.Request.RequestURI) {
 			token := c.Request.Header.Get("token")
-			if len(token) == 32 {
+			if len(token) != 32 {
 				tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
 				c.Abort()
 				return
@@ -277,7 +224,7 @@ func PermissionToCheckForMerchant() gin.HandlerFunc {
 		if !tools.IsArray(whiteUrl, c.Request.RequestURI) {
 			token := c.Request.Header.Get("token")
 			//商户号
-			if len(token) == 36 {
+			if len(token) != 36 {
 				tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
 				c.Abort()
 				return

@@ -28,6 +28,7 @@ type Collection struct {
 	BankCode         string
 	IFSC             string
 	Name             string
+	ProofOfPayment   string //支付凭证
 	Created          int64
 	Updated          int64
 }

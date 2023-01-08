@@ -1,0 +1,646 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>用户列表</title>
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+    <script src="../../assets/js/moment.js"></script>
+
+    <style>
+
+            .currSerachBtn{
+                box-shadow: 0 15px 18px -6px rgb(45 140 240 / 65%) !important;
+            }
+
+            .currReloadBtn{
+                box-shadow: 0 15px 18px -6px rgb(146 109 222 / 65%) !important;
+            }
+
+            .layui-table-cell{
+                height:46px;
+                line-height: 46px;
+
+                /*height: auto ;*/
+                /*white-space: normal;*/
+                /*word-wrap:break-word;*/
+            }
+
+            /*!** 数据表格中的select尺寸调整 *!*/
+            /*.layui-table-view .layui-table-cell .layui-select-title .layui-input {*/
+            /*    height: 28px;*/
+            /*    line-height: 28px;*/
+            /*}*/
+
+            /*.layui-table-view [lay-size="lg"] .layui-table-cell .layui-select-title .layui-input {*/
+            /*    height: 40px;*/
+            /*    line-height: 40px;*/
+            /*}*/
+
+            /*.layui-table-view [lay-size="lg"] .layui-table-cell .layui-select-title .layui-input {*/
+            /*    height: 40px;*/
+            /*    line-height: 40px;*/
+            /*}*/
+
+            /*.layui-table-view [lay-size="sm"] .layui-table-cell .layui-select-title .layui-input {*/
+            /*    height: 20px;*/
+            /*    line-height: 20px;*/
+            /*}*/
+
+            /*.layui-table-view [lay-size="sm"] .layui-table-cell .layui-btn-xs {*/
+            /*    height: 18px;*/
+            /*    line-height: 18px;*/
+            /*}*/
+
+
+
+    </style>
+
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">&emsp;
+                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="addGropeTask" id="addGropeTask" lay-submit style="background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);">
+                            <i class="layui-icon">&#xe624;</i>添加
+                        </button>
+<!--                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit >-->
+<!--                            <i class="layui-icon">&#xe615;</i>搜索-->
+<!--                        </button>-->
+                        <button class="layui-btn icon-btn currReloadBtn" lay-filter="reloadData" lay-submit style="background-color: #926dde;border-color: #926dde;">
+                            <i class="layui-icon layui-icon-refresh"></i>刷新数据
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- 数据表格 -->
+            <table id="userTable" lay-filter="userTable" style="margin-top:10px"></table>
+        </div>
+    </div>
+</div>
+
+
+<!-- js部分 -->
+<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../../assets/js/common.js?v=318"></script>
+
+<script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="../../assets/js/config.url.js"></script>
+
+
+<!--数据表格操作工具栏-->
+<script type="text/html" id="orderListBar">
+    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="channeldetail" style="background-color: #ffba00"><i class="layui-icon layui-icon-app"></i>查看</a>
+<!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="deleteBtn" style="background-color: #f96868 "><i class="layui-icon layui-icon-delete"></i>删除</a>-->
+</script>
+
+<script>
+
+    var mybck= $.cookie('tokenMyb');
+    //alert(document.cookie);
+    //console.log(mybck)
+    if(mybck == "" || mybck == null){
+
+        window.top.location.href="../../login.html";
+
+    }else{
+
+        var jsondata ;
+        var countryListArr = []
+
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','treeTable'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var util = layui.util;
+            var admin = layui.admin;
+            var xmSelect = layui.xmSelect;
+            var notice = layui.notice;
+            var treeTable = layui.treeTable
+
+
+
+
+            var log_login_request_param = {};
+            // log_login_request_param['overlay_id']= 0;
+            // log_login_request_param['token']= $.cookie('tokenMyb');
+            /* 渲染表格 */
+            var insTb = table.render({
+                elem: '#userTable',
+                url: global_requestAddress+global_requestAddress_js_channel+"?action=check",
+                method: 'post',
+                headers:{
+                    token:mybck
+                },
+                response: {
+                    statusCode: 200,
+                    dataName: 'result',
+                },
+                where:log_login_request_param,
+                // toolbar: ['<p>',
+                //     '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+                //     '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                //     '</p>'].join(''),
+                cellMinWidth: 100,
+                page :  { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                    //,curr: 5 //设定初始在第 5 页
+                    ,groups: 10 //只显示 1 个连续页码
+                    ,first: "首页" //不显示首页
+                    ,last: "尾页"//不显示尾页
+                },
+                height : "full-100",
+                limit : 20,
+                limits : [20,30,50,100],
+                // id : "systemLog",
+                cols: [[
+                    // {type: 'checkbox'},
+                    {field: 'ID',title:'ID',sort: true,align:"center",width:70},
+                    {field: 'ChannelName', title: '通道名字', edit: 'text', sort: true,align:"center"},
+                    {field: 'Rate', title: '通道费率', edit: 'text', sort: true,align:"center"},
+                    {field: 'Currency', title: '币种', edit: 'text', sort: true,align:"center"},
+                    {field: 'Kinds', title: '类型', width:130,sort: true,align:"center", templet: function (d) {
+                            var vipHtml = '<div><div class="ew-select-fixed"><select lay-filter="templetVipSel">';
+                            layui.each(channelArr, function (i, item) {
+                                if (d.Kinds === item.ID) {  // 这里加selected
+                                    vipHtml += ('<option  selected value="' + item.ID+ '">' + item.name + '</option>');
+                                } else {
+                                    vipHtml += ('<option  value="' + item.ID+ '">' + item.name + '</option>');
+                                }
+                            });
+                            vipHtml += '</select></div></div>';
+                            return vipHtml;
+                        }},
+                    {field: 'Status', title: '状态', sort: true,align:"center",templet:function(d){
+                            var state = "";
+                            if(d.Status == "1"){//正常,checked 打开
+                                state = "<input type='checkbox' value='" + d.Status + "' id='table_status' lay-filter='table_status'  name='table_status'  lay-skin='switch' lay-text='正常|禁用' checked>";
+                                return state;
+                            }else if(d.Status == "2"){//禁用
+                                state = "<input type='checkbox' value='" + d.Status + "' id='table_status' lay-filter='table_status'  name='table_status'  lay-skin='switch' lay-text='正常|禁用'>";
+                                return state;
+                            }else{
+                                return ''
+                            }
+
+                        }},
+                    {field: 'Created', title: '创建时间',align:"center",width:175, sort: true, templet: function (d) {
+                            // return util.toDateString(d.Created* 1000);
+                            return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
+                    }},
+                    // {
+                    //     field: 'Updated', title: '更新时间',align:"center",width:175, templet: function (d) {
+                    //         // return util.toDateString(d.Updated* 1000);
+                    //         return moment(d.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
+                    //     }, sort: true
+                    // },
+                    {title: '操作', width:180, templet:'#orderListBar',fixed:"right",align:"center"}
+                    // {title: '操作', width:250, templet:'#orderListBar',fixed:"right",align:"center"}
+                ]],
+                done: function (res, curr, count) {
+                    $('tr').css({'background-color': '#fff', 'color': '#191a1c'});
+
+                    // $(".layui-table-main tr").each(function (index, val) {
+                    //     $($(".layui-table-fixed-l .layui-table-body tbody tr")[index]).height($(val).height());
+                    //     $($(".layui-table-fixed-r .layui-table-body tbody tr")[index]).height($(val).height());
+                    // });
+
+                }
+            });
+
+
+            //添加银行
+            $("#addGropeTask").click(function () {
+
+                var index = layui.layer.open({
+                    area: ['500px', '500px'],
+                    fixed: false, //不固定
+                    maxmin: false,
+                    title : "添加通道",
+                    skin: 'layui-layer-rim',//加上边框
+                    type : 2,
+                    content : "channel_add.html",
+                    success : function(layero, index){
+                        var body = layui.layer.getChildFrame('body', index);
+
+                    },
+                    end : function() {//弹窗关闭后的回调函数
+                        //利用laypage实现局部刷新,以下两种方式都可以
+                        // $(".layui-laypage-btn").click()
+                        //直接刷新当前修改的行
+                        $(".layui-laypage-btn")[0].click()
+
+                    }
+                })
+                // window.sessionStorage.setItem("index",index);
+                // //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
+                // $(window).on("resize",function(){
+                //     layui.layer.full(window.sessionStorage.getItem("index"));
+                // })
+
+
+                return false
+            })
+
+            /* 表格搜索 */
+            var currTempObj;
+            var bet_tb_this;
+            form.on('submit(userTbSearch)', function (data) {
+
+                // console.log("currTempObj",data.field.username)
+                // insTb.reload({where: data.field, page: {curr: 1}});
+                currTempObj = {}
+                currTempObj.token = $.cookie('tokenMyb');
+                currTempObj.status = 1;
+
+                if(data.field.username === ""){
+
+
+                }else{
+                    currTempObj.username = data.field.username
+                }
+
+
+                if(data.field.phone === ""){
+
+
+                }else{
+                    currTempObj.phone = data.field.phone
+                }
+
+
+                if(data.field.qq_nums === ""){
+
+
+                }else{
+                    currTempObj.qq_nums = data.field.qq_nums
+                }
+
+
+                if(data.field.definition === ""){
+
+
+                }else{
+                    currTempObj.definition = data.field.definition
+                }
+
+                if(data.field.nickname === ""){
+
+
+                }else{
+                    currTempObj.nickname = data.field.nickname
+                }
+
+
+
+                //2.6.0之前清除保留之前的数据的最有用的方式
+                if (bet_tb_this != null) {
+                    // console.log("book_tb_this--不为null",bet_tb_this)
+                    bet_tb_this.where = {};  //置空where
+                }
+                insTb.reload({
+                    where: currTempObj,
+                    page: {curr: 1},
+                    done:function(){
+                        bet_tb_this = this;
+                        // console.log("book_tb_this----重载后的值",bet_tb_this)
+                    }
+                },false);
+
+
+                return false;
+            });
+
+
+            //监听单元格编辑
+            table.on('edit(userTable)', function(obj){
+                // 单元格编辑之前的值
+                var oldText = $(this).prev().text();
+                // console.log("oldText",oldText)
+
+                var value = obj.value //得到修改后的值
+                    ,data = obj.data //得到所在行所有键值
+                    ,field = obj.field; //得到字段
+                // console.log("value",obj)
+
+                var param = {};
+                param['id'] = data.ID;
+
+                if(field === "ChannelName"){
+
+                    if(!checkRate(util.escape(value))){
+                        layer.msg("通道名称只能为数字!", {icon: 2});
+                        // this.value='';
+                        //重新赋值
+                        $(this).val(oldText);
+                        return false
+                    }
+
+                    param['channel_name'] = util.escape(value);
+                }
+                if(field === "Rate"){
+                    param['rate'] =util.escape(value);
+                }
+
+                if(field === "Currency"){
+                    param['currency'] =util.escape(value);
+                }
+
+                // layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改值为：'+ util.escape(value));
+
+                $.ajax({
+                    url: global_requestAddress+global_requestAddress_js_channel+"?action=update",
+                    data: param,
+                    headers:{
+                      token:mybck
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    success: function (addResult) {
+
+                        if (addResult.code === 200) {
+                            notice.msg(addResult.msg, {icon: 1});
+                        } else {
+                            // layer.msg(addResult.msg);
+                            notice.msg(addResult.msg, {icon: 2});
+                        }
+
+
+                    },
+
+                });
+            });
+
+            //下拉框选择事件
+            form.on("select(templetVipSel)",function(data){
+                //获取当前行tr对象
+                var elem = data.othis.parents('tr');
+                //第一列的值是Guid，取guid来判断
+                var Guid= elem.first().find('td').eq(0).text();
+                //选择的select对象值；
+                var selectValue = data.value;
+                // console.log("data",Guid)
+
+                var param = {};
+                param['id'] = Guid;
+                param['kinds'] =selectValue;
+
+                $.ajax({
+                    url: global_requestAddress+global_requestAddress_js_channel+"?action=update",
+                    data: param,
+                    headers:{
+                        token:mybck
+                    },
+                    type: "POST",
+                    dataType: "json",
+                    success: function (addResult) {
+
+                        if (addResult.code === 200) {
+                            notice.msg(addResult.msg, {icon: 1});
+
+                        } else {
+                            // layer.msg(addResult.msg);
+                            notice.msg(addResult.msg, {icon: 2});
+                        }
+
+
+                    },
+
+
+                });
+
+            })
+
+
+            //监听开启开关按钮操作
+            form.on('switch(table_status)', function(obj){
+
+                // console.log("obj",obj)
+
+                // 获取当前控件
+                var selectIfKey=obj.othis;
+                // 获取当前所在行
+                var parentTr = selectIfKey.parents("tr");
+                // 获取当前所在行的索引
+                // var parentTrIndex = parentTr.attr("data-index");
+
+                //通过相对位置找对应行数据
+                // 获取当前行第一和三列的值
+                var currentwx_id = parentTr.find(('td:eq(0)')).text().trim();
+                console.log("currentwx_id",currentwx_id)
+
+
+                var currStatusBool = obj.elem.checked;
+                // console.log("currStatusBool",currStatusBool)
+                var messageTitle = '';
+                var currStatusNum = 0;
+                if(currStatusBool){  //currStatusBool true
+                    messageTitle = '系统将对该数据进行开启操作,确定对当前用户进行开启操作吗?'
+                }else{ //false
+
+                    messageTitle = '系统将对该数据进行关闭操作,确定对当前用户进行关闭操作吗?'
+
+                }
+
+                //弹窗组件
+                layer.open({
+                    // type: 2,
+                    area: ['450px', '195px'],
+                    fix: false,
+                    //不固定
+                    maxmin: true,
+                    shade: 0.3,
+                    skin: 'layui-layer-rim',//加上边框
+                    title: "温馨提示",
+                    content:messageTitle,
+                    // content: `<div>`+messageTitle+`</div>`,
+                    btn: ['确定','取消'],
+                    // // 弹层外区域关闭
+                    shadeClose: true,
+                    btn1: function(index, layero) {//确定事件
+                        //点击第一个按钮处理逻辑
+                        // layer.msg("1");
+                        if(currStatusBool){
+                            currStatusNum = 1
+                        }else{
+                            currStatusNum = 2
+                        }
+
+                        //进行ajax请求
+                        var param={};
+                        param.status = currStatusNum
+                        //这个就是当前那条数据的ID
+                        param.id = currentwx_id
+
+                        $.ajax({
+                            url: global_requestAddress+global_requestAddress_js_channel+"?action=update",
+                            method:'POST',
+                            data:param,
+                            dataType:"json",
+                            headers:{
+                                token:mybck,
+                            },
+                            success:function (res) {
+                                if(res.code === 200){  //
+                                    notice.msg(res.msg, {icon: 1});
+                                    //列表的刷新
+                                    insTb.reload();
+                                    //关闭第一个弹窗的组件ID
+                                    layer.close(index);
+                                }else{
+                                    notice.msg(res.msg, {icon: 2});
+                                    insTb.reload();
+                                    layer.close(index);
+                                }
+                            }
+                        })
+
+
+
+
+                    },
+                    btn2: function(index, layero){//取消事件
+                        //点击第二个按钮处理逻辑
+                        // layer.msg("2");
+
+                        notice.msg("取消操作", {icon: 5});
+                        // $.message({
+                        //     message: "取消操作",
+                        //     type: 'info',
+                        //     showClose: true
+                        // });
+
+                        var x = obj.elem.checked;
+
+                        obj.elem.checked = !x;
+                        form.render();
+                        layer.close(index);
+                    },
+                    cancel: function(index, layero){//取消事件
+                        //点击第二个按钮处理逻辑
+                        // layer.msg("2");
+                        notice.msg("取消操作", {icon: 5});
+                        var x = obj.elem.checked;
+                        obj.elem.checked = !x;
+                        form.render();
+                        layer.close(index);
+                    }
+                })
+
+
+
+
+
+            });
+
+            /* 表格工具条点击事件 */
+            table.on('tool(userTable)', function (obj) {
+                var currDatas  = obj.data;
+                if (obj.event === 'channeldetail') { // 修改
+                    // showEditModel(obj.data);
+
+                    jsondata = JSON.stringify(currDatas)
+                    var index = layui.layer.open({
+                        area: ['1200px', '500px'],
+                        fixed: false, //不固定
+                        maxmin: false,
+                        title : "查看通道详情",
+                        skin: 'layui-layer-rim',//加上边框
+                        type : 2,
+                        content : "channel_detail_lists.html",
+                        success : function(layero, index){
+                            var body = layui.layer.getChildFrame('body', index);
+                            if(currDatas) {
+
+                            }
+                        },
+                        end : function() {//弹窗关闭后的回调函数
+                            //利用laypage实现局部刷新,以下两种方式都可以
+                            // $(".layui-laypage-btn").click()
+                            //直接刷新当前修改的行
+                            $(".layui-laypage-btn")[0].click()
+
+                        }
+                    })
+                    window.sessionStorage.setItem("index",index);
+                    //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
+                    $(window).on("resize",function(){
+                        layui.layer.full(window.sessionStorage.getItem("index"));
+                    })
+
+                }else if(obj.event === 'deleteBtn'){ //删除
+                    layer.confirm('确定要删除选中数据吗？', {
+                        skin: 'layui-layer-admin',
+                        shade: .1
+                    }, function (i) {
+                        layer.close(i);
+                        var loadIndex = layer.load(2);
+
+                        var param = {};
+                        param['id'] = currDatas.ID;
+
+                        $.ajax({
+                            url: global_requestAddress+global_requestAddress_js_slideshow+"?action=delete",
+                            data: param,
+                            headers:{
+                                token:mybck
+                            },
+                            type: "POST",
+                            dataType: "json",
+                            success: function (addResult) {
+                                layer.close(loadIndex);
+                                if (addResult.code === 2000) {
+                                    notice.msg(addResult.msg, {icon: 1});
+                                    insTb.reload({page: {curr: 1}});
+                                } else {
+                                    notice.msg(addResult.msg, {icon: 2});
+                                }
+
+                            },
+
+
+                        });
+
+                    });
+                }
+            });
+
+
+
+
+        });
+
+    }
+
+    //判断字符串是否为数字
+    function checkRate(nubmer) {
+        //判断正整数
+        var re = /^\d+$/;
+        if (re.test(nubmer)) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+
+</script>
+</body>
+</html>

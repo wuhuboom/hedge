@@ -21,7 +21,7 @@ type Error struct {
 
 var (
 	Success     = NewError(http.StatusOK, 0, "success")
-	ServerError = NewError(http.StatusInternalServerError, 200500, "系统异常，请稍后重试!")
+	ServerError = NewError(http.StatusInternalServerError, 200500, "System exception, please try again later!")
 	NotFound    = NewError(http.StatusNotFound, 200404, http.StatusText(http.StatusNotFound))
 )
 

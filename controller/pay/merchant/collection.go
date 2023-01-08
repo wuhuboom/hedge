@@ -33,6 +33,8 @@ func CollectionAmount(c *gin.Context) {
 
 		if start, IsE := c.GetPostForm("start"); IsE == true {
 			if end, IsE := c.GetPostForm("end"); IsE == true {
+				//startInt, _ := strconv.ParseInt(start, 10, 64)
+				//endInt, _ := strconv.ParseInt(end, 10, 64)
 				db = db.Where("created  <=  ? and created >=  ?", end, start)
 			}
 		}

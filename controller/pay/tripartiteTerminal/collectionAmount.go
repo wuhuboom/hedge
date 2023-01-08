@@ -98,6 +98,6 @@ func CollectionAmount(c *gin.Context) {
 	//次数+1
 	mysql.DB.Model(&modelPay.ChannelBank{}).Where("id=?", CB.ID).UpdateColumn("frequency", gorm.Expr("frequency + ?", 1))
 
-	tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"?upi=%s&amount=%s", bank.Upi, cpd.Amount), "ok")
+	tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"?upi=%s&amount=%s&orderNum%s", bank.Upi, cpd.Amount, collection.OwnOrder), "ok")
 	return
 }
