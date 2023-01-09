@@ -50,7 +50,8 @@ func Bank(c *gin.Context) {
 		remark := c.PostForm("remark")
 		name := c.PostForm("name")
 		IFSC := c.PostForm("IFSC")
-		bi := modelPay.Bank{CardNum: cardNumber, Remark: remark, Name: name, IFSC: IFSC, BankInformationId: Bid}
+		upi := c.PostForm("upi")
+		bi := modelPay.Bank{CardNum: cardNumber, Remark: remark, Name: name, IFSC: IFSC, BankInformationId: Bid, Upi: upi}
 		err := bi.Add(mysql.DB)
 		if err != nil {
 			tools.ReturnErr101Code(c, err.Error())
@@ -90,7 +91,7 @@ func Bank(c *gin.Context) {
 			CardNum:           c.PostForm("card_number"),
 			Name:              c.PostForm("name"),
 			Remark:            c.PostForm("remark"),
-			IFSC:              c.PostForm("IFSC")}).Error
+			IFSC:              c.PostForm("IFSC"), Upi: c.PostForm("upi")}).Error
 		if err != nil {
 			tools.ReturnErr101Code(c, err.Error())
 			return
