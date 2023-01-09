@@ -48,6 +48,12 @@
         </div>
     </div>
     <div class="layui-form-item layui-row layui-col-xs12">
+        <label class="layui-form-label">UPI</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input " id="UPI" placeholder="请在此输入UPI">
+        </div>
+    </div>
+    <div class="layui-form-item layui-row layui-col-xs12">
         <label class="layui-form-label">备注</label>
         <div class="layui-input-block">
             <input type="text" class="layui-input " id="remark" placeholder="请在此输入备注">
@@ -125,6 +131,11 @@
                 let formData = {}
 
 
+                    // if(!$('#UPI').val()){
+                    //     layer.msg('UPI不允许为空！', {icon: 2});
+                    //     return  false
+                    // }
+
 
                 if(!$('#card_number').val()){
                     layer.msg('卡号不允许为空！', {icon: 2});
@@ -140,6 +151,7 @@
                 formData.name = $('#name').val()
                 formData.IFSC = $('#IFSC').val()
                 formData.card_number = $('#card_number').val()
+                formData.upi = $('#UPI').val()
                 formData.remark = $('#remark').val()
 
                 $.ajax({

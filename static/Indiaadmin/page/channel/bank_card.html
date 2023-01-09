@@ -168,6 +168,7 @@
                 cols: [[
                     // {type: 'checkbox'},
                     {field: 'ID',title:'ID',sort: true,align:"center",width:70},
+                    {field: 'Upi', title: 'UPI', edit: 'text', sort: true,align:"center"},
                     {field: 'CardNum', title: '卡号', edit: 'text', sort: true,align:"center"},
                     {field: 'Name', title: '持卡人名字', edit: 'text', sort: true,align:"center"},
                     {field: 'IFSC', title: 'IFSC', edit: 'text', sort: true,align:"center"},
@@ -337,6 +338,11 @@
                 var param = {};
                 param['id'] = data.ID;
                 param['bank_information_id'] = data.BankInformationId;
+
+
+                if(field === "Upi"){
+                    param['upi'] =util.escape(value);
+                }
 
                 if(field === "CardNum"){
                     param['card_number'] =util.escape(value);

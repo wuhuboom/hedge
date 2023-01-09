@@ -79,7 +79,7 @@ var channelArr = [{
 
 
 var param={};
-var currTimeZoneValue = "Asia/Shanghai"
+var currTimeZoneValue = 8
 let currTimeZoneNameStr
 // //获取配置数据
 // $.ajax({
