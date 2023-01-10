@@ -31,7 +31,7 @@ func MerchantOperation(c *gin.Context) {
 	}
 
 	if action == "add" {
-		mer := model.Merchant{}
+		mer := model.Merchant{GoogleSwitch: 2}
 		mer.MerchantNum = c.PostForm("merchant")
 		mer.WhiteIps = c.PostForm("ips")
 		mer.MinMoney, _ = strconv.ParseFloat(c.PostForm("min_money"), 64)
@@ -125,7 +125,7 @@ func MerchantOperation(c *gin.Context) {
 
 		//谷歌开关
 		if status, isExist := c.GetPostForm("google_switch"); isExist == true {
-			updated["GoogleSwitch"] = status
+			updated["GoogleSwitch"], _ = strconv.Atoi(status)
 		}
 
 		mysql.DB.Model(&model.Merchant{}).Where("id=?", id).Update(updated)
