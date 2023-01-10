@@ -41,10 +41,11 @@ func MerchantOperation(c *gin.Context) {
 		mer.Kinds, _ = strconv.Atoi(c.PostForm("kinds"))
 		mer.Gateway = c.PostForm("gateway")
 		mer.LoginPassword = c.PostForm("login_password")
-
+		mer.LoginPassword = tools.MD5(mer.LoginPassword)
 		mer.MaxPay, _ = strconv.ParseFloat(c.PostForm("max_pay"), 64)
 		mer.MinPay, _ = strconv.ParseFloat(c.PostForm("min_pay"), 64)
 
+		mer.Token = tools.RandStringRunes(36)
 		//通道币种
 		if mer.MerchantNum == "" {
 			tools.ReturnErr101Code(c, "The parameter cannot be empty")
@@ -121,6 +122,12 @@ func MerchantOperation(c *gin.Context) {
 		if status, isExist := c.GetPostForm("gateway"); isExist == true {
 			updated["Gateway"] = status
 		}
+
+		//谷歌开关
+		if status, isExist := c.GetPostForm("google_switch"); isExist == true {
+			updated["GoogleSwitch"] = status
+		}
+
 		mysql.DB.Model(&model.Merchant{}).Where("id=?", id).Update(updated)
 		tools.ReturnSuccess2000Code(c, "ok")
 		return

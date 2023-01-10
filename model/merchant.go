@@ -24,6 +24,7 @@ type Merchant struct {
 	PaidChannel          string  //代付渠道
 	LoginPassword        string  //登录密码
 	GoogleCode           string  //谷歌 code
+	GoogleSwitch         int     `gorm:"default:2"` //谷歌开关  //1开  2关
 	Token                string  //登录
 	Gateway              string  //网关
 	AllAmount            float64 `gorm:"type:decimal(10,2)"` //总金额
@@ -31,12 +32,11 @@ type Merchant struct {
 	FreezeAmount         float64 `gorm:"type:decimal(10,2)"` //冻结的金额
 	CollectionCommission float64 `gorm:"type:decimal(10,2)"` //代收手续费
 	PayCommission        float64 `gorm:"type:decimal(10,2)"` //代付手续费
-
-	MinPay float64 `gorm:"type:decimal(10,2)"` //最小代付
-	MaxPay float64 `gorm:"type:decimal(10,2)"` //最大代付
-
-	Created int64
-	Updated int64
+	MinPay               float64 `gorm:"type:decimal(10,2)"` //最小代付
+	MaxPay               float64 `gorm:"type:decimal(10,2)"` //最大代付
+	Created              int64
+	Updated              int64
+	PayC                 []modelPay.Channel `gorm:"-"`
 }
 
 func CheckIsExistModelMerchant(db *gorm.DB) {
@@ -73,7 +73,7 @@ func (m *Merchant) ChannelIsExistOrOpenForCollection(db *gorm.DB) {
 }
 
 // AmountChange   kind  1代收 2代付
-func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channel int, collectionId int) (error, Merchant) {
+func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, collectionId int, merOrder string) (error, Merchant) {
 	//查询账户余额
 	common.MerchantChangeMoneyLock.RLock()
 	mer := Merchant{}
@@ -82,9 +82,10 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channel int, collec
 		common.MerchantChangeMoneyLock.RUnlock()
 		return err, mer
 	}
+
 	//  获取渠道
 	ch := modelPay.Channel{}
-	err = db.Where("channel_name=?", channel).First(&ch).Error
+	err = db.Where("id=?", channelId).First(&ch).Error
 	if err != nil {
 		common.MerchantChangeMoneyLock.RUnlock()
 		return err, mer
@@ -104,17 +105,31 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channel int, collec
 		}
 		//更新账变
 		amountC := modelPay.AmountChange{MerchantNum: m.MerchantNum, Amount: amount, Before: mer.AllAmount,
-			After: mer.AllAmount + amount, Remark: "collection"}
+			After: mer.AllAmount + amount, Remark: "关联订单: " + merOrder}
 		if err := amountC.Add(db); err != nil {
 			db.Rollback()
 			return err, mer
 		}
 
+		//每日统计
+		sta := modelPay.Statistics{TodayCollectionAmount: amount, TodayCollectionCommission: amount * ch.Rate, MerchantNum: m.MerchantNum, TodayCollection: 1}
+		err := sta.Add(db, 1)
+		if err != nil {
+			db.Rollback()
+			return err, mer
+		}
 	} else if ch.Kinds == 2 { //代付
 		update["AvailableAmount"] = mer.AvailableAmount - amount - (amount * ch.Rate)
 		update["PayCommission"] = amount*ch.Rate + mer.PayCommission
 		update["FreezeAmount"] = mer.FreezeAmount + amount + amount*ch.Rate
+		sta := modelPay.Statistics{TodayPayAmount: amount, TodayPayCommission: amount * ch.Rate, MerchantNum: m.MerchantNum, TodayPay: 1}
+		err := sta.Add(db, 2)
+		if err != nil {
+			db.Rollback()
+			return err, mer
+		}
 	}
+
 	err = db.Model(&Merchant{}).Where("id=?", mer.ID).Update(update).Error
 	if err != nil {
 		db.Rollback()

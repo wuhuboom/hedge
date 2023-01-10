@@ -49,7 +49,7 @@ func CollectionAmount(c *gin.Context) {
 
 	//判断通道状态
 	ch := modelPay.Channel{}
-	if err := mysql.DB.Where("channel_name=?", cpd.ChannelId).First(&ch).Error; err != nil || ch.Status != 1 || ch.Kinds != 1 {
+	if err := mysql.DB.Where("id=?", cpd.ChannelId).First(&ch).Error; err != nil || ch.Status != 1 || ch.Kinds != 1 {
 		tools.ReturnErr101Code(c, "Channel under maintenance")
 		return
 	}

@@ -104,6 +104,12 @@ func Setup() *gin.Engine {
 		mer.POST("/login", merchant.Login)
 		//代收订单  collection
 		mer.POST("/collection", merchant.CollectionAmount)
+		//GetMe
+		mer.POST("/getMe", merchant.GetMe)
+		//GetFlowOfFunds
+		mer.POST("/getFlowOfFunds", merchant.GetFlowOfFunds)
+		//Statistics
+		mer.POST("/statistics", merchant.Statistics)
 
 	}
 
