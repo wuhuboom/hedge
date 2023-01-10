@@ -120,7 +120,7 @@ func GetFlowOfFunds(c *gin.Context) {
 	//	db = db.Where("", status)
 	//}
 
-	db.Model(&modelPay.Collection{}).Count(&total)
+	db.Model(&modelPay.AmountChange{}).Count(&total)
 	db = db.Model(&modelPay.AmountChange{}).Offset((page - 1) * limit).Limit(limit).Order("created desc")
 	db.Find(&sl)
 	tools.ReturnDataLIst2000(c, sl, total)

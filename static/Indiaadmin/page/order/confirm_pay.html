@@ -21,17 +21,33 @@
 </head>
 <body class="childrenBody">
 <form class="layui-form" style="width:80%;margin-top: 20px" lay-filter="formAdvForm">
-    <div class="layui-form-item layui-row layui-col-xs12">
-        <label class="layui-form-label  layui-form-required">银行卡号</label>
+    <div class="layui-formlayui-form-item layui-row layui-col-xs12">
+        <label class="layui-form-label">状态</label>
         <div class="layui-input-block">
-            <div id="card_num_div">
-            </div>
+            <select name="status" id="status" lay-filter="statusFilter" lay-verType="tips"
+                    lay-verify="required" required>
+                <option value="2">支付成功</option>
+                <option value="3">失败</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-row layui-col-xs12" style="margin-top: 10px">
+        <label class="layui-form-label  layui-form-required">实际金额</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" id="actual_amount" name="actual_amount" placeholder="请在此输入实际金额" lay-verType="tips" lay-verify="required" required>
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-row layui-col-xs12">
+        <label class="layui-form-label  layui-form-required">备注</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" id="remark" name="remark" placeholder="请在此输入备注" lay-verType="tips" lay-verify="required" required>
         </div>
     </div>
     <div class="layui-form-item layui-row layui-col-xs12">
         <div class="layui-input-block">
-            <button class="layui-btn layui-btn-lg" lay-filter="comfireAdd" id="comfireAdd"  lay-submit>确认添加</button>
-            <button class="layui-btn layui-btn-lg layui-btn-primary" lay-filter="cancelAdd" id="cancelAdd">取消</button>
+            <button class="layui-btn layui-btn-lg" lay-filter="comfirePay" id="comfirePay"  lay-submit>确认</button>
+            <button class="layui-btn layui-btn-lg layui-btn-primary" lay-filter="cancelPay" id="cancelPay">取消</button>
         </div>
     </div>
 </form>
@@ -46,8 +62,10 @@
         window.top.location.href = "../../login.html";
 
     } else {
-        var currParentDatas = eval('(' + parent.jsonDataIds + ')')
-        // console.log("currParentDatas",currParentDatas)
+        var currParentDatas = eval('(' + parent.jsondata + ')')
+        $("#actual_amount").val(currParentDatas.ActualAmount)
+
+        var uploadFileOBJ
         layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice','upload'], function () {
             var $ = layui.jquery;
             var layer = layui.layer;
@@ -60,70 +78,29 @@
             var notice = layui.notice;
             var upload = layui.upload;
 
-            //获取数据添加到下拉框中
-            var param = {};
-            param.page = 1
-            param.limit = 3000
-
-            $.ajax({
-                url: global_requestAddress + global_requestAddress_js_bank + "?action=check",
-                headers: {
-                    "token": mybck
-                },
-                dataType: 'json',
-                type: 'post',
-                data: param,
-                success: function (res) {
-                    if (res.code === 200) {
-                        var returnDataArray = res.result
-                        $("#card_num_div").html("");
-                        // $('#country_filter').append(new Option('全部', '999999'));// 下拉菜单里添加元素
-
-                        var vipHtml = ''
-                        $.each(returnDataArray, function (index, item) {
-                            $("#card_num_div").append('<input type="checkbox" name="cardnum" id="'+item.ID+'" name="'+item.ID+'" value="' + item.ID + '" title="' + item.CardNum + '">');
-                            // vipHtml += ('<input type="checkbox" id="'+item.ID+'"  name="'+item.ID+'" title="'+item.CardNum+'">');
-                            // $('#card_num_div').append(vipHtml);
-                        });
-                        // vipHtml += '</div>';
-                        // console.log("vipHtml",vipHtml)
-                        //重新渲染 固定写法
-                        form.render("checkbox");
-                    }
-                }
-            })
-
 
             /* 监听表单提交 */
-            form.on('submit(comfireAdd)', function (data) {
+            form.on('submit(comfirePay)', function (data) {
                 // layer.msg(JSON.stringify(data.field));
                 // console.log("JSON.stringify(data.field)", JSON.stringify(data.field))
 
-                //将页面全部复选框选中的值拼接到一个数组中
-                var bank_id_str = ""
-                var arr_box = [];
-                $('input[type=checkbox]:checked').each(function() {
-                    // arr_box.push($(this).val());
-                    bank_id_str = bank_id_str + $(this).val() + "@"
-                });
+                if(hasChinese($('#remark').val())){
+                    notice.msg("备注不允许为中文", {icon: 2});
+                    return  false
+                }
 
-                bank_id_str = bank_id_str.substring(0,bank_id_str.length-1);
 
-                // $("input:checkbox[name='cardnum']:checked").each(function(i){
-                //     arr_box[i] = $(this).val();
-                // });
-                // var aaabstr = arr_box.join('@')
-
-                //数组
-                // console.log(bank_id_str);
-                // console.log("aaabstr",aaabstr)
 
                 var param = {};
-                param['channel_id'] = currParentDatas.currDatasID;
-                param['bank_id'] = bank_id_str;
+
+                param['id'] = currParentDatas.ID;
+                param['status'] = data.field.status;
+                param['remark'] = data.field.remark;
+                param['actual_amount'] = data.field.actual_amount;
+
 
                 $.ajax({
-                    url: global_requestAddress + global_requestAddress_js_channelBank + "?action=add",
+                    url: global_requestAddress + global_requestAddress_js_collectionOperation + "?action=confirmationOfPayment",
                     headers: {
                         "token": mybck,
                     },
@@ -151,9 +128,8 @@
                 return false;
             });
 
-
             //添加内容点击事件
-            $("#cancelAdd").click(function () {
+            $("#cancelPay").click(function () {
 
                 // layer.msg("取消操作");
                 notice.msg('取消操作!', {icon: 5});

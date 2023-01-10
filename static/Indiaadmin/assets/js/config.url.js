@@ -18,6 +18,14 @@ global_requestAddress_js_bank="/admin/v1/bank";
 //商户号管理
 global_requestAddress_js_merchant="/admin/v1/merchant";
 
+
+// 代收订单
+global_requestAddress_js_collectionOperation="/admin/v1/collectionOperation";
+
+
+
+
+
 // 获取系统配置
 global_requestAddress_js_configOperation="/admin/v1/configOperation";
 
@@ -280,3 +288,7 @@ function getCurrDate() {
 
 
 
+// 判断字符串是否包含中文
+function hasChinese(str) {
+	return /[\u4E00-\u9FA5]+/g.test(str)
+}

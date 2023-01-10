@@ -39,18 +39,19 @@ func CollectionAmount(c *gin.Context) {
 		return
 	}
 
-	//检查 通道id是否开通  或者存在
-	ChannelId, _ := strconv.Atoi(cpd.ChannelId)
-	payChannelArray := strings.Split(mer.PayChannel, "@")
-	if tools.IsArray(payChannelArray, cpd.ChannelId) == false {
-		tools.ReturnErr101Code(c, "Illegal channel")
-		return
-	}
+	//判断通道是否存在
 
 	//判断通道状态
 	ch := modelPay.Channel{}
-	if err := mysql.DB.Where("id=?", cpd.ChannelId).First(&ch).Error; err != nil || ch.Status != 1 || ch.Kinds != 1 {
+	if err := mysql.DB.Where("channel_name=?", cpd.ChannelId).First(&ch).Error; err != nil || ch.Status != 1 || ch.Kinds != 1 {
 		tools.ReturnErr101Code(c, "Channel under maintenance")
+		return
+	}
+	//检查 通道id是否开通  或者存在
+	ChannelId := strconv.Itoa(ch.ID)
+	payChannelArray := strings.Split(mer.PayChannel, "@")
+	if tools.IsArray(payChannelArray, ChannelId) == false {
+		tools.ReturnErr101Code(c, "Illegal channel")
 		return
 	}
 
@@ -71,7 +72,7 @@ func CollectionAmount(c *gin.Context) {
 	//添加数据
 	collection.Amount = amountFlot
 	collection.NoticeUrl = cpd.NoticeUrl
-	collection.ChannelId = ChannelId
+	collection.ChannelId = ch.ID
 	collection.Currency = cpd.Currency
 	collection.Callback = 1
 	collection.OwnOrder = "Mer" + time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(1000))

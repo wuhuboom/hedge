@@ -50,50 +50,50 @@
             <!-- 表格工具栏 -->
             <form class="layui-form toolbar">
                 <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <label class="layui-form-label">状态:</label>
-                        <div class="layui-input-inline">
-                            <select name="status" id="status">
-                                <option value="999">所有</option>
-                                <option value="1">等待支付</option>
-                                <option value="2">支付成功</option>
-                                <option value="3">失败</option>
-                            </select>
-                        </div>
-                    </div>
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">状态:</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <select name="status" id="status">-->
+<!--                                <option value="999">所有</option>-->
+<!--                                <option value="1">等待支付</option>-->
+<!--                                <option value="2">支付成功</option>-->
+<!--                                <option value="3">失败</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <div class="layui-inline">
-                        <label class="layui-form-label">回调状态:</label>
-                        <div class="layui-input-inline">
-                            <select name="callback" id="callback">
-                                <option value="777">所有</option>
-                                <option value="1">没有回调</option>
-                                <option value="2">回调成功</option>
-                                <option value="3">回调失败</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="layui-inline">
-                        <label class="layui-form-label">开始日期</label>
-                        <div class="layui-input-inline">
-                           <input type="text" class="layui-input" id="startDate" name="startDate" placeholder="yyyy-MM-dd HH:mm:ss">
-                        </div>
-                    </div>
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">回调状态:</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <select name="callback" id="callback">-->
+<!--                                <option value="777">所有</option>-->
+<!--                                <option value="1">没有回调</option>-->
+<!--                                <option value="2">回调成功</option>-->
+<!--                                <option value="3">回调失败</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">开始日期</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                           <input type="text" class="layui-input" id="startDate" name="startDate" placeholder="yyyy-MM-dd HH:mm:ss">-->
+<!--                        </div>-->
+<!--                    </div>-->
 
 
-                    <div class="layui-inline">
-                        <label class="layui-form-label">结束日期</label>
-                        <div class="layui-input-inline">
-                            <input type="text" class="layui-input" id="endDate" name="endDate" placeholder="yyyy-MM-dd HH:mm:ss">
-                        </div>
-                    </div>
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">结束日期</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <input type="text" class="layui-input" id="endDate" name="endDate" placeholder="yyyy-MM-dd HH:mm:ss">-->
+<!--                        </div>-->
+<!--                    </div>-->
                     <div class="layui-inline">&emsp;
 <!--                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="addGropeTask" id="addGropeTask" lay-submit style="background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);">-->
 <!--                            <i class="layui-icon">&#xe624;</i>添加-->
 <!--                        </button>-->
-                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit >
-                            <i class="layui-icon">&#xe615;</i>搜索
-                        </button>
+<!--                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit >-->
+<!--                            <i class="layui-icon">&#xe615;</i>搜索-->
+<!--                        </button>-->
                         <button class="layui-btn icon-btn currReloadBtn" lay-filter="reloadData" lay-submit style="background-color: #926dde;border-color: #926dde;">
                             <i class="layui-icon layui-icon-refresh"></i>刷新数据
                         </button>
@@ -120,7 +120,7 @@
 <!--数据表格操作工具栏-->
 <script type="text/html" id="orderListBar">
     <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="callbacksuccess" style="background-color: #ffba00"><i class="layui-icon layui-icon-ok"></i>回调成功</a>
-    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="detailBtn" style="background-color: #6891f9 "><i class="layui-icon layui-icon-transfer"></i>详情</a>
+    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="deleteBtn" style="background-color: #f96868 "><i class="layui-icon layui-icon-delete"></i>详情</a>
 </script>
 
 <script>
@@ -139,7 +139,7 @@
 
         var currDateVal
         var currDateVal_end
-        var local_storage_key = 'pay_order_list_t_list';
+        var local_storage_key = 'pay_funs_list_t_list';
         layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','treeTable','laydate'], function () {
             var $ = layui.jquery;
             var layer = layui.layer;
@@ -151,48 +151,48 @@
             var notice = layui.notice;
             var treeTable = layui.treeTable
             var laydate = layui.laydate;
-
-            //开始日期组件常规用法
-            laydate.render({
-                elem: '#startDate'
-                ,isInitValue: true
-                ,theme: 'molv'
-                ,type: 'datetime'
-                ,done: function(value, date){//选中后的回调
-                    // layer.alert('你选择的日期是：' + value + '<br>获得的对象是' + JSON.stringify(date));
-                    // console.log("自带的",date)
-                    // console.log("jquery",$("#buildDate").val())
-                    currDateVal = ""
-                    currDateVal = value
-                }
-            });
-
-
-            //结束日期组件常规用法
-            laydate.render({
-                elem: '#endDate'
-                ,isInitValue: true
-                ,theme: 'molv'
-                ,type: 'datetime'
-                ,done: function(value, date){//选中后的回调
-                    // layer.alert('你选择的日期是：' + value + '<br>获得的对象是' + JSON.stringify(date));
-                    // console.log("自带的",date)
-                    // console.log("jquery",$("#buildDate").val())
-                    currDateVal_end = ""
-                    currDateVal_end = value
-                }
-            });
+            //
+            // //开始日期组件常规用法
+            // laydate.render({
+            //     elem: '#startDate'
+            //     ,isInitValue: true
+            //     ,theme: 'molv'
+            //     ,type: 'datetime'
+            //     ,done: function(value, date){//选中后的回调
+            //         // layer.alert('你选择的日期是：' + value + '<br>获得的对象是' + JSON.stringify(date));
+            //         // console.log("自带的",date)
+            //         // console.log("jquery",$("#buildDate").val())
+            //         currDateVal = ""
+            //         currDateVal = value
+            //     }
+            // });
+            //
+            //
+            // //结束日期组件常规用法
+            // laydate.render({
+            //     elem: '#endDate'
+            //     ,isInitValue: true
+            //     ,theme: 'molv'
+            //     ,type: 'datetime'
+            //     ,done: function(value, date){//选中后的回调
+            //         // layer.alert('你选择的日期是：' + value + '<br>获得的对象是' + JSON.stringify(date));
+            //         // console.log("自带的",date)
+            //         // console.log("jquery",$("#buildDate").val())
+            //         currDateVal_end = ""
+            //         currDateVal_end = value
+            //     }
+            // });
 
 
 
             var log_login_request_param = {};
-            log_login_request_param['kinds']= 1;
+            // log_login_request_param['kinds']= 1;
             // log_login_request_param['token']= $.cookie('tokenMyb');
             /* 渲染表格 */
             var tableCols = tableSetCol(getTableCols(), local_storage_key);
             var insTb = table.render({
                 elem: '#userTable',
-                url: global_requestAddress + global_requestAddress_js_collection + "?action=check",
+                url: global_requestAddress + global_requestAddress_js_getFlowOfFunds,
                 method: 'post',
                 headers:{
                     token:mybck
@@ -201,9 +201,9 @@
                     statusCode: 200,
                     dataName: 'result',
                 },
-                toolbar: true,
-                defaultToolbar: ['filter'],
-                where:log_login_request_param,
+                // toolbar: true,
+                // defaultToolbar: ['filter'],
+                // where:log_login_request_param,
                 // toolbar: ['<p>',
                 //     '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
                 //     '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
@@ -265,64 +265,22 @@
                 var col = [[
                         // {type: 'checkbox'},
                         {field: 'ID',title:'ID',sort: true,align:"center",width:70},
-                        {field: 'MerChantNum', title: '商家号',  sort: true,align:"center"},
-                        {field: 'MerchantOrderNum', title: '商家订单号', sort: true,align:"center",width:180},
-                        {field: 'Amount', title: '订单金额', sort: true,align:"center",width:120},
-                        {field: 'ActualAmount', title: '实际充值金额',  sort: true,align:"center",width:130},
-                        {field: 'Commission', title: '手续费', sort: true,align:"center"},
-                        {field: 'CallbackReturn', title: '回调返回信息', sort: true,align:"center",width:180},
-
-                        {field: 'NoticeUrl', title: '回调地址', sort: true,align:"center",width:180},
-                        {field: 'Currency', title: '币种', sort: true,align:"center"},
-                        {field: 'OwnOrder', title: '我方平台订单', sort: true,align:"center",width:180},
-
-                        // {field: 'BankName', title: '银行名', width:130,sort: true,align:"center", templet: function (d) {
-                        //         var vipHtml = '<div><div class="ew-select-fixed"><select lay-filter="templetBankSel">';
-                        //         layui.each(bankListArr, function (i, item) {
-                        //             if (d.BankInformationId === item.ID) {  // 这里加selected
-                        //                 vipHtml += ('<option  selected value="' + item.ID+ '">' + item.BankName + '</option>');
-                        //             } else {
-                        //                 vipHtml += ('<option  value="' + item.ID+ '">' + item.BankName + '</option>');
-                        //             }
-                        //         });
-                        //         vipHtml += '</select></div></div>';
-                        //         return vipHtml;
-                        //     }},
-                        {field: 'Callback', title: '回调状态', sort: true,align:"center",width:120,templet:function(d){
-                                if(d.Callback == "1"){//1没有回调
-                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #faa64b;border-color: #faa64b;">'+'没有回调'+'</button>'
-                                }else if(d.Callback == "2"){// 2回调成功
-                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #33cabb;border-color: #33cabb;">'+'回调成功'+'</button>'
-                                }else if(d.Callback == "3"){//3回调失败
-                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">'+'回调失败'+'</button>'
-                                }else{
-                                    return ''
-                                }
-                            }},
-                        {field: 'Status', title: '状态', sort: true,align:"center",templet:function(d){
-
-                                if(d.Status == "1"){//1等待支付
-                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #337ab7;border-color: #337ab7;">'+'等待支付'+'</button>'
-                                }else if(d.Status == "2"){//2支付成功
-                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #28a745;border-color: #28a745;">'+'支付成功'+'</button>'
-                                }else if(d.Status == "3"){// 3失败
-                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #993055;border-color: #993055;">'+'失败'+'</button>'
-                                }else{
-                                    return ''
-                                }
-
-                            }},
+                        {field: 'MerchantNum', title: '商户号',  sort: true,align:"center"},
+                        {field: 'Amount', title: '变动金额', sort: true,align:"center",width:180},
+                        {field: 'Before', title: '变动前的金额', sort: true,align:"center",width:130},
+                        {field: 'After', title: '变动后的金额',  sort: true,align:"center",width:130},
+                        {field: 'Remark', title: '关联订单', sort: true,align:"center"},
                         {field: 'Created', title: '创建时间',align:"center",width:175, sort: true, templet: function (d) {
                                 // return util.toDateString(d.Created* 1000);
                                 return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
                             }},
-                        {
-                            field: 'Updated', title: '更新时间',align:"center",width:175, templet: function (d) {
-                                // return util.toDateString(d.Updated* 1000);
-                                return moment(d.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
-                            }, sort: true
-                        },
-                        {title: '操作', width:230, templet:'#orderListBar',fixed:"right",align:"center"}
+                        // {
+                        //     field: 'Updated', title: '更新时间',align:"center",width:175, templet: function (d) {
+                        //         // return util.toDateString(d.Updated* 1000);
+                        //         return moment(d.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
+                        //     }, sort: true
+                        // },
+                        // {title: '操作', width:180, templet:'#orderListBar',fixed:"right",align:"center"}
                     ]]
                 return col;
             }
@@ -342,39 +300,6 @@
                 return [colArr];
             }
 
-
-            //添加银行
-            $("#addGropeTask").click(function () {
-
-                var index = layui.layer.open({
-                    area: ['500px', '500px'],
-                    fixed: false, //不固定
-                    maxmin: false,
-                    title : "添加银行卡",
-                    skin: 'layui-layer-rim',//加上边框
-                    type : 2,
-                    content : "bank_card_add.html",
-                    success : function(layero, index){
-                        var body = layui.layer.getChildFrame('body', index);
-
-                    },
-                    end : function() {//弹窗关闭后的回调函数
-                        //利用laypage实现局部刷新,以下两种方式都可以
-                        // $(".layui-laypage-btn").click()
-                        //直接刷新当前修改的行
-                        $(".layui-laypage-btn")[0].click()
-
-                    }
-                })
-                // window.sessionStorage.setItem("index",index);
-                // //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
-                // $(window).on("resize",function(){
-                //     layui.layer.full(window.sessionStorage.getItem("index"));
-                // })
-
-
-                return false
-            })
 
             /* 表格搜索 */
             var currTempObj;
@@ -709,36 +634,36 @@
                     });
 
 
-                }else if(obj.event === 'detailBtn'){ //删除
+                }else if(obj.event === 'deleteBtn'){ //删除
 
-                    jsondata = JSON.stringify(currDatas)
-                    var index = layui.layer.open({
-                        area: ['1200px', '500px'],
-                        fixed: false, //不固定
-                        maxmin: false,
-                        title : "银行列表",
-                        skin: 'layui-layer-rim',//加上边框
-                        type : 2,
-                        content : "pay_order_detail.html",
-                        success : function(layero, index){
-                            var body = layui.layer.getChildFrame('body', index);
-                            if(currDatas) {
-
-                            }
-                        },
-                        end : function() {//弹窗关闭后的回调函数
-                            //利用laypage实现局部刷新,以下两种方式都可以
-                            // $(".layui-laypage-btn").click()
-                            //直接刷新当前修改的行
-                            $(".layui-laypage-btn")[0].click()
-
-                        }
-                    })
-                    window.sessionStorage.setItem("index",index);
-                    //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
-                    $(window).on("resize",function(){
-                        layui.layer.full(window.sessionStorage.getItem("index"));
-                    })
+                    // jsondata = JSON.stringify(currDatas)
+                    // var index = layui.layer.open({
+                    //     area: ['1200px', '500px'],
+                    //     fixed: false, //不固定
+                    //     maxmin: false,
+                    //     title : "银行列表",
+                    //     skin: 'layui-layer-rim',//加上边框
+                    //     type : 2,
+                    //     content : "bank_lists.html",
+                    //     success : function(layero, index){
+                    //         var body = layui.layer.getChildFrame('body', index);
+                    //         if(currDatas) {
+                    //
+                    //         }
+                    //     },
+                    //     end : function() {//弹窗关闭后的回调函数
+                    //         //利用laypage实现局部刷新,以下两种方式都可以
+                    //         // $(".layui-laypage-btn").click()
+                    //         //直接刷新当前修改的行
+                    //         $(".layui-laypage-btn")[0].click()
+                    //
+                    //     }
+                    // })
+                    // window.sessionStorage.setItem("index",index);
+                    // //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
+                    // $(window).on("resize",function(){
+                    //     layui.layer.full(window.sessionStorage.getItem("index"));
+                    // })
 
                 }
             });

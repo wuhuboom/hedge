@@ -6,6 +6,15 @@ global_requestloginAddress_js="/merchant/v2/login";
 // 代收接口
 global_requestAddress_js_collection="/merchant/v2/collection";
 
+// 商户信息
+global_requestAddress_js_getMe="/merchant/v2/getMe";
+
+// 资金流水
+global_requestAddress_js_getFlowOfFunds="/merchant/v2/getFlowOfFunds";
+
+// 统计
+global_requestAddress_js_statistics="/merchant/v2/statistics";
+
 
 
 const timeArr = [{

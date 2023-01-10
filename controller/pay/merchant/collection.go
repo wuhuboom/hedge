@@ -2,7 +2,7 @@ package merchant
 
 import (
 	"github.com/gin-gonic/gin"
-	jsoniter "github.com/json-iterator/go"
+	"github.com/json-iterator/go"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/model/modelPay"
@@ -60,7 +60,17 @@ func CollectionAmount(c *gin.Context) {
 	if action == "one" {
 		id := c.PostForm("id")
 		col := modelPay.Collection{}
-		mysql.DB.Where("id=?", id).First(&col)
+		err2 := mysql.DB.Where("id=?", id).First(&col).Error
+		if err2 != nil {
+			tools.ReturnErr101Code(c, err2.Error())
+			return
+		}
+		CH := modelPay.Channel{}
+		err := mysql.DB.Where("id=?", col.ChannelId).First(&CH).Error
+		if err == nil {
+			col.ChannelId = CH.ChannelName
+		}
+
 		tools.ReturnSuccess2000DataCode(c, col, "OK")
 		return
 
@@ -69,13 +79,13 @@ func CollectionAmount(c *gin.Context) {
 	if action == "callback" {
 		id := c.PostForm("id")
 		col := modelPay.Collection{}
-		err := mysql.DB.Where("id=?  and  merchant_num  =?", id, whoMap.MerchantNum).First(&col).Error
+		err := mysql.DB.Where("id=?  and  mer_chant_num  =?", id, whoMap.MerchantNum).First(&col).Error
 		if err != nil {
 			tools.ReturnErr101Code(c, err.Error())
 			return
 		}
 		mer := model.Merchant{}
-		err = mysql.DB.Where("merchant_num= ?", col.MerChantNum).First(&mer).Error
+		err = mysql.DB.Where("merchant_num = ?", col.MerChantNum).First(&mer).Error
 		if err != nil {
 			tools.ReturnErr101Code(c, "Businesses don't exist")
 			return

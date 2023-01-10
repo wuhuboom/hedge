@@ -86,42 +86,48 @@
 
             </div>
         </div>
+
+        <div class="layui-card">
+            <div class="layui-card-header">扩展配置</div>
+            <div class="layui-card-body">
+
+                <div class="layui-form-item layui-row">
+                    <div class="layui-inline layui-col-md8">
+                        <label class="layui-form-label ">网关</label>
+                        <div class="layui-input-block">
+                            <input name="gateway" id="gateway" placeholder="请输入网关" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label ">最小代付</label>
+                        <div class="layui-input-block">
+                            <input name="min_pay" id="min_pay" placeholder="请输入最小代付" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label ">最大代付</label>
+                        <div class="layui-input-block">
+                            <input name="max_pay" id="max_pay" placeholder="请输入最大代付" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label ">谷歌开关:</label>
+                        <div class="layui-input-block">
+                            <input type="checkbox"  name="google_switch" lay-skin="switch"lay-filter="google_switch_filter" id="google_switch" lay-text="开启|关闭" checked>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
         <div class="form-group-bottom text-right" style="margin-bottom: 20px">
             <button class="layui-btn layui-btn-lg" lay-filter="comfireEdit" id="comfireEdit">确认编辑</button>
             <button class="layui-btn layui-btn-lg layui-btn-primary" lay-filter="cancelAdd" id="cancelAdd">取消</button>
         </div>
     </div>
-<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
-<!--        <label class="layui-form-label">商户号</label>-->
-<!--        <div class="layui-input-block">-->
-<!--            <div class="layui-form-mid layui-word-aux" id="merchant"></div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
-<!--        <label class="layui-form-label">IP白名单</label>-->
-<!--        <div class="layui-input-block">-->
-<!--            <input type="text" class="layui-input " id="ips" placeholder="请在此输入IP白名单">-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
-<!--        <label class="layui-form-label">最小金额</label>-->
-<!--        <div class="layui-input-block">-->
-<!--            <input type="text" class="layui-input " id="min_money" placeholder="请在此输入最小金额">-->
-<!--        </div>-->
-<!--    </div>-->
 
-<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
-<!--        <label class="layui-form-label">最大金额</label>-->
-<!--        <div class="layui-input-block">-->
-<!--            <input type="text" class="layui-input " id="max_money" placeholder="请在此输入最大金额">-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
-<!--        <div class="layui-input-block">-->
-<!--            <button class="layui-btn layui-btn-lg" lay-filter="comfireEdit" id="comfireEdit">确认修改</button>-->
-<!--            <button class="layui-btn layui-btn-lg layui-btn-primary" lay-filter="cancelAdd" id="cancelAdd">取消</button>-->
-<!--        </div>-->
-<!--    </div>-->
 </form>
 
 
@@ -142,6 +148,11 @@
         $("#login_password").val(currParentDatas.LoginPassword)
         $("#min_money").val(currParentDatas.MinMoney)
         $("#max_money").val(currParentDatas.MaxMoney)
+
+        $("#gateway").val(currParentDatas.Gateway)
+        $("#min_pay").val(currParentDatas.MinPay)
+        $("#max_pay").val(currParentDatas.MaxPay)
+
 
 
         var payChannelParant =  currParentDatas.PayChannel
@@ -165,6 +176,17 @@
             var admin = layui.admin;
             var xmSelect = layui.xmSelect;
             var notice = layui.notice;
+
+            if(currParentDatas.GoogleSwitch === 2){
+                $("#google_switch").attr("value", '2');
+                $("#google_switch").removeAttr('checked')
+            }else {
+                $("#google_switch").attr("value", '1');
+                $('#google_switch').attr('checked', 'checked'); //改变开关为 开
+            }
+
+            //重要,switch attr 之后需要重新渲染checkbox，否则没有效果
+            form.render('checkbox');
 
             var paySel = xmSelect.render({
                 el: '#pay_select',
@@ -305,6 +327,10 @@
                 param['max_money'] = $('#max_money').val();
                 param['ips'] = $('#ips').val();
 
+                param['gateway'] = $('#gateway').val();
+                param['min_pay'] = $('#min_pay').val();
+                param['max_pay'] = $('#max_pay').val();
+                param['google_switch'] = $('#google_switch').val();
 
                 var pay_selectArr = paySel.getValue("name");
                 var pay_selectArrValue = paySel.getValue("value");
@@ -382,6 +408,20 @@
                 return false;
 
             })
+
+            //监听谷歌验证开关
+            form.on('switch(google_switch_filter)', function(data){
+
+
+                if(data.elem.checked){
+                    $("#google_switch").attr("value", '1');
+                    // console.log(data.value);
+                }else{
+                    $("#google_switch").attr("value", '2');
+                }
+
+            })
+
 
         })
     }

@@ -86,63 +86,46 @@
             </div>
         </div>
 
+        <div class="layui-card">
+            <div class="layui-card-header">扩展配置</div>
+            <div class="layui-card-body">
+
+                <div class="layui-form-item layui-row">
+                    <div class="layui-inline layui-col-md8">
+                        <label class="layui-form-label ">网关</label>
+                        <div class="layui-input-block">
+                            <input name="gateway" id="gateway" placeholder="请输入网关" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label ">最小代付</label>
+                        <div class="layui-input-block">
+                            <input name="min_pay" id="min_pay" placeholder="请输入最小代付" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline layui-col-md4">
+                        <label class="layui-form-label ">最大代付</label>
+                        <div class="layui-input-block">
+                            <input name="max_pay" id="max_pay" placeholder="请输入最大代付" class="layui-input"/>
+                        </div>
+                    </div>
+<!--                    <div class="layui-inline layui-col-md4">-->
+<!--                        <label class="layui-form-label ">谷歌开关:</label>-->
+<!--                        <div class="layui-input-block">-->
+<!--                            <input type="checkbox"  name="google_switch" lay-skin="switch"lay-filter="google_switch_filter" id="google_switch" lay-text="开启|关闭" checked>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                </div>
+
+            </div>
+        </div>
 
 
-
-
-<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
-<!--        <label class="layui-form-label">商户号</label>-->
-<!--        <div class="layui-input-block">-->
-<!--            <input type="text" class="layui-input " id="merchant" placeholder="请在此输入商户号">-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
-<!--        <label class="layui-form-label">登录密码</label>-->
-<!--        <div class="layui-input-block">-->
-<!--            <input type="text" class="layui-input " id="login_password" placeholder="请在此输入商户号">-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
-<!--        <label class="layui-form-label">代收通道</label>-->
-<!--        <div class="layui-input-block">-->
-<!--            <div id="pay_select" class="xm-select-demo"></div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
-<!--        <label class="layui-form-label">代付通道</label>-->
-<!--        <div class="layui-input-block">-->
-<!--            <div id="paying_select" class="xm-select-demo"></div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
-<!--        <label class="layui-form-label">IP白名单</label>-->
-<!--        <div class="layui-input-block">-->
-<!--            <input type="text" class="layui-input " id="ips" placeholder="请在此输入IP白名单">-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
-<!--        <label class="layui-form-label">最小金额</label>-->
-<!--        <div class="layui-input-block">-->
-<!--            <input type="text" class="layui-input " id="min_money" placeholder="请在此输入最小金额">-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
-<!--        <label class="layui-form-label">最大金额</label>-->
-<!--        <div class="layui-input-block">-->
-<!--            <input type="text" class="layui-input " id="max_money" placeholder="请在此输入最大金额">-->
-<!--        </div>-->
-<!--    </div>-->
         <div class="form-group-bottom text-right" style="margin-bottom: 20px">
             <button class="layui-btn layui-btn-lg" lay-filter="comfireAdd" id="comfireAdd">确认添加</button>
             <button class="layui-btn layui-btn-lg layui-btn-primary" lay-filter="cancelAdd" id="cancelAdd">取消</button>
         </div>
-<!--    <div class="layui-form-item layui-row layui-col-xs12">-->
-<!--        <div class="layui-input-block">-->
-<!--            <button class="layui-btn layui-btn-lg" lay-filter="comfireAdd" id="comfireAdd">确认添加</button>-->
-<!--            <button class="layui-btn layui-btn-lg layui-btn-primary" lay-filter="cancelAdd" id="cancelAdd">取消</button>-->
-<!--        </div>-->
-<!--    </div>-->
+
     </div>
 </form>
 
@@ -240,6 +223,29 @@
                     return false
                 }
 
+
+                if(!$("#gateway").val()){
+
+                    layer.msg("网关地址不允许为空!", {icon: 2});
+                    return false
+                }
+
+
+                if(!$("#min_pay").val()){
+
+                    layer.msg("代付最小金额不允许为空!", {icon: 2});
+                    return false
+                }
+
+
+                if(!$("#max_pay").val()){
+
+                    layer.msg("代付最大金额不允许为空!", {icon: 2});
+                    return false
+                }
+
+
+
                 var param = {};
                 param['kinds'] = 2;
                 param['merchant'] = $("#merchant").val();
@@ -247,6 +253,10 @@
                 param['ips'] = $('#ips').val();
                 param['min_money'] = $('#min_money').val();
                 param['max_money'] = $('#max_money').val();
+                param['gateway'] = $('#gateway').val();
+                param['min_pay'] = $('#min_pay').val();
+                param['max_pay'] = $('#max_pay').val();
+                // param['google_switch'] = 1
 
                 var arr_box = [];
                 var paying_arr_box = [];
