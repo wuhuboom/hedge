@@ -104,9 +104,11 @@ func CollectionAmount(c *gin.Context) {
 	if err != nil {
 		config.ExpireTime = 60 * 60
 	}
+
+	fmt.Println(config.ExpireTime)
 	i := time.Now().Unix() + config.ExpireTime
 
-	is := strconv.FormatInt(i, 64)
+	is := strconv.FormatInt(i, 10)
 
 	mysql.DB.Model(&modelPay.ChannelBank{}).Where("id=?", CB.ID).UpdateColumn("frequency", gorm.Expr("frequency + ?", 1))
 	tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", bank.Upi, cpd.Amount, collection.OwnOrder, is), "ok")
