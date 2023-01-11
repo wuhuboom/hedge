@@ -69,6 +69,14 @@ func CollectionAmount(c *gin.Context) {
 		return
 	}
 
+	// 获取upi
+	CB := modelPay.ChannelBank{}
+	err := mysql.DB.Where("channel_id=?", ch.ID).Order("frequency asc").First(&CB).Error
+	if err != nil {
+		tools.ReturnErr101Code(c, err.Error())
+		return
+	}
+
 	//添加数据
 	collection.Amount = amountFlot
 	collection.NoticeUrl = cpd.NoticeUrl
@@ -76,19 +84,11 @@ func CollectionAmount(c *gin.Context) {
 	collection.Currency = cpd.Currency
 	collection.Callback = 1
 	collection.OwnOrder = "Mer" + time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(1000))
-	err := collection.Add(mysql.DB)
+	err = collection.Add(mysql.DB)
 	if err != nil {
 		tools.ReturnErr101Code(c, err.Error())
 		return
 	}
-	// 获取upi
-	CB := modelPay.ChannelBank{}
-	err = mysql.DB.Where("channel_id=?", ch.ID).Order("frequency asc").First(&CB).Error
-	if err != nil {
-		tools.ReturnErr101Code(c, err.Error())
-		return
-	}
-
 	//
 	bank := modelPay.Bank{}
 	err = mysql.DB.Where("id=?", CB.BankId).First(&bank).Error
@@ -98,7 +98,6 @@ func CollectionAmount(c *gin.Context) {
 	}
 	//次数+1
 	mysql.DB.Model(&modelPay.ChannelBank{}).Where("id=?", CB.ID).UpdateColumn("frequency", gorm.Expr("frequency + ?", 1))
-
-	tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"?upi=%s&amount=%s&orderNum%s", bank.Upi, cpd.Amount, collection.OwnOrder), "ok")
+	tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"?upi=%s&amount=%s&orderNum=%s", bank.Upi, cpd.Amount, collection.OwnOrder), "ok")
 	return
 }
