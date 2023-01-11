@@ -79,6 +79,7 @@ func CollectionAmount(c *gin.Context) {
 
 	//添加数据
 	collection.Amount = amountFlot
+	collection.ActualAmount = amountFlot
 	collection.NoticeUrl = cpd.NoticeUrl
 	collection.ChannelId = ch.ID
 	collection.Currency = cpd.Currency

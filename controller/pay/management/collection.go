@@ -129,7 +129,6 @@ func CollectionOperation(c *gin.Context) {
 		callback["actual_amount"] = c.PostForm("actual_amount")
 		callback["currency"] = col.Currency
 		callback["commission"] = strconv.FormatFloat(col.Commission, 'f', 2, 64)
-
 		fmt.Println(tools.AsciiKey(callback) + "&key=" + mer.ApiKey)
 		callback["sign"] = tools.MD5(tools.AsciiKey(callback) + "&key=" + mer.ApiKey)
 		marshal, err := jsoniter.Marshal(callback)
