@@ -104,8 +104,8 @@ func CollectionAmount(c *gin.Context) {
 	if err != nil {
 		ex = int(config.ExpireTime)
 	}
-
+	exs := strconv.Itoa(ex)
 	mysql.DB.Model(&modelPay.ChannelBank{}).Where("id=?", CB.ID).UpdateColumn("frequency", gorm.Expr("frequency + ?", 1))
-	tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"?upi=%s&amount=%s&orderNum=%s&expiration=%s", bank.Upi, cpd.Amount, collection.OwnOrder, ex), "ok")
+	tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"?upi=%s&amount=%s&orderNum=%s&expiration=%s", bank.Upi, cpd.Amount, collection.OwnOrder, exs), "ok")
 	return
 }
