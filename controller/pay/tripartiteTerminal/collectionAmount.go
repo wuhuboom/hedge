@@ -98,15 +98,14 @@ func CollectionAmount(c *gin.Context) {
 	}
 	//次数+1
 
-	ex := 60 * 30
+	//ex := 60 * 30
 	config := model.Config{}
 	err = mysql.DB.Where("id=?", 1).First(&config).Error
 	if err != nil {
-		ex = int(config.ExpireTime)
+		config.ExpireTime = 60 * 60
 	}
-	exs := strconv.Itoa(ex)
-
+	i := time.Now().Unix() + config.ExpireTime
 	mysql.DB.Model(&modelPay.ChannelBank{}).Where("id=?", CB.ID).UpdateColumn("frequency", gorm.Expr("frequency + ?", 1))
-	tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", bank.Upi, cpd.Amount, collection.OwnOrder, exs), "ok")
+	tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", bank.Upi, cpd.Amount, collection.OwnOrder, i), "ok")
 	return
 }
