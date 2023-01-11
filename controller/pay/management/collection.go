@@ -1,6 +1,7 @@
 package management
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/wangyi/GinTemplate/dao/mysql"
@@ -128,6 +129,8 @@ func CollectionOperation(c *gin.Context) {
 		callback["actual_amount"] = c.PostForm("actual_amount")
 		callback["currency"] = col.Currency
 		callback["commission"] = strconv.FormatFloat(col.Commission, 'f', 2, 64)
+
+		fmt.Println(tools.AsciiKey(callback) + "&key=" + mer.ApiKey)
 		callback["sign"] = tools.MD5(tools.AsciiKey(callback) + "&key=" + mer.ApiKey)
 		marshal, err := jsoniter.Marshal(callback)
 		if err != nil {
@@ -202,6 +205,23 @@ func CollectionOperation(c *gin.Context) {
 		mysql.DB.Model(&modelPay.Collection{}).Where("id=?", col.ID).Update(up)
 		tools.ReturnSuccess2000Code(c, "OK")
 		return
+	}
+	if action == "one" {
+		id := c.PostForm("id")
+		col := modelPay.Collection{}
+		err2 := mysql.DB.Where("id=?", id).First(&col).Error
+		if err2 != nil {
+			tools.ReturnErr101Code(c, err2.Error())
+			return
+		}
+		CH := modelPay.Channel{}
+		err := mysql.DB.Where("id=?", col.ChannelId).First(&CH).Error
+		if err == nil {
+			col.ChannelId = CH.ChannelName
+		}
+		tools.ReturnSuccess2000DataCode(c, col, "OK")
+		return
+
 	}
 
 }
