@@ -14,6 +14,7 @@ import (
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
 	"github.com/wangyi/GinTemplate/logger"
+	"github.com/wangyi/GinTemplate/process"
 	"github.com/wangyi/GinTemplate/router"
 	"github.com/wangyi/GinTemplate/setting"
 	"github.com/wangyi/GinTemplate/tools"
@@ -85,8 +86,8 @@ func run(cmd *cobra.Command, args []string) {
 		return
 	}
 	defer redis.Close()
-
 	//go process.CheckExpirationPayOrder(mysql.DB)
+	go process.OverdueCollection(mysql.DB)
 	router.Setup()
 }
 

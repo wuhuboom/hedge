@@ -1,10 +1,12 @@
 package process
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/wangyi/GinTemplate/common"
 	"github.com/wangyi/GinTemplate/model"
+	"github.com/wangyi/GinTemplate/model/modelPay"
 	"github.com/wangyi/GinTemplate/tools"
 	"strconv"
 	"time"
@@ -53,6 +55,15 @@ func CheckExpirationPayOrder(db *gorm.DB) {
 			common.OrderLuck.Unlock() //关闭写锁
 			time.Sleep(time.Second * 2)
 		}
+		time.Sleep(time.Second * 30)
+	}
+}
+
+func OverdueCollection(db *gorm.DB) {
+	for true {
+		err := db.Model(&modelPay.Collection{}).Where("status=?  and   expire_time  < ?", 1, time.Now().Unix()).Update(&modelPay.Collection{Status: 4}).Error
+		fmt.Println(err)
+
 		time.Sleep(time.Second * 30)
 	}
 }

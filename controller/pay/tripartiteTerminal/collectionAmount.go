@@ -89,13 +89,13 @@ func CollectionAmount(c *gin.Context) {
 	collection.BankId = upiBank.ID
 	collection.Date = time.Now().Format("2006-01-02")
 	collection.ReleaseTime = time.Now().Unix() + config.ReleaseTime*60
+	i := time.Now().Unix() + config.ExpireTime
+	collection.ExpireTime = i
 	err = collection.Add(mysql.DB)
 	if err != nil {
 		tools.ReturnErr101Code(c, err.Error())
 		return
 	}
-
-	i := time.Now().Unix() + config.ExpireTime
 	is := strconv.FormatInt(i, 10)
 	mysql.DB.Model(&modelPay.ChannelBank{}).Where("bank_id=?", upiBank.ID).UpdateColumn("frequency", gorm.Expr("frequency + ?", 1))
 	tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", upiBank.Upi, cpd.Amount, collection.OwnOrder, is), "ok")

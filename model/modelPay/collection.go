@@ -13,7 +13,7 @@ type Collection struct {
 	ChannelId        int     //  通道id
 	MerChantNum      string  // 商户号
 	MerchantOrderNum string  //商家订单号
-	Status           int     //1等待支付  2支付成功  3失败
+	Status           int     //1等待支付  2支付成功  3失败 4超时
 	Callback         int     //  回调  1没有回调 2回调成功 3回调失败
 	Amount           float64 `gorm:"type:decimal(10,2)"`
 	ActualAmount     float64 `gorm:"type:decimal(10,2)"` //实际支付金额
@@ -32,7 +32,8 @@ type Collection struct {
 	BankId           int    //   这笔代付使用的  银行卡
 	Remark           string //备注
 	Date             string //日期
-	ReleaseTime      int64  //  释放时间
+	ReleaseTime      int64  // 释放时间
+	ExpireTime       int64
 	Created          int64
 	Updated          int64
 }
