@@ -107,18 +107,16 @@ func initDir() {
 
 //初始化守护进程
 func initDaemon() {
-
-	pid, err := ioutil.ReadFile("Project.sock")
+	pids, err := ioutil.ReadFile("Project.sock")
 	if err != nil {
 		return
 	}
-	pidSlice := strings.Split(string(pid), ",")
+	pidSlice := strings.Split(string(pids), ",")
 	var command *exec.Cmd
 	for _, pid := range pidSlice {
 		if runtime.GOOS == "windows" {
 			command = exec.Command("taskkill.exe", "/f", "/pid", pid)
 		} else {
-			fmt.Println("成功结束进程:", pid)
 			command = exec.Command("kill", pid)
 		}
 		command.Start()
@@ -130,5 +128,5 @@ func initDaemon() {
 		d.Run()
 	}
 	//记录pid
-	ioutil.WriteFile(common.RootPath+"/Project.sock", []byte(fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())), 0666)
+	ioutil.WriteFile("Project.sock", []byte(fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())), 0666)
 }
