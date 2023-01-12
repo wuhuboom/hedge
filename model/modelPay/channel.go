@@ -51,10 +51,8 @@ func (ch *Channel) GetUpi(db *gorm.DB) (Bank, error) {
 		db.Debug().Raw("SELECT sum(amount)  as  sum_pull  FROM collections  WHERE bank_id =?  and  date =  ? and  release_time  > ?  and  status = 1", bank.ID, time.Now().Format("2006-01-02"), time.Now().Unix()).Scan(&TallData)
 		//比大小
 		Ba := Bank{}
-		err := db.Where("id=?", bank.BankId).First(&Ba).Error
-		if err != nil {
-			continue
-		}
+		fmt.Println(bank.BankId)
+		db.Where("id=?", bank.BankId).First(&Ba)
 		//符合
 		fmt.Println(Ba)
 		fmt.Printf("限制金额:%f \n", Ba.LimitMoney)
