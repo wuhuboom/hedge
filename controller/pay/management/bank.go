@@ -101,4 +101,26 @@ func Bank(c *gin.Context) {
 		tools.ReturnSuccess2000Code(c, "OK")
 		return
 	}
+	if action == "del" {
+		id := c.PostForm("id")
+
+		db := mysql.DB
+		db = db.Begin()
+		err := db.Model(modelPay.Bank{}).Where("id=?", id).Delete(&modelPay.Bank{}).Error
+		if err != nil {
+			tools.ReturnErr101Code(c, err)
+			return
+		}
+
+		err = db.Where(&modelPay.ChannelBank{}).Where("bank_id=?", id).Delete(&modelPay.ChannelBank{}).Error
+		if err != nil {
+			db.Rollback()
+			tools.ReturnErr101Code(c, err)
+			return
+		}
+		db.Commit()
+		tools.ReturnSuccess2000Code(c, "OK")
+		return
+	}
+
 }

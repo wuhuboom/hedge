@@ -130,5 +130,5 @@ func initDaemon() {
 		d.Run()
 	}
 	//记录pid
-	ioutil.WriteFile(common.RootPath+"/MgHash.sock", []byte(fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())), 0666)
+	ioutil.WriteFile(common.RootPath+"/Project.sock", []byte(fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())), 0666)
 }

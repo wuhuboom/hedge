@@ -49,18 +49,17 @@ func (ch *Channel) GetUpi(db *gorm.DB) (Bank, error) {
 	for _, bank := range CB {
 		TallData.SumPull = 0
 		//判断今日已经占用的金额
-		db.Debug().Raw("SELECT sum(amount)  as  sum_pull  FROM collections  WHERE bank_id =?  and  date =  ? and  release_time  > ?  and  status = 1", bank.BankId, time.Now().Format("2006-01-02"), time.Now().Unix()).Scan(&TallData)
+		db.Raw("SELECT sum(amount)  as  sum_pull  FROM collections  WHERE bank_id =?  and  date =  ? and  release_time  > ?  and  status = 1", bank.BankId, time.Now().Format("2006-01-02"), time.Now().Unix()).Scan(&TallData)
 		//比大小
 		Ba := Bank{}
 		err := db.Where("id=?", bank.BankId).First(&Ba).Error
 		if err != nil {
 			continue
 		}
-
 		//符合
-		fmt.Println(Ba)
-		fmt.Printf("限制金额:%f \n", Ba.LimitMoney)
-		fmt.Printf("未释放金额:%f \n", TallData.SumPull)
+		//fmt.Println(Ba)
+		//fmt.Printf("限制金额:%f \n", Ba.LimitMoney)
+		//fmt.Printf("未释放金额:%f \n", TallData.SumPull)
 		fmt.Println(Ba.LimitMoney > TallData.SumPull)
 		if Ba.LimitMoney > TallData.SumPull {
 			//fmt.Println(Ba)
