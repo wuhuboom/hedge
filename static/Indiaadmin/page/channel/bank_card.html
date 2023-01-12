@@ -82,8 +82,8 @@
 
 <!--数据表格操作工具栏-->
 <script type="text/html" id="orderListBar">
-    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="bankdetail" style="background-color: #ffba00"><i class="layui-icon layui-icon-app"></i>银行</a>
-<!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="deleteBtn" style="background-color: #f96868 "><i class="layui-icon layui-icon-delete"></i>删除</a>-->
+<!--    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="bankdetail" style="background-color: #ffba00"><i class="layui-icon layui-icon-app"></i>银行</a>-->
+    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="deleteBtn" style="background-color: #f96868 "><i class="layui-icon layui-icon-delete"></i>删除</a>
 </script>
 
 <script>
@@ -168,11 +168,11 @@
                 cols: [[
                     // {type: 'checkbox'},
                     {field: 'ID',title:'ID',sort: true,align:"center",width:70},
-                    {field: 'Upi', title: 'UPI', edit: 'text', sort: true,align:"center"},
+                    {field: 'Upi', title: 'UPI', edit: 'text', sort: true,align:"center",width:230},
                     {field: 'CardNum', title: '卡号', edit: 'text', sort: true,align:"center"},
-                    {field: 'Name', title: '持卡人名字', edit: 'text', sort: true,align:"center"},
-                    {field: 'IFSC', title: 'IFSC', edit: 'text', sort: true,align:"center"},
-                    {field: 'LimitMoney ', title: '限额', edit: 'text', sort: true,align:"center"},
+                    {field: 'Name', title: '持卡人名字', edit: 'text', sort: true,align:"center",width:175},
+                    {field: 'IFSC', title: 'IFSC', edit: 'text', sort: true,align:"center",width:150},
+                    {field: 'LimitMoney', title: '限额', edit: 'text', sort: true,align:"center"},
                     {field: 'Remark', title: '备注', edit: 'text', sort: true,align:"center"},
                     // {field: 'BankName', title: '银行名', sort: true,align:"center"},
                     {field: 'BankName', title: '银行名', width:130,sort: true,align:"center", templet: function (d) {
@@ -211,7 +211,7 @@
                     //         return moment(d.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
                     //     }, sort: true
                     // },
-                    // {title: '操作', width:180, templet:'#orderListBar',fixed:"right",align:"center"}
+                    {title: '操作', width:100, templet:'#orderListBar',fixed:"right",align:"center"}
                 ]],
                 done: function (res, curr, count) {
                     $('tr').css({'background-color': '#fff', 'color': '#191a1c'});
@@ -336,6 +336,7 @@
                     ,data = obj.data //得到所在行所有键值
                     ,field = obj.field; //得到字段
 
+                // console.log("field",field)
                 var param = {};
                 param['id'] = data.ID;
                 param['bank_information_id'] = data.BankInformationId;
@@ -362,6 +363,8 @@
                 if(field === "LimitMoney"){
                    if(!util.escape(value)){
                        param['limit_money'] = 50000;
+                       // obj.update({title: old});
+                       // $(this).val("50000");
                    }else{
                        param['limit_money'] =util.escape(value);
                    }
@@ -383,6 +386,7 @@
 
                         if (addResult.code === 200) {
                             notice.msg(addResult.msg, {icon: 1});
+                            insTb.reload();
                         } else {
                             // layer.msg(addResult.msg);
                             notice.msg(addResult.msg, {icon: 2});
@@ -603,7 +607,7 @@
                         param['id'] = currDatas.ID;
 
                         $.ajax({
-                            url: global_requestAddress+global_requestAddress_js_slideshow+"?action=delete",
+                            url: global_requestAddress+global_requestAddress_js_bank+"?action=del",
                             data: param,
                             headers:{
                                 token:mybck
@@ -612,7 +616,7 @@
                             dataType: "json",
                             success: function (addResult) {
                                 layer.close(loadIndex);
-                                if (addResult.code === 2000) {
+                                if (addResult.code === 200) {
                                     notice.msg(addResult.msg, {icon: 1});
                                     insTb.reload({page: {curr: 1}});
                                 } else {

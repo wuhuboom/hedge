@@ -253,6 +253,8 @@
                             statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #28a745;border-color: #28a745;">支付成功</button>'
                         }else if(returnDataArray.Status === 3){
                             statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #993055;border-color: #993055;">失败</button>'
+                        }else if(returnDataArray.Status === 4){
+                            statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #465161;border-color: #465161;">已过期</button>'
                         }
                         $("#Status").append(statusHtml)
 
