@@ -64,6 +64,15 @@
 <!--                                    </select>-->
 <!--                                </div>-->
 <!--                            </div>-->
+
+                            <div class="layui-form-item" style="margin-top: 10px;">
+                                <label class="layui-form-label" style="width: 120px">释放时间(Min)</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="ReleaseTime" class="layui-input " placeholder="请在此输入释放时间
+" />
+                                </div>
+                            </div>
+
                             <div class="layui-form-item" style="margin-top: 10px;">
                                 <label class="layui-form-label" style="width: 120px">过期时间(Min)</label>
                                 <div class="layui-input-inline">
@@ -264,6 +273,7 @@
 
                     //----基础配置
 
+                    $("#ReleaseTime").val(returnDataArray.ReleaseTime);
                     $("#ExpireTime").val(returnDataArray.ExpireTime);
 
                     // $('#timezone_filter').val(returnDataArray.TimeZone)
@@ -337,6 +347,7 @@
                 param.kinds = currTabIndex + 1
                 if(currTabIndex === 0){ //基本配置
                     param['ExpireTime'] = $("#ExpireTime").val();
+                    param['ReleaseTime'] = $("#ReleaseTime").val();
                     // param['request_limit']= $("#RequestLimit").val();
                     // param['task_timeout'] = $("#TaskTimeout").val();
                     // param['website_h5']= $("#WebsiteH5").val();

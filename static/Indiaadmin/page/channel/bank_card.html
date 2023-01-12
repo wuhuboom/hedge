@@ -172,6 +172,7 @@
                     {field: 'CardNum', title: '卡号', edit: 'text', sort: true,align:"center"},
                     {field: 'Name', title: '持卡人名字', edit: 'text', sort: true,align:"center"},
                     {field: 'IFSC', title: 'IFSC', edit: 'text', sort: true,align:"center"},
+                    {field: 'LimitMoney ', title: '限额', edit: 'text', sort: true,align:"center"},
                     {field: 'Remark', title: '备注', edit: 'text', sort: true,align:"center"},
                     // {field: 'BankName', title: '银行名', sort: true,align:"center"},
                     {field: 'BankName', title: '银行名', width:130,sort: true,align:"center", templet: function (d) {
@@ -357,6 +358,15 @@
                 if(field === "IFSC"){
                     param['IFSC'] =util.escape(value);
                 }
+
+                if(field === "LimitMoney"){
+                   if(!util.escape(value)){
+                       param['limit_money'] = 50000;
+                   }else{
+                       param['limit_money'] =util.escape(value);
+                   }
+                }
+
 
 
                 // layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改值为：'+ util.escape(value));

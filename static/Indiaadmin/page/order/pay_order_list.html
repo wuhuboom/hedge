@@ -73,6 +73,13 @@
                     </div>
 
                     <div class="layui-inline">
+                        <label class="layui-form-label">支付凭证:</label>
+                        <div class="layui-input-inline">
+                            <input name="proof_of_payment" class="layui-input" placeholder="请输入支付凭证"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
                         <label class="layui-form-label">状态:</label>
                         <div class="layui-input-inline">
                             <select name="status" id="status">
@@ -425,6 +432,9 @@
                     currTempObj.own_order = data.field.own_order
                 }
 
+                if(data.field.proof_of_payment){
+                    currTempObj.proof_of_payment = data.field.proof_of_payment
+                }
 
                 if(data.field.status === "999"){
 

@@ -56,6 +56,8 @@ func (ch *Channel) GetUpi(db *gorm.DB) (Bank, error) {
 			continue
 		}
 		//符合
+		fmt.Printf("未释放金额:%f", TallData.SumPull)
+
 		if Ba.LimitMoney > TallData.SumPull {
 			return Ba, nil
 		}
