@@ -47,6 +47,7 @@ func (ch *Channel) GetUpi(db *gorm.DB) (Bank, error) {
 		SumPull float64 `json:"sum_pull"`
 	}
 	for _, bank := range CB {
+		TallData.SumPull = 0
 		//判断今日已经占用的金额
 		db.Debug().Raw("SELECT sum(amount)  as  sum_pull  FROM collections  WHERE bank_id =?  and  date =  ? and  release_time  > ?  and  status = 1", bank.BankId, time.Now().Format("2006-01-02"), time.Now().Unix()).Scan(&TallData)
 		//比大小
