@@ -29,7 +29,10 @@ type Collection struct {
 	IFSC             string
 	Name             string
 	ProofOfPayment   string //支付凭证
+	BankId           int    //   这笔代付使用的  银行卡
 	Remark           string //备注
+	Date             string //日期
+	ReleaseTime      int64  //  释放时间
 	Created          int64
 	Updated          int64
 }

@@ -36,6 +36,10 @@ func ConfigOperation(c *gin.Context) {
 			update["ExpireTime"], _ = strconv.ParseFloat(status, 64)
 
 		}
+		if status, isE := c.GetPostForm("ReleaseTime"); isE == true {
+			update["ReleaseTime"], _ = strconv.ParseFloat(status, 64)
+
+		}
 		mysql.DB.Model(&model.Config{}).Where("id=?", 1).Update(update)
 		tools.ReturnSuccess2000Code(c, "OK")
 		return

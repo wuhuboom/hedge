@@ -9,7 +9,6 @@ import (
 )
 
 func Bank(c *gin.Context) {
-
 	action := c.Query("action")
 	if action == "check" {
 		//查询bankCard
@@ -51,7 +50,8 @@ func Bank(c *gin.Context) {
 		name := c.PostForm("name")
 		IFSC := c.PostForm("IFSC")
 		upi := c.PostForm("upi")
-		bi := modelPay.Bank{CardNum: cardNumber, Remark: remark, Name: name, IFSC: IFSC, BankInformationId: Bid, Upi: upi}
+		limitMoney, _ := strconv.ParseFloat(c.PostForm("limit_money"), 64)
+		bi := modelPay.Bank{CardNum: cardNumber, Remark: remark, Name: name, IFSC: IFSC, BankInformationId: Bid, Upi: upi, LimitMoney: limitMoney}
 		err := bi.Add(mysql.DB)
 		if err != nil {
 			tools.ReturnErr101Code(c, err.Error())
@@ -86,12 +86,13 @@ func Bank(c *gin.Context) {
 			tools.ReturnErr101Code(c, "bank_information_id is  not exist")
 			return
 		}
+		limitMoney, _ := strconv.ParseFloat(c.PostForm("limit_money"), 64)
 		err = mysql.DB.Model(&modelPay.Bank{}).Where("id=?", id).Update(&modelPay.Bank{
 			BankInformationId: Bid,
 			CardNum:           c.PostForm("card_number"),
 			Name:              c.PostForm("name"),
 			Remark:            c.PostForm("remark"),
-			IFSC:              c.PostForm("IFSC"), Upi: c.PostForm("upi")}).Error
+			IFSC:              c.PostForm("IFSC"), Upi: c.PostForm("upi"), LimitMoney: limitMoney}).Error
 		if err != nil {
 			tools.ReturnErr101Code(c, err.Error())
 			return

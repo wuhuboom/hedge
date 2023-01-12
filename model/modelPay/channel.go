@@ -3,6 +3,7 @@ package modelPay
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	eeor "github.com/wangyi/GinTemplate/error"
 	"time"
 )
 
@@ -32,4 +33,33 @@ func (ch *Channel) Add(db *gorm.DB) error {
 	ch.Created = time.Now().Unix()
 	ch.Updated = time.Now().Unix()
 	return db.Save(ch).Error
+}
+
+func (ch *Channel) GetUpi(db *gorm.DB) (Bank, error) {
+	// 获取upi
+	CB := make([]ChannelBank, 0)
+	db.Where("channel_id=?", ch.ID).Order("frequency ASC").Find(&CB)
+	//判断金额 是否 超标
+	if len(CB) == 0 {
+		return Bank{}, eeor.OtherError("I'm sorry, I didn't find a match")
+	}
+	var TallData struct {
+		SumPull float64 `json:"sum_pull"`
+	}
+	for _, bank := range CB {
+		//判断今日已经占用的金额
+		db.Raw("SELECT sum(amount)  as  sum_pull  FROM collections  WHERE bank_id =?  and  date =  ? and  release_time  > ?  and  status = 1", bank.ID, time.Now().Format("2006-01-02"), time.Now().Unix()).Scan(&TallData)
+		//比大小
+		Ba := Bank{}
+		err := db.Where("id=?", bank.BankId).First(&Ba).Error
+		if err != nil {
+			continue
+		}
+		//符合
+		if Ba.LimitMoney > TallData.SumPull {
+			return Ba, nil
+		}
+
+	}
+	return Bank{}, eeor.OtherError("I'm sorry, I didn't find a match too")
 }
