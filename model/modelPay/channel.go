@@ -56,11 +56,12 @@ func (ch *Channel) GetUpi(db *gorm.DB) (Bank, error) {
 			continue
 		}
 		//符合
-		fmt.Printf("限制金额:%f", Ba.LimitMoney)
-		fmt.Printf("未释放金额:%f", TallData.SumPull)
+		fmt.Println(Ba)
+		fmt.Printf("限制金额:%f \n", Ba.LimitMoney)
+		fmt.Printf("未释放金额:%f \n", TallData.SumPull)
 		fmt.Println(Ba.LimitMoney > TallData.SumPull)
 		if Ba.LimitMoney > TallData.SumPull {
-			fmt.Println(Ba)
+			//fmt.Println(Ba)
 			return Ba, nil
 		}
 
