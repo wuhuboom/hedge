@@ -143,7 +143,7 @@
 <script type="text/html" id="orderListBar">
     <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="callbacksuccess" style="background-color: #ffba00"><i class="layui-icon layui-icon-ok"></i>回调成功</a>
     <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="confirpay" style="background-color: #ee00ff"><i class="layui-icon layui-icon-windows"></i>审核</a>
-<!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="detailBtn" style="background-color: #6891f9 "><i class="layui-icon layui-icon-transfer"></i>详情</a>-->
+    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="detailBtn" style="background-color: #6891f9 "><i class="layui-icon layui-icon-transfer"></i>详情</a>
 </script>
 
 <script>
@@ -298,6 +298,7 @@
                         {field: 'NoticeUrl', title: '回调地址', sort: true,align:"center",width:180},
                         {field: 'Currency', title: '币种', sort: true,align:"center"},
                         {field: 'OwnOrder', title: '我方平台订单', sort: true,align:"center",width:180},
+                        {field: 'ProofOfPayment', title: '支付凭证', sort: true,align:"center",width:180},
 
                         // {field: 'BankName', title: '银行名', width:130,sort: true,align:"center", templet: function (d) {
                         //         var vipHtml = '<div><div class="ew-select-fixed"><select lay-filter="templetBankSel">';
@@ -345,7 +346,7 @@
                                 return moment(d.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
                             }, sort: true
                         },
-                        {title: '操作', width:230, templet:'#orderListBar',fixed:"right",align:"center"}
+                        {title: '操作', width:280, templet:'#orderListBar',fixed:"right",align:"center"}
                     ]]
                 return col;
             }

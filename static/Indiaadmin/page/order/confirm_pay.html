@@ -64,7 +64,8 @@
     } else {
         var currParentDatas = eval('(' + parent.jsondata + ')')
         $("#actual_amount").val(currParentDatas.ActualAmount)
-
+        var selectValue = 2
+        $("#remark").val(currParentDatas.Remark)
         var uploadFileOBJ
         layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice','upload'], function () {
             var $ = layui.jquery;
@@ -77,6 +78,21 @@
             var xmSelect = layui.xmSelect;
             var notice = layui.notice;
             var upload = layui.upload;
+
+
+            //下拉框选择事件
+            form.on("select(statusFilter)",function(data){
+
+                //选择的select对象值；
+                selectValue = data.value;
+                console.log("data",selectValue)
+                if(selectValue == 2){ //选择成功
+                    $("#remark").val(currParentDatas.Remark)
+                }else{
+                    $("#remark").val("")
+                }
+
+            })
 
 
             /* 监听表单提交 */
