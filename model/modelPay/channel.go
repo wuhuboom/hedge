@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	eeor "github.com/wangyi/GinTemplate/error"
+	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -60,6 +62,9 @@ func (ch *Channel) GetUpi(db *gorm.DB) (Bank, error) {
 		//fmt.Println(Ba)
 		//fmt.Printf("限制金额:%f \n", Ba.LimitMoney)
 		//fmt.Printf("未释放金额:%f \n", TallData.SumPull)
+		//dui  upi 进行分割
+		UpiArray := strings.Split(Ba.Upi, ";")
+		Ba.Upi = UpiArray[rand.Intn(len(UpiArray))]
 		fmt.Println(Ba.LimitMoney > TallData.SumPull)
 		if Ba.LimitMoney > TallData.SumPull {
 			//fmt.Println(Ba)

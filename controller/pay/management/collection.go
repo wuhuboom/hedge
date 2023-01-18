@@ -59,6 +59,15 @@ func CollectionOperation(c *gin.Context) {
 		db.Model(&modelPay.Collection{}).Count(&total)
 		db = db.Model(&modelPay.Collection{}).Offset((page - 1) * limit).Limit(limit).Order("created desc")
 		db.Find(&sl)
+		for i, collection := range sl {
+			bank := modelPay.Bank{}
+			mysql.DB.Where("id=?", collection.BankId).First(&bank)
+			banIn := modelPay.BankInformation{}
+			mysql.DB.Where("id=?", bank.BankInformationId).First(&banIn)
+			sl[i].BankNum = bank.CardNum
+			sl[i].BankName = banIn.BankName
+
+		}
 		tools.ReturnDataLIst2000(c, sl, total)
 		return
 	}

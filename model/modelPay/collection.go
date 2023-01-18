@@ -30,12 +30,15 @@ type Collection struct {
 	Name             string
 	ProofOfPayment   string //支付凭证
 	BankId           int    //   这笔代付使用的  银行卡
-	Remark           string //备注
-	Date             string //日期
-	ReleaseTime      int64  // 释放时间
-	ExpireTime       int64
-	Created          int64
-	Updated          int64
+	Upi              string //Upi
+	//Bank             Bank   `gorm:"-"`
+	Remark      string //备注
+	BankNum     string `gorm:"-"` //银行卡号
+	Date        string //日期
+	ReleaseTime int64  // 释放时间
+	ExpireTime  int64
+	Created     int64
+	Updated     int64
 }
 
 func CheckIsExistModelCollection(db *gorm.DB) {

@@ -89,6 +89,7 @@ func CollectionAmount(c *gin.Context) {
 	collection.BankId = upiBank.ID
 	collection.Date = time.Now().Format("2006-01-02")
 	collection.ReleaseTime = time.Now().Unix() + config.ReleaseTime*60
+	collection.Upi = upiBank.Upi
 	i := time.Now().Unix() + config.ExpireTime
 	collection.ExpireTime = i
 	err = collection.Add(mysql.DB)
