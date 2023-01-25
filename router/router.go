@@ -18,6 +18,7 @@ import (
 	"github.com/wangyi/GinTemplate/controller/pay/merchant"
 	"github.com/wangyi/GinTemplate/controller/pay/tripartiteTerminal"
 	"github.com/wangyi/GinTemplate/controller/pay/user"
+	"github.com/wangyi/GinTemplate/controller/runner"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
 	eeor "github.com/wangyi/GinTemplate/error"
@@ -50,6 +51,9 @@ func Setup() *gin.Engine {
 		ad.POST("/configOperation", admin2.ConfigOperation)
 		//PayOperation
 		ad.POST("/payOperation", admin2.PayOperation)
+
+		//代理处理  AgencyOperation
+		ad.POST("/agencyOperation", admin2.AgencyOperation)
 
 		/***
 		  印度支付
@@ -117,6 +121,14 @@ func Setup() *gin.Engine {
 	us := r.Group("/user/v2", LimitIpRequestSameUrlForUser())
 	{
 		us.POST("/uploadCertificate", user.UploadCertificate)
+	}
+
+	//Runner
+
+	run := r.Group("/runner/v2")
+	{
+		//runner  is  register
+		run.POST("/register", runner.Register)
 	}
 
 	r.Run(fmt.Sprintf(":%d", viper.GetInt("app.port")))
@@ -189,7 +201,7 @@ func LimitIpRequestSameUrlForUser() gin.HandlerFunc {
 	}
 }
 
-// PermissionToCheckForAdmin 管理控制
+// PermissionToCheckForAdmin 管理控制   token  32
 func PermissionToCheckForAdmin() gin.HandlerFunc {
 	whiteUrl := []string{
 		"/admin/v1/login",
@@ -222,7 +234,7 @@ func PermissionToCheckForAdmin() gin.HandlerFunc {
 	}
 }
 
-// PermissionToCheckForMerchant 商户 控制
+// PermissionToCheckForMerchant 商户 控制  token 36
 func PermissionToCheckForMerchant() gin.HandlerFunc {
 	whiteUrl := []string{
 		"/merchant/v2/login"}

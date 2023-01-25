@@ -1,7 +1,6 @@
 package process
 
 import (
-	"fmt"
 	"github.com/jinzhu/gorm"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/wangyi/GinTemplate/common"
@@ -61,9 +60,7 @@ func CheckExpirationPayOrder(db *gorm.DB) {
 
 func OverdueCollection(db *gorm.DB) {
 	for true {
-		err := db.Model(&modelPay.Collection{}).Where("status=?  and   expire_time  < ?", 1, time.Now().Unix()).Update(&modelPay.Collection{Status: 4}).Error
-		fmt.Println(err)
-
+		db.Model(&modelPay.Collection{}).Where("status=?  and   expire_time  < ?", 1, time.Now().Unix()).Update(&modelPay.Collection{Status: 4})
 		time.Sleep(time.Second * 30)
 	}
 }

@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
+	eeor "github.com/wangyi/GinTemplate/error"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
@@ -263,4 +265,15 @@ func ReturnDataLIst2000(context *gin.Context, data interface{}, count int) {
 		"result": data,
 		"count":  count,
 	})
+}
+
+func GetInvitationCode(num int, redis *redis.Client) (string, error) {
+	for i := 0; i < 5; i++ {
+		str := RandStringRunes(num)
+		result, _ := redis.HExists("InvitationCode", str).Result()
+		if !result {
+			return str, nil
+		}
+	}
+	return "", eeor.OtherError("Sorry, duplicate invitation code")
 }

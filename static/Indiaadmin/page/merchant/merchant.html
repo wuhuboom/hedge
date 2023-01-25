@@ -123,9 +123,9 @@
 
 <!--数据表格操作工具栏-->
 <script type="text/html" id="orderListBar">
-        <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="editbtn" ><i class="layui-icon layui-icon-edit"></i>编辑</a>
-<!--        <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="resetgoogle" style="background-color: #ffba00;color: #fff;border: 1px solid #ffba00;">重置google</a>-->
-<!--        <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="yuebdbtn" style="background-color: #fb7299;color: #ffffff;"><i class="layui-icon layui-icon-form"></i>绑代理</a>-->
+    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="check" style="background-color: #fb7299;color: #ffffff;"><i class="layui-icon layui-icon-form"></i>查看</a>
+    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="editbtn" ><i class="layui-icon layui-icon-edit"></i>修改</a>
+        <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="resetGoogle" style="background-color: #ffba00;color: #fff;border: 1px solid #ffba00;">重置google</a>
 <!--        <a class="layui-btn layui-btn-sm  " lay-event="changebtn" style="background-color: #009688"><i class="layui-icon layui-icon-edit"></i>权限设置</a>-->
 <!--        <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="tixianbtn" style="background-color: #fbc472"><i class="layui-icon layui-icon-down"></i>提现下分</a>-->
 
@@ -191,10 +191,17 @@
                 cols: [[
                     // {type: 'checkbox'},
                     {field: 'ID',title:'id',sort: true,align:"center",width:70},
-                    {field: 'MerchantNum', title: '商户号',  sort: true,align:"center"},
-                    {field: 'MinMoney', title: '最小金额',  sort: true,align:"center"},
-                    {field: 'MaxMoney', title: '最大金额',  sort: true,align:"center"},
-                    {field: 'ApiKey', title: 'APIkey', sort: true,align:"center",width: 150},
+                    {field: 'MerchantNum', title: '商户号',  sort: true,align:"center",width: 150},
+                    // {field: 'MinMoney', title: '最小充值金额',  sort: true,align:"center"},
+                    // {field: 'MaxMoney', title: '最大充值金额',  sort: true,align:"center"},
+                    //AllAmount
+                    {field: 'AllAmount', title: '账户余额',  sort: true,align:"center",width: 150},
+                    //AvailableAmount
+                    {field: 'AvailableAmount', title: '账户可用金额',  sort: true,align:"center",width: 150},
+                    {field: 'FreezeAmount', title: '冻结金额',  sort: true,align:"center",width: 150},
+
+                    // {field: 'WhiteIps', title: '白名单', sort: true,align:"center"},
+                    // {field: 'ApiKey', title: 'APIkey', sort: true,align:"center",width: 150},
                     {field: 'Status', title: '状态', sort: true,align:"center",templet:function(d){
                             var state = "";
                             if(d.Status == "1"){//正常,checked 打开
@@ -218,8 +225,7 @@
                     //         // return util.toDateString(d.Updated * 1000);
                     //     }},
                     // {field: 'WhiteIps', title: '白名单', edit:true, sort: true,align:"center"},
-                    {field: 'WhiteIps', title: '白名单', sort: true,align:"center"},
-                    {title: '操作', width:100, templet:'#orderListBar',fixed:"right",align:"center"}
+                    {title: '操作', templet:'#orderListBar',fixed:"right",align:"center"}
                 ]],
                 done: function (res, curr, count) {
                     $('tr').css({'background-color': '#fff', 'color': '#191a1c'});

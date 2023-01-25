@@ -229,23 +229,14 @@
                     layer.msg("网关地址不允许为空!", {icon: 2});
                     return false
                 }
-
-
                 if(!$("#min_pay").val()){
-
                     layer.msg("代付最小金额不允许为空!", {icon: 2});
                     return false
                 }
-
-
                 if(!$("#max_pay").val()){
-
                     layer.msg("代付最大金额不允许为空!", {icon: 2});
                     return false
                 }
-
-
-
                 var param = {};
                 param['kinds'] = 2;
                 param['merchant'] = $("#merchant").val();
@@ -257,7 +248,6 @@
                 param['min_pay'] = $('#min_pay').val();
                 param['max_pay'] = $('#max_pay').val();
                 // param['google_switch'] = 1
-
                 var arr_box = [];
                 var paying_arr_box = [];
                 var pay_selectStr = ""

@@ -74,6 +74,12 @@
                             <input name="proof_of_payment" class="layui-input" placeholder="请输入支付凭证"/>
                         </div>
                     </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">Upi:</label>
+                        <div class="layui-input-inline">
+                            <input name="upi" class="layui-input" placeholder="请输入支付凭证"/>
+                        </div>
+                    </div>
 
                     <div class="layui-inline">
                         <label class="layui-form-label">状态:</label>
@@ -306,12 +312,10 @@
                     {field: 'ActualAmount', title: '实际充值金额', sort: true, align: "center", width: 130},
                     {field: 'Commission', title: '手续费', sort: true, align: "center"},
                     {field: 'CallbackReturn', title: '回调返回信息', sort: true, align: "center", width: 180},
-
                     {field: 'NoticeUrl', title: '回调地址', sort: true, align: "center", width: 180},
                     {field: 'Currency', title: '币种', sort: true, align: "center"},
                     {field: 'OwnOrder', title: '我方平台订单', sort: true, align: "center", width: 180},
                     {field: 'ProofOfPayment', title: '支付凭证', sort: true, align: "center", width: 180},
-                    {field: 'Upi', title: 'Upi', sort: true, align: "center", width: 180},
 
                     // {field: 'BankName', title: '银行名', width:130,sort: true,align:"center", templet: function (d) {
                     //         var vipHtml = '<div><div class="ew-select-fixed"><select lay-filter="templetBankSel">';
