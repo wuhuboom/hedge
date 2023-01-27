@@ -374,3 +374,50 @@
 2023-01-26T00:01:16.928+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
 2023-01-26T00:02:27.235+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
 2023-01-26T00:03:19.362+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T14:30:03.668+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T14:38:39.665+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T14:40:55.917+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T14:43:35.552+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T19:07:32.776+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T19:09:57.586+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T19:31:00.338+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T19:31:02.553+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T19:31:02.555+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T19:31:04.034+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T19:31:04.037+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T19:31:04.643+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T19:31:04.644+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T19:31:05.051+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T19:31:05.052+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T19:31:05.359+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T19:31:05.360+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T19:34:08.127+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T19:35:21.615+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T19:49:27.202+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T20:09:07.691+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T20:09:12.824+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:09:12.827+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:09:13.398+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:09:13.400+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:09:13.931+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:09:13.932+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:09:14.386+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:09:14.388+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:09:14.681+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:09:14.681+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:09:55.221+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T20:10:11.304+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:10:11.306+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:10:19.827+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:10:19.829+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:10:20.144+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:10:20.146+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:10:20.512+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:10:20.513+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:10:20.844+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:10:20.846+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-26T20:13:02.226+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T20:20:22.242+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T20:21:20.405+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T20:21:48.403+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-26T20:22:07.356+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa

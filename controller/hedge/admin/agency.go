@@ -45,10 +45,23 @@ func AgencyOperation(c *gin.Context) {
 				return
 			}
 		}
+
+		//代付渠道进行验证
+		PArray := strings.Split(c.PostForm("pay_channel"), "@")
+		for _, s := range PArray {
+			err := mysql.DB.Where("id=? and  kinds =?", s, 2).First(&modelPay.Channel{}).Error
+			fmt.Println(err)
+			if err != nil {
+				tools.ReturnErr101Code(c, "Illegal collection channel")
+				return
+			}
+		}
+
 		add := model.AgencyRunner{
 			Username:          c.PostForm("username"),
 			Password:          tools.MD5(c.PostForm("password")),
 			CollectionChannel: c.PostForm("collection_channel"),
+			PayChannel:        c.PostForm("pay_channel"),
 		}
 		add.CashPledge, _ = strconv.ParseFloat(c.PostForm("cash_pledge"), 64)
 		add.CollectionPoint, _ = strconv.ParseFloat(c.PostForm("collection_point"), 64)
@@ -87,6 +100,23 @@ func AgencyOperation(c *gin.Context) {
 			tools.ReturnSuccess2000Code(c, "Modified successfully")
 			return
 		}
+		//谷歌开关 单独修改  GoogleSwitch
+
+		if status, isExist := c.GetPostForm("google_switch"); isExist == true {
+			sta, _ := strconv.Atoi(status)
+			if sta != 2 && sta != 1 {
+				tools.ReturnErr101Code(c, "Please enter the correct status")
+				return
+			}
+			err := mysql.DB.Model(&model.AgencyRunner{}).Where("id=?", id).Update(&model.AgencyRunner{GoogleSwitch: sta}).Error
+			if err != nil {
+				tools.ReturnErr101Code(c, err.Error())
+				return
+			}
+			tools.ReturnSuccess2000Code(c, "Modified successfully")
+			return
+		}
+
 		//重置谷歌
 		if _, isExist := c.GetPostForm("reset"); isExist == true {
 			err := mysql.DB.Model(&model.AgencyRunner{}).Where("id=?", id).Update(map[string]interface{}{"GoogleCode": ""}).Error
@@ -101,6 +131,7 @@ func AgencyOperation(c *gin.Context) {
 		ups["Password"] = tools.MD5(c.PostForm("password"))
 		ups["PayPassword"] = tools.MD5(c.PostForm("pay_password"))
 		ups["CollectionChannel"] = c.PostForm("collection_channel")
+		ups["PayChannel"] = c.PostForm("pay_channel")
 		ups["CollectionPoint"], _ = strconv.ParseFloat(c.PostForm("collection_point"), 64)
 		ups["PayPoint"], _ = strconv.ParseFloat(c.PostForm("pay_point"), 64)
 		ups["JuniorPoint"], _ = strconv.ParseFloat(c.PostForm("junior_point"), 64)

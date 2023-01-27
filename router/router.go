@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"github.com/wangyi/GinTemplate/controller/agency"
 	admin2 "github.com/wangyi/GinTemplate/controller/hedge/admin"
 	"github.com/wangyi/GinTemplate/controller/hedge/h5"
 	"github.com/wangyi/GinTemplate/controller/hedge/three"
@@ -88,7 +89,6 @@ func Setup() *gin.Engine {
 		pay.POST("checkImageForUpload", LimitIpRequestSameUrlForUser(), h5.CheckImageForUpload)
 
 	}
-
 	//印度支付 拉起订单
 	tripartite := r.Group("/tripartiteTerminal/v2")
 	{
@@ -100,7 +100,6 @@ func Setup() *gin.Engine {
 
 	}
 	//CollectionAmount
-
 	//Login
 	mer := r.Group("/merchant/v2").Use(PermissionToCheckForMerchant())
 	{
@@ -116,19 +115,23 @@ func Setup() *gin.Engine {
 		mer.POST("/statistics", merchant.Statistics)
 
 	}
-
 	//UploadCertificate
 	us := r.Group("/user/v2", LimitIpRequestSameUrlForUser())
 	{
 		us.POST("/uploadCertificate", user.UploadCertificate)
 	}
-
 	//Runner
-
 	run := r.Group("/runner/v2")
 	{
 		//runner  is  register
 		run.POST("/register", runner.Register)
+	}
+
+	ay := r.Group("/agency/v2", PermissionToCheckForAgency())
+	{
+		ay.POST("/login", agency.Login)
+		ay.POST("/getMe", agency.GetMe)
+		ay.POST("/logger", agency.Logger)
 	}
 
 	r.Run(fmt.Sprintf(":%d", viper.GetInt("app.port")))
@@ -257,6 +260,38 @@ func PermissionToCheckForMerchant() gin.HandlerFunc {
 			}
 			//判断token 是否过期?
 			if redis.Rdb.Get("MerchantToken_"+token).Val() == "" {
+				tools.JsonWrite(c, tools.TokenExpire, nil, "An unlawful request")
+				c.Abort()
+				return
+			}
+			c.Set("who", ad)
+			c.Next()
+		}
+	}
+}
+
+func PermissionToCheckForAgency() gin.HandlerFunc {
+	whiteUrl := []string{
+		"/agency/v2/login"}
+	return func(c *gin.Context) {
+		if !tools.IsArray(whiteUrl, c.Request.RequestURI) {
+			token := c.Request.Header.Get("token")
+			//商户号
+			if len(token) != 31 {
+				tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
+				c.Abort()
+				return
+			}
+
+			ad := model.AgencyRunner{}
+			err := mysql.DB.Where("token=?", token).First(&ad).Error
+			if err != nil {
+				tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
+				c.Abort()
+				return
+			}
+			//判断token 是否过期?
+			if redis.Rdb.Get("AgencyToken_"+token).Val() == "" {
 				tools.JsonWrite(c, tools.TokenExpire, nil, "An unlawful request")
 				c.Abort()
 				return

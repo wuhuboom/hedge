@@ -58,6 +58,7 @@ func Init() error {
 	model.CheckIsExistModelAgencyRunner(DB)
 	model.CheckIsExistModelRunner(DB)
 	model.CheckIsExistModelAgencyAccountChange(DB)
+	model.CheckIsExistModelAgencyLog(DB)
 	////////////////////////////////////////////////////////////////////////模型初始化
 	return err
 }

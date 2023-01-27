@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
+	"github.com/wangyi/GinTemplate/model/modelPay"
 	"github.com/wangyi/GinTemplate/tools"
 	"time"
 )
@@ -12,27 +13,31 @@ type AgencyRunner struct {
 	ID                          int    `gorm:"primaryKey"`
 	Username                    string `gorm:"unique_index"` //用户名 唯一
 	Password                    string
-	PayPassword                 string  `gorm:"default:123123"` //提现密码
-	Status                      int     `gorm:"default:1"`      //  状态 1正常 2封
-	InvitationCode              string  //邀请码唯一性
-	CashPledge                  float64 `gorm:"type:decimal(10,2);default:0"` //押金
-	CollectionChannel           string  //代收通道   @分割
-	CollectionPoint             float64 `gorm:"type:decimal(10,2);default:0"` //代收盈利点
-	CollectionLimit             float64 `gorm:"type:decimal(10,2);default:0"` //代收额度
-	PayPoint                    float64 `gorm:"type:decimal(10,2);default:0"` //代付盈利点
-	PayLimit                    float64 `gorm:"type:decimal(10,2);default:0"` //代付额度
-	Created                     int64   //账号创建时间
-	LastLoginTime               int64   //最后一次登录时间
-	LastLoginIp                 string  //最后一次登录的ip
-	LastLoginRegion             string  //最后一次登录日期
-	Commission                  float64 `gorm:"type:decimal(10,2);default:0"` //佣金
-	JuniorPoint                 float64 `gorm:"type:decimal(10,2);default:2"` //下级税点
-	Token                       string  `gorm:"unique_index"`                 //token
-	FreezeMonet                 float64 `gorm:"type:decimal(10,2);default:0"` //提现冻结金额
-	WithdrawCommission          float64 `gorm:"type:decimal(10,2);default:0"` //提现手续费 (0.1%)
-	FreezeCashPledge            float64 `gorm:"type:decimal(10,2);default:0"` //冻结的押金
-	GoogleCode                  string  //谷歌验证码
-	AccumulativeCollectionLimit float64 `gorm:"type:decimal(10,2);default:0"` //累计已用代收额度
+	PayPassword                 string             `gorm:"default:123123"` //提现密码
+	Status                      int                `gorm:"default:1"`      //  状态 1正常 2封
+	InvitationCode              string             //邀请码唯一性
+	CashPledge                  float64            `gorm:"type:decimal(10,2);default:0"` //押金
+	CollectionChannel           string             //代收通道   @分割
+	PayChannel                  string             //代付通道   @分割
+	CollectionPoint             float64            `gorm:"type:decimal(10,2);default:0"` //代收盈利点
+	CollectionLimit             float64            `gorm:"type:decimal(10,2);default:0"` //代收额度
+	PayPoint                    float64            `gorm:"type:decimal(10,2);default:0"` //代付盈利点
+	PayLimit                    float64            `gorm:"type:decimal(10,2);default:0"` //代付额度
+	Created                     int64              //账号创建时间
+	LastLoginTime               int64              //最后一次登录时间
+	LastLoginIp                 string             //最后一次登录的ip
+	LastLoginRegion             string             //最后一次登录日期
+	Commission                  float64            `gorm:"type:decimal(10,2);default:0"` //佣金
+	JuniorPoint                 float64            `gorm:"type:decimal(10,2);default:2"` //下级税点
+	Token                       string             `gorm:"unique_index"`                 //token
+	FreezeMoney                 float64            `gorm:"type:decimal(10,2);default:0"` //提现冻结金额
+	WithdrawCommission          float64            `gorm:"type:decimal(10,2);default:0"` //提现手续费 (0.1%)
+	FreezeCashPledge            float64            `gorm:"type:decimal(10,2);default:0"` //冻结的押金
+	GoogleCode                  string             //谷歌验证码
+	AccumulativeCollectionLimit float64            `gorm:"type:decimal(10,2);default:0"` //累计已用代收额度
+	GoogleSwitch                int                `gorm:"default:1"`                    //谷歌开关     1开  2  关
+	CollectionChannelArray      []modelPay.Channel `gorm:"-"`
+	PayChannelArray             []modelPay.Channel `gorm:"-"`
 }
 
 func CheckIsExistModelAgencyRunner(db *gorm.DB) {
