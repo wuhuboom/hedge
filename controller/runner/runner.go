@@ -2,6 +2,7 @@ package runner
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/tools"
 )
 
@@ -18,5 +19,7 @@ func Register(c *gin.Context) {
 		tools.ReturnVerifyErrCode(c, err)
 		return
 	}
+	//判断邀请码长度
+	runner := model.Runner{InvitationCode: lo.InvitationCode}
 
 }

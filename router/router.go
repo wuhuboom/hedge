@@ -132,6 +132,8 @@ func Setup() *gin.Engine {
 		ay.POST("/login", agency.Login)
 		ay.POST("/getMe", agency.GetMe)
 		ay.POST("/logger", agency.Logger)
+		ay.POST("/getAmountChange", agency.GetAmountChange) //获取账户变化
+		ay.POST("/runnerOperation", agency.RunnerOperation)
 	}
 
 	r.Run(fmt.Sprintf(":%d", viper.GetInt("app.port")))

@@ -2,16 +2,19 @@ package agency
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/wangyi/GinTemplate/controller/hedge/admin"
 	"github.com/wangyi/GinTemplate/dao/mmdb"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
 	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/model/modelPay"
 	"github.com/wangyi/GinTemplate/tools"
+	"strconv"
 	"strings"
 	"time"
 )
 
+// Login 登录
 func Login(c *gin.Context) {
 	var lo LoginVerify
 	//检查参数
@@ -107,5 +110,53 @@ func GetMe(c *gin.Context) {
 	whoMap.PayPassword = "******"
 	tools.ReturnSuccess2000DataCode(c, whoMap, "OK")
 	return
+
+}
+
+// GetAmountChange 资金流水
+func GetAmountChange(c *gin.Context) {
+	who, _ := c.Get("who")
+	whoMap := who.(model.AgencyRunner)
+	action := c.Query("action")
+	if action == "check" {
+		//查询bankCard
+		limit, _ := strconv.Atoi(c.PostForm("limit"))
+		page, _ := strconv.Atoi(c.PostForm("page"))
+		sl := make([]model.AgencyAccountChange, 0)
+		db := mysql.DB.Where("agency_runner_id=?", whoMap.ID)
+		var total int
+		//   条件  1押金 2代收额度  3代付额度  4佣金   5提现
+		if kinds, IsE := c.GetPostForm("kinds"); IsE == true {
+			db = db.Where("kinds=?", kinds)
+		}
+		//用户名  runner_id
+		if username, isE := c.GetPostForm("username"); isE == true {
+			//查找这个  runner_id
+			runner := model.Runner{Username: username}
+			db = db.Where("runner_id=?", runner.GetRunnerId(mysql.DB))
+		}
+		//runner_collection_order_id
+		if runnerCollectionOrder, isE := c.GetPostForm("runner_collection_order"); isE == true {
+			order := model.RunnerCollectionOrder{OrderNum: runnerCollectionOrder}
+			db = db.Where("runner_collection_order_id=?", order.GetId(mysql.DB))
+		}
+		//runner_pay_order_id
+		if runnerCollectionOrder, isE := c.GetPostForm("runner_pay_order"); isE == true {
+			order := model.RunnerPayOrder{OrderNum: runnerCollectionOrder}
+			db = db.Where("runner_pay_order_id=?", order.GetId(mysql.DB))
+		}
+
+		//record_id
+		if runnerCollectionOrder, isE := c.GetPostForm("record_order"); isE == true {
+			order := model.Record{OrderNum: runnerCollectionOrder}
+			db = db.Where("record_id=?", order.GetId(mysql.DB))
+		}
+
+		db.Model(model.AgencyAccountChange{}).Count(&total)
+		db = db.Model(&model.AgencyAccountChange{}).Offset((page - 1) * limit).Limit(limit).Order("created desc")
+		db.Find(&sl)
+		admin.ReturnDataLIst2000(c, sl, total)
+		return
+	}
 
 }
