@@ -79,3 +79,13 @@ func Register(c *gin.Context) {
 	tools.ReturnSuccess2000Code(c, "OK")
 	return
 }
+
+func GetSlideshow(c *gin.Context) {
+	who, _ := c.Get("who")
+	whoMap := who.(model.Runner)
+
+	sl := make([]model.Slideshow, 0)
+	mysql.DB.Where("agency_runner_id=?", whoMap.AgencyRunnerId).Find(&sl)
+	tools.ReturnSuccess2000DataCode(c, sl, "OK")
+	return
+}

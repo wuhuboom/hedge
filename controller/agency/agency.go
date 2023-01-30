@@ -9,6 +9,7 @@ import (
 	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/model/modelPay"
 	"github.com/wangyi/GinTemplate/tools"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -135,16 +136,16 @@ func GetAmountChange(c *gin.Context) {
 			runner := model.Runner{Username: username}
 			db = db.Where("runner_id=?", runner.GetRunnerId(mysql.DB))
 		}
-		//runner_collection_order_id
-		if runnerCollectionOrder, isE := c.GetPostForm("runner_collection_order"); isE == true {
-			order := model.RunnerCollectionOrder{OrderNum: runnerCollectionOrder}
-			db = db.Where("runner_collection_order_id=?", order.GetId(mysql.DB))
-		}
-		//runner_pay_order_id
-		if runnerCollectionOrder, isE := c.GetPostForm("runner_pay_order"); isE == true {
-			order := model.RunnerPayOrder{OrderNum: runnerCollectionOrder}
-			db = db.Where("runner_pay_order_id=?", order.GetId(mysql.DB))
-		}
+		////runner_collection_order_id
+		//if runnerCollectionOrder, isE := c.GetPostForm("runner_collection_order"); isE == true {
+		//	order := model.RunnerCollectionOrder{OrderNum: runnerCollectionOrder}
+		//	db = db.Where("runner_collection_order_id=?", order.GetId(mysql.DB))
+		//}
+		////runner_pay_order_id
+		//if runnerCollectionOrder, isE := c.GetPostForm("runner_pay_order"); isE == true {
+		//	order := model.RunnerPayOrder{OrderNum: runnerCollectionOrder}
+		//	db = db.Where("runner_pay_order_id=?", order.GetId(mysql.DB))
+		//}
 
 		//record_id
 		if runnerCollectionOrder, isE := c.GetPostForm("record_order"); isE == true {
@@ -186,5 +187,61 @@ func SetMyselfConfig(c *gin.Context) {
 	}
 	tools.ReturnSuccess2000Code(c, "OK")
 	return
+
+}
+
+// SlideshowOperation 获取轮播图
+func SlideshowOperation(c *gin.Context) {
+	who, _ := c.Get("who")
+	whoMap := who.(model.AgencyRunner)
+	action := c.Query("action")
+	if action == "check" {
+		//查询bankCard
+		limit, _ := strconv.Atoi(c.PostForm("limit"))
+		page, _ := strconv.Atoi(c.PostForm("page"))
+		sl := make([]model.Slideshow, 0)
+		db := mysql.DB.Where("agency_runner_id=?", whoMap.ID)
+		var total int
+		//  状态
+		if kinds, IsE := c.GetPostForm("status"); IsE == true {
+			db = db.Where("status=?", kinds)
+		}
+		db.Model(model.Slideshow{}).Count(&total)
+		db = db.Model(&model.Slideshow{}).Offset((page - 1) * limit).Limit(limit).Order("created desc")
+		db.Find(&sl)
+		admin.ReturnDataLIst2000(c, sl, total)
+		return
+	}
+	if action == "add" {
+		file, _ := c.FormFile("file")
+		path := "./static/upload/" + time.Now().Format("20060102") + "/"
+		if noExist, _ := tools.IsFileNotExist(path); noExist {
+			if err := os.MkdirAll(path, 0777); err != nil {
+				tools.ReturnErr101Code(c, err.Error())
+				return
+			}
+		}
+		nameArray := strings.Split(file.Filename, ".")
+		path = path + time.Now().Format("20060102150405") + nameArray[0] + "." + nameArray[1]
+		err := c.SaveUploadedFile(file, path)
+		if err != nil {
+			tools.ReturnErr101Code(c, err.Error())
+			return
+		}
+
+		slideshow := model.Slideshow{Url: path, AgencyRunnerId: whoMap.ID}
+		slideshow.Add(mysql.DB)
+		tools.ReturnSuccess2000Code(c, "OK")
+		return
+
+	}
+
+	if action == "del" {
+		id := c.PostForm("id")
+		atom, _ := strconv.Atoi(id)
+		mysql.DB.Model(&model.Slideshow{}).Delete(&model.Slideshow{ID: atom})
+		tools.ReturnSuccess2000Code(c, "OK")
+		return
+	}
 
 }

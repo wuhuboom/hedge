@@ -132,6 +132,9 @@ func Setup() *gin.Engine {
 		run.POST("/getAnnouncement", runner.GetAnnouncement)
 		//GetCustomerServiceAddress
 		run.POST("/getCustomerServiceAddress", runner.GetCustomerServiceAddress)
+		//GetSlideshow
+		run.POST("/getSlideshow", runner.GetSlideshow)
+
 	}
 
 	ay := r.Group("/agency/v2", PermissionToCheckForAgency())
@@ -144,6 +147,8 @@ func Setup() *gin.Engine {
 		ay.POST("/announcementOperation", agency.AnnouncementOperation)
 		//SetMyselfConfig
 		ay.POST("/setMyselfConfig", agency.SetMyselfConfig)
+		//SlideshowOperation
+		ay.POST("/slideshowOperation", agency.SlideshowOperation)
 
 	}
 

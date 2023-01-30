@@ -537,3 +537,9 @@
 2023-01-30T22:15:28.470+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
 2023-01-30T22:15:29.119+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
 2023-01-30T22:15:29.709+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-01-30T23:26:33.600+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-30T23:50:42.661+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-30T23:53:29.504+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-30T23:55:30.894+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-30T23:55:30.896+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-30T23:57:50.315+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
