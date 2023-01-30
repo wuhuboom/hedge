@@ -6,37 +6,41 @@ import (
 	"github.com/jinzhu/gorm"
 	eeor "github.com/wangyi/GinTemplate/error"
 	"github.com/wangyi/GinTemplate/tools"
+	"math"
+	"strconv"
 	"time"
 )
 
 type Runner struct {
-	ID                 int    `gorm:"primaryKey"`
-	Username           string `gorm:"unique_index"`
-	Password           string
-	PayPassword        string  `gorm:"default:123123"` //提现密码
-	AgencyRunnerId     int     //代理账号
-	InvitationCode     string  `gorm:"unique_index"` //邀请码
-	RegisterTime       int64   //注册时间
-	Status             int     `gorm:"default:1"` //状态 1正常 2封
-	Superior           int     //上级 玩家
-	LeverTree          string  //上级树  @ 分割
-	CollectionPoint    float64 `gorm:"type:decimal(10,2)"`           //代收赢利点
-	PayPoint           float64 `gorm:"type:decimal(10,2)"`           //代付盈利点
-	CashPledge         float64 `gorm:"type:decimal(10,2);default:0"` //押金
-	CollectionLimit    float64 `gorm:"type:decimal(10,2);default:0"` //代收额度
-	PayLimit           float64 `gorm:"type:decimal(10,2);default:0"` //代付额度
-	Commission         float64 `gorm:"type:decimal(10,2);default:0"` //佣金
-	FreezeMoney        float64 `gorm:"type:decimal(10,2);default:0"` //提现冻结金额
-	JuniorPoint        float64 `gorm:"type:decimal(10,2)"`           //下级税点
-	WithdrawCommission float64 `gorm:"type:decimal(10,2);default:0"` //提现手续费
-	Token              string  `gorm:"unique_index"`                 //Token   唯一标识   长度  48位
-	LastLoginTime      int64   //最后一次登陆时间
-	LastLoginIp        string  //最后一次登录的ip
-	LastLoginRegion    string  //最后一次登录地区
-	PaySwitch          int     `gorm:"default:2"`  //代付开关   1开  2关
-	ActiveGrade        int     `gorm:"default:60"` //活跃分数
-	CreditScore        int     `gorm:"default:60"` //信用分
-
+	ID                    int    `gorm:"primaryKey"`
+	Username              string `gorm:"unique_index"`
+	Password              string
+	PayPassword           string  `gorm:"default:123123"` //提现密码
+	AgencyRunnerId        int     //代理账号
+	InvitationCode        string  `gorm:"unique_index"` //邀请码
+	RegisterTime          int64   //注册时间
+	Status                int     `gorm:"default:1"` //状态 1正常 2封
+	Superior              int     //上级 玩家
+	LeverTree             string  //上级树  @ 分割
+	CollectionPoint       float64 `gorm:"type:decimal(10,2)"`           //代收赢利点
+	PayPoint              float64 `gorm:"type:decimal(10,2)"`           //代付盈利点
+	CashPledge            float64 `gorm:"type:decimal(10,2);default:0"` //押金
+	CollectionLimit       float64 `gorm:"type:decimal(10,2);default:0"` //代收额度
+	FreezeCollectionLimit float64 `gorm:"type:decimal(10,2);default:0"` //冻结代收额度
+	PayLimit              float64 `gorm:"type:decimal(10,2);default:0"` //代付额度
+	Commission            float64 `gorm:"type:decimal(10,2);default:0"` //佣金
+	FreezeMoney           float64 `gorm:"type:decimal(10,2);default:0"` //提现冻结金额
+	JuniorPoint           float64 `gorm:"type:decimal(10,2)"`           //下级税点
+	WithdrawCommission    float64 `gorm:"type:decimal(10,2);default:0"` //提现手续费
+	Token                 string  `gorm:"unique_index"`                 //Token   唯一标识   长度  48位
+	Balance               float64 `gorm:"type:decimal(10,2);default:0"` //玩家余额
+	LastLoginTime         int64   //最后一次登陆时间
+	LastLoginIp           string  //最后一次登录的ip
+	LastLoginRegion       string  //最后一次登录地区
+	PaySwitch             int     `gorm:"default:2"`  //代付开关   1开  2关
+	ActiveGrade           int     `gorm:"default:60"` //活跃分数
+	CreditScore           int     `gorm:"default:60"` //信用分
+	Remark                string  `gorm:"-"`
 }
 
 func CheckIsExistModelRunner(db *gorm.DB) {
@@ -89,15 +93,139 @@ func (r *Runner) IsExist(db *gorm.DB) (bool, *Runner) {
 	return true, r
 }
 
-func (r *Runner) CheckInvitationCode(db *gorm.DB) error {
-
+// CheckInvitationCode 检查邀请码
+func (r *Runner) CheckInvitationCode(db *gorm.DB) (*Runner, error) {
 	if len(r.InvitationCode) == 8 {
 		//上级是会员
-
+		runner := Runner{}
+		err := db.Where("invitation_code=?", r.InvitationCode).First(&runner).Error
+		if err != nil {
+			return r, eeor.OtherError("The invitation code is invalid or expired")
+		}
+		r.Superior = runner.ID
+		r.LeverTree = runner.LeverTree + strconv.Itoa(r.Superior) + "@"
+		r.AgencyRunnerId = runner.AgencyRunnerId
+		//查询这个代理
+		agencyRunner := AgencyRunner{}
+		err = db.Where("id=?", runner.AgencyRunnerId).First(&agencyRunner).Error
+		if err != nil {
+			return r, eeor.OtherError("The invitation code is invalid or expired")
+		}
+		r.CollectionPoint = agencyRunner.JuniorPoint
+		r.PayPoint = agencyRunner.JuniorPoint
+		r.WithdrawCommission = agencyRunner.JuniorWithdrawCommission
+		return r, nil
 	} else if len(r.InvitationCode) == 6 {
 		//上级代理
-
+		agencyRunner := AgencyRunner{}
+		err := db.Where("invitation_code=?", r.InvitationCode).First(&agencyRunner).Error
+		if err != nil {
+			return r, eeor.OtherError("The invitation code is invalid or expired")
+		}
+		r.AgencyRunnerId = agencyRunner.ID
+		r.CollectionPoint = agencyRunner.JuniorPoint
+		r.PayPoint = agencyRunner.JuniorPoint
+		r.WithdrawCommission = agencyRunner.JuniorWithdrawCommission
+		return r, nil
 	} else {
-		return eeor.OtherError("The invitation code is invalid")
+		return r, eeor.OtherError("The invitation code is invalid")
 	}
+}
+
+// ChangeCashPledge 修改玩家 的押金
+func (r *Runner) ChangeCashPledge(db *gorm.DB) error {
+	//判断是否存在这个用户
+	rTwo := Runner{}
+	err := db.Where("id=? and  agency_runner_id=?", r.ID, r.AgencyRunnerId).First(&rTwo).Error
+	if err != nil {
+		return eeor.OtherError("The player does not exist")
+	}
+	ups := map[string]interface{}{}
+	if rTwo.CashPledge+r.CashPledge < 0 {
+		return eeor.OtherError("Insufficient deposit balance")
+	}
+	ups["CashPledge"] = rTwo.CashPledge + r.CashPledge
+
+	//账变
+	change := RunnerAmountChange{RunnerId: r.ID,
+		NowAmount:    rTwo.CashPledge + r.CashPledge,
+		ChangeAmount: r.CashPledge,
+		FontAmount:   rTwo.CashPledge, Kinds: 1,
+		Remark: r.Remark}
+	change.Add(db)
+	return db.Model(&Runner{}).Where("id=?", r.ID).Update(ups).Error
+}
+
+// ChangeCollectionLimit 修改代收的额度     1.管理员操作  2玩家 接单    3订单失效释放订单
+func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool) error {
+	db = db.Begin()
+	rr2 := Runner{}
+	err := db.Where("id=?", r.ID).First(&rr2).Error
+	if err != nil {
+		return err
+	}
+	if r.CollectionLimit < 0 {
+		if rr2.CollectionLimit < math.Abs(r.CollectionLimit) {
+			return eeor.OtherError("The collection line is not enough")
+		}
+	}
+	//自动代理操作 需要扣除代理的 代收额度
+	if IfSystem {
+		//判断是否够用
+		ag := AgencyRunner{}
+		db.Where("id=?", r.AgencyRunnerId).First(&ag)
+
+		if r.CollectionLimit > 0 {
+			if ag.CollectionLimit < r.CollectionLimit {
+				return eeor.OtherError("The collection line is not enough")
+			}
+		}
+
+		//修改余额
+		apps := make(map[string]interface{})
+		apps["CollectionLimit"] = ag.CollectionLimit - r.CollectionLimit
+		apps["UseCollectionLimit"] = ag.UseCollectionLimit + r.CollectionLimit
+		err := db.Model(&AgencyRunner{}).Where("id=? and  collection_limit=?  and  use_collection_limit=?", r.AgencyRunnerId, ag.CollectionLimit, ag.UseCollectionLimit).Update(apps).Error
+		if err != nil {
+			return err
+		}
+		//添加账变
+		change := AgencyAccountChange{
+			ChangeAmount: r.CollectionLimit,
+			NowAmount:    ag.CollectionLimit - r.CollectionLimit,
+			FontAmount:   ag.CollectionLimit, Kinds: 2, AgencyRunnerId: r.AgencyRunnerId, RunnerId: r.ID, Remark: r.Remark}
+		err = change.Add(db)
+		if err != nil {
+			db.Rollback()
+			return err
+		}
+	}
+
+	////collection_limit  代收额度不够
+	//if rr2.CollectionLimit-r.CollectionLimit < 0 {
+	//	db.Rollback()
+	//	return eeor.OtherError("sorry,The collection line is not enough")
+	//}
+
+	ups := make(map[string]interface{})
+	ups["CollectionLimit"] = rr2.CollectionLimit + r.CollectionLimit
+	//更新代付代付额度
+	err = db.Model(&Runner{}).Where("id=? and  collection_limit =?", r.ID, rr2.CollectionLimit).Update(ups).Error
+	if err != nil {
+		db.Rollback()
+		return err
+	}
+	//生成账变
+	change := RunnerAmountChange{RunnerId: r.ID,
+		NowAmount:    rr2.CollectionLimit + r.CollectionLimit,
+		ChangeAmount: r.CollectionLimit,
+		FontAmount:   rr2.CollectionLimit,
+		Remark:       r.Remark}
+	err = change.Add(db)
+	if err != nil {
+		db.Rollback()
+		return err
+	}
+	db.Commit()
+	return nil
 }

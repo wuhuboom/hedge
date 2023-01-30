@@ -433,3 +433,107 @@
 2023-01-28T17:38:32.678+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
 2023-01-28T17:41:05.486+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
 2023-01-28T17:46:22.165+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T03:48:03.292+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T03:49:21.297+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T04:02:28.750+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T04:02:54.945+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T14:44:11.499+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T14:44:54.252+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T14:52:17.636+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T14:59:11.176+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T15:09:11.056+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T15:10:15.315+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T15:10:37.382+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T15:56:14.773+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T16:01:48.880+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T16:01:50.439+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:50.440+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:51.094+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:51.097+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:51.709+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:51.711+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:53.518+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:53.520+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:54.096+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:54.098+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:54.570+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:54.572+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:55.029+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:55.030+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:55.468+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:55.469+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:55.845+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:55.846+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:56.196+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:56.197+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:57.913+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:57.915+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:58.307+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:58.309+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:58.651+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:58.653+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:59.043+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:59.045+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:59.392+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:01:59.393+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:02:00.185+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:02:00.187+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:02:00.548+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:02:00.549+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:02:00.942+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:02:00.944+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:02:01.287+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:02:01.288+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T16:52:33.117+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T16:53:20.415+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T16:55:19.000+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T16:56:13.189+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T16:56:30.888+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T17:06:21.296+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T17:07:55.680+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T17:08:10.417+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T17:08:10.418+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T18:37:26.837+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T18:37:29.391+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T18:37:29.394+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T18:37:30.023+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T18:37:30.024+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T18:38:34.402+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T18:38:38.803+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T18:38:38.806+0800	[35mDEBUG[0m	mmdb/mmdb.go:24	open GeoLite2-Country.mmdb: The system cannot find the file specified.
+2023-01-29T21:22:55.651+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T21:47:31.979+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T21:48:10.439+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T23:05:06.221+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T23:12:40.480+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T23:15:08.402+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-29T23:17:44.861+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-30T18:57:03.188+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-30T21:40:48.228+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-30T21:41:55.115+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-30T21:47:01.105+0800	[31mERROR[0m	tools/tools.go:290	Concurrent number lock
+2023-01-30T21:47:04.769+0800	[31mERROR[0m	tools/tools.go:290	Concurrent number lock
+2023-01-30T21:47:05.439+0800	[31mERROR[0m	tools/tools.go:290	Concurrent number lock
+2023-01-30T21:48:24.446+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-30T21:48:26.246+0800	[31mERROR[0m	tools/tools.go:291	Concurrent number lock
+2023-01-30T21:49:55.382+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-30T21:49:56.374+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-01-30T22:04:10.148+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-01-30T22:05:56.589+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-30T22:06:13.372+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-30T22:06:52.603+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-01-30T22:06:53.327+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-01-30T22:11:10.643+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-30T22:11:30.856+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-01-30T22:11:32.607+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-01-30T22:11:32.928+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-01-30T22:11:33.318+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-01-30T22:11:36.895+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :sorry,The collection line is not enough
+2023-01-30T22:11:38.663+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :sorry,The collection line is not enough
+2023-01-30T22:11:39.084+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :sorry,The collection line is not enough
+2023-01-30T22:11:58.471+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :sorry,The collection line is not enough
+2023-01-30T22:12:17.646+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :sorry,The collection line is not enough
+2023-01-30T22:14:36.827+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-01-30T22:15:28.470+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-01-30T22:15:29.119+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-01-30T22:15:29.709+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough

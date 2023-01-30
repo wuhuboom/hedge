@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/jinzhu/gorm"
 	eeor "github.com/wangyi/GinTemplate/error"
+	"go.uber.org/zap"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
@@ -276,4 +278,18 @@ func GetInvitationCode(num int, redis *redis.Client) (string, error) {
 		}
 	}
 	return "", eeor.OtherError("Sorry, duplicate invitation code")
+}
+
+func ForFunc(name func(db *gorm.DB, IfSystemDo bool) error, db2 *gorm.DB, IfSystemDo bool) error {
+
+	var err error
+	for i := 0; i < 5; i++ {
+		err = name(db2, IfSystemDo)
+		fmt.Println(err)
+		if err == nil {
+			return nil
+		}
+	}
+	zap.L().Error("ForFunc :" + err.Error())
+	return eeor.OtherError(err.Error())
 }

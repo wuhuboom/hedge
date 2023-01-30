@@ -21,6 +21,7 @@ type AgencyRunner struct {
 	PayChannel                  string             //代付通道   @分割
 	CollectionPoint             float64            `gorm:"type:decimal(10,2);default:0"` //代收盈利点
 	CollectionLimit             float64            `gorm:"type:decimal(10,2);default:0"` //代收额度
+	UseCollectionLimit          float64            `gorm:"type:decimal(10,2);default:0"` //已经下发代收额度
 	PayPoint                    float64            `gorm:"type:decimal(10,2);default:0"` //代付盈利点
 	PayLimit                    float64            `gorm:"type:decimal(10,2);default:0"` //代付额度
 	Created                     int64              //账号创建时间
@@ -36,6 +37,8 @@ type AgencyRunner struct {
 	GoogleCode                  string             //谷歌验证码
 	AccumulativeCollectionLimit float64            `gorm:"type:decimal(10,2);default:0"` //累计已用代收额度
 	GoogleSwitch                int                `gorm:"default:1"`                    //谷歌开关     1开  2  关
+	JuniorWithdrawCommission    float64            `gorm:"default:0"`                    //下级提现手续费
+	CustomerServiceAddress      string             //客服地址
 	CollectionChannelArray      []modelPay.Channel `gorm:"-"`
 	PayChannelArray             []modelPay.Channel `gorm:"-"`
 }

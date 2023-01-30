@@ -121,10 +121,17 @@ func Setup() *gin.Engine {
 		us.POST("/uploadCertificate", user.UploadCertificate)
 	}
 	//Runner
-	run := r.Group("/runner/v2")
+	run := r.Group("/runner/v2", PermissionToCheckForRunner(), LimitIpRequestSameUrlForUser())
 	{
 		//runner  is  register
 		run.POST("/register", runner.Register)
+		run.POST("/login", runner.Login)
+		//GenerateCaptcha
+		run.POST("/generateCaptcha", runner.GenerateCaptcha)
+		//GetAnnouncement
+		run.POST("/getAnnouncement", runner.GetAnnouncement)
+		//GetCustomerServiceAddress
+		run.POST("/getCustomerServiceAddress", runner.GetCustomerServiceAddress)
 	}
 
 	ay := r.Group("/agency/v2", PermissionToCheckForAgency())
@@ -134,6 +141,10 @@ func Setup() *gin.Engine {
 		ay.POST("/logger", agency.Logger)
 		ay.POST("/getAmountChange", agency.GetAmountChange) //获取账户变化
 		ay.POST("/runnerOperation", agency.RunnerOperation)
+		ay.POST("/announcementOperation", agency.AnnouncementOperation)
+		//SetMyselfConfig
+		ay.POST("/setMyselfConfig", agency.SetMyselfConfig)
+
 	}
 
 	r.Run(fmt.Sprintf(":%d", viper.GetInt("app.port")))
@@ -294,6 +305,38 @@ func PermissionToCheckForAgency() gin.HandlerFunc {
 			}
 			//判断token 是否过期?
 			if redis.Rdb.Get("AgencyToken_"+token).Val() == "" {
+				tools.JsonWrite(c, tools.TokenExpire, nil, "An unlawful request")
+				c.Abort()
+				return
+			}
+			c.Set("who", ad)
+			c.Next()
+		}
+	}
+}
+
+func PermissionToCheckForRunner() gin.HandlerFunc {
+	whiteUrl := []string{
+		"/runner/v2/login", "/runner/v2/register", "/runner/v2/generateCaptcha"}
+	return func(c *gin.Context) {
+		if !tools.IsArray(whiteUrl, c.Request.RequestURI) {
+			token := c.Request.Header.Get("token")
+			//商户号
+			if len(token) != 48 {
+				tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
+				c.Abort()
+				return
+			}
+
+			ad := model.Runner{}
+			err := mysql.DB.Where("token=?", token).First(&ad).Error
+			if err != nil {
+				tools.JsonWrite(c, tools.IllegalityCode, nil, "An unlawful request")
+				c.Abort()
+				return
+			}
+			//判断token 是否过期?
+			if redis.Rdb.Get("RunnerToken_"+token).Val() == "" {
 				tools.JsonWrite(c, tools.TokenExpire, nil, "An unlawful request")
 				c.Abort()
 				return

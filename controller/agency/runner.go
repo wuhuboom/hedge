@@ -8,6 +8,7 @@ import (
 	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/tools"
 	"strconv"
+	"time"
 )
 
 func RunnerOperation(c *gin.Context) {
@@ -64,7 +65,7 @@ func RunnerOperation(c *gin.Context) {
 	}
 	if action == "update" {
 		id, _ := strconv.Atoi(c.PostForm("id"))
-		runner := model.Runner{ID: id}
+		runner := model.Runner{ID: id, AgencyRunnerId: whoMap.ID}
 		boolOne, _ := runner.IsExist(mysql.DB)
 		if boolOne == false {
 			tools.ReturnErr101Code(c, "Sorry, the user does not exist")
@@ -90,6 +91,45 @@ func RunnerOperation(c *gin.Context) {
 				return
 			}
 			tools.ReturnErr101Code(c, "pay_password changed successfully")
+			return
+		}
+		//修改玩家押金
+		if cashPledge, isE := c.GetPostForm("cash_pledge"); isE == true {
+			result, _ := redis.Rdb.Get("CashPledge_" + runner.Username).Result()
+			if result != "" {
+				tools.ReturnErr101Code(c, "Don't do the deposit operation at the specified time")
+				return
+			}
+			remark := c.PostForm("remark")
+			if remark == "" {
+				remark = ""
+			}
+			m := model.Runner{ID: id, AgencyRunnerId: runner.AgencyRunnerId, Remark: remark}
+			m.CashPledge, _ = strconv.ParseFloat(cashPledge, 64)
+			err := m.ChangeCashPledge(mysql.DB)
+			if err != nil {
+				tools.ReturnErr101Code(c, err.Error())
+				return
+			}
+			redis.Rdb.Set("CashPledge_"+runner.Username, "123", 5*time.Second)
+			tools.ReturnSuccess2000Code(c, "OK")
+			return
+		}
+		//修改代收金额
+		if CollectionLimit, isE := c.GetPostForm("collection_limit"); isE == true {
+			result, _ := redis.Rdb.Get("CollectionLimit" + runner.Username).Result()
+			if result != "" {
+				tools.ReturnErr101Code(c, "Don't do the deposit operation at the specified time")
+				return
+			}
+			runner.CollectionLimit, _ = strconv.ParseFloat(CollectionLimit, 64)
+			//修改代收额度
+			err := tools.ForFunc(runner.ChangeCollectionLimit, mysql.DB, true)
+			if err != nil {
+				tools.ReturnErr101Code(c, err.Error())
+				return
+			}
+			tools.ReturnSuccess2000Code(c, "OK")
 			return
 		}
 

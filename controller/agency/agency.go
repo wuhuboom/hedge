@@ -160,3 +160,31 @@ func GetAmountChange(c *gin.Context) {
 	}
 
 }
+
+// SetMyselfConfig 修改  设置
+func SetMyselfConfig(c *gin.Context) {
+	who, _ := c.Get("who")
+	whoMap := who.(model.AgencyRunner)
+	ups := map[string]interface{}{}
+
+	//客服地址
+	if ca, isE := c.GetPostForm("customer_service_address"); isE == true {
+		ups["CustomerServiceAddress"] = ca
+	}
+	//下级提现手续费(比率)
+	if ca, isE := c.GetPostForm("junior_withdraw_commission"); isE == true {
+		ups["JuniorWithdrawCommission"], _ = strconv.ParseFloat(ca, 64)
+	}
+	//JuniorPoint  下级税点
+	if ca, isE := c.GetPostForm("junior_point"); isE == true {
+		ups["JuniorPoint"], _ = strconv.ParseFloat(ca, 64)
+	}
+	err := mysql.DB.Model(&model.AgencyRunner{}).Where("id=?", whoMap.ID).Update(ups).Error
+	if err != nil {
+		tools.ReturnErr101Code(c, "sorry, "+err.Error())
+		return
+	}
+	tools.ReturnSuccess2000Code(c, "OK")
+	return
+
+}
