@@ -134,6 +134,8 @@ func Setup() *gin.Engine {
 		run.POST("/getCustomerServiceAddress", runner.GetCustomerServiceAddress)
 		//GetSlideshow
 		run.POST("/getSlideshow", runner.GetSlideshow)
+		//GetReceiveCollectionOrder
+		run.POST("/getReceiveCollectionOrder", runner.GetReceiveCollectionOrder)
 
 	}
 

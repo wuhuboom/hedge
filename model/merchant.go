@@ -34,6 +34,8 @@ type Merchant struct {
 	PayCommission        float64 `gorm:"type:decimal(10,2)"` //代付手续费
 	MinPay               float64 `gorm:"type:decimal(10,2)"` //最小代付
 	MaxPay               float64 `gorm:"type:decimal(10,2)"` //最大代付
+	HedgeSwitch          int     `gorm:"default:2"`          //对冲开关1开 2关
+	RunSwitch            int     `gorm:"default:2"`          //跑分开关1开 2关
 	Created              int64
 	Updated              int64
 	PayC                 []modelPay.Channel `gorm:"-"`

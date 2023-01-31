@@ -280,11 +280,11 @@ func GetInvitationCode(num int, redis *redis.Client) (string, error) {
 	return "", eeor.OtherError("Sorry, duplicate invitation code")
 }
 
-func ForFunc(name func(db *gorm.DB, IfSystemDo bool) error, db2 *gorm.DB, IfSystemDo bool) error {
+func ForFunc(name func(db *gorm.DB, IfSystemDo bool, kinds int) error, db2 *gorm.DB, IfSystemDo bool, kinds int) error {
 
 	var err error
 	for i := 0; i < 5; i++ {
-		err = name(db2, IfSystemDo)
+		err = name(db2, IfSystemDo, kinds)
 		fmt.Println(err)
 		if err == nil {
 			return nil

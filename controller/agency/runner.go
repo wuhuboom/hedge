@@ -124,7 +124,7 @@ func RunnerOperation(c *gin.Context) {
 			}
 			runner.CollectionLimit, _ = strconv.ParseFloat(CollectionLimit, 64)
 			//修改代收额度
-			err := tools.ForFunc(runner.ChangeCollectionLimit, mysql.DB, true)
+			err := tools.ForFunc(runner.ChangeCollectionLimit, mysql.DB, true, 2)
 			if err != nil {
 				tools.ReturnErr101Code(c, err.Error())
 				return

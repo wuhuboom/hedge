@@ -72,3 +72,36 @@ func (cp *CheckPayData) CheckSign(db *gorm.DB, ip string) (model.PaidOrder, erro
 
 	return paid, nil
 }
+
+func (cp *CheckPayData) MD5CheckSign(db *gorm.DB, ip string) error {
+	mer := model.Merchant{}
+	err := db.Where("merchant_num=?", cp.MerchantNum).First(&mer).Error
+	if err != nil {
+		return eeor.OtherError("Merchant non-existence")
+	}
+	//检查ip
+	ipArray := strings.Split(mer.WhiteIps, "@")
+	if tools.IsArray(ipArray, ip) == false {
+		return eeor.OtherError("Illegal request")
+	}
+	account, _ := strconv.ParseFloat(cp.Amount, 64)
+	if account < mer.MinMoney || account > mer.MaxMoney {
+		return eeor.OtherError("Illegal account")
+	}
+
+	//参数校验
+	st := make(map[string]string)
+	st["amount"] = cp.Amount
+	st["merchant_num"] = cp.MerchantNum
+	st["three_order"] = cp.ThreeOrder
+	st["username"] = cp.Username
+	st["notice_url"] = cp.NoticeUrl
+	str := tools.AsciiKey(st)
+	str = str + "&key=" + mer.ApiKey
+	fmt.Println(str)
+	if tools.MD5(str) != cp.Sign {
+		return eeor.OtherError("wrong signature")
+	}
+
+	return nil
+}

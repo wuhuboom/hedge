@@ -22,7 +22,6 @@ func CollectionAmount(c *gin.Context) {
 		tools.ReturnVerifyErrCode(c, err)
 		return
 	}
-
 	mer := model.Merchant{}
 	if err := mysql.DB.Where("merchant_num=?", cpd.MerChantNum).First(&mer).Error; err != nil || mer.Kinds != 2 {
 		tools.ReturnErr101Code(c, "Illegal request")
@@ -38,7 +37,6 @@ func CollectionAmount(c *gin.Context) {
 		tools.ReturnErr101Code(c, "Amount out of range")
 		return
 	}
-
 	//判断通道是否存在
 	//判断通道状态
 	ch := modelPay.Channel{}
@@ -60,24 +58,16 @@ func CollectionAmount(c *gin.Context) {
 	}
 	//订单是否重复提交
 	collection := modelPay.Collection{MerchantOrderNum: cpd.MerchantOrderNum, MerChantNum: cpd.MerChantNum}
-	if err := collection.MerchantOrderNumIsExist(mysql.DB); err == nil {
-		tools.ReturnErr101Code(c, "Order already exists")
-		return
-	}
-
-	ch2 := modelPay.Channel{ID: ch.ID}
-	upiBank, err := ch2.GetUpi(mysql.DB)
-	if err != nil {
-		tools.ReturnErr101Code(c, err.Error())
-		return
-	}
+	//if err := collection.MerchantOrderNumIsExist(mysql.DB); err == nil {
+	//	tools.ReturnErr101Code(c, "Order already exists")
+	//	return
+	//}
 
 	config := model.Config{}
-	err = mysql.DB.Where("id=?", 1).First(&config).Error
+	err := mysql.DB.Where("id=?", 1).First(&config).Error
 	if err != nil {
 		config.ExpireTime = 60 * 60
 	}
-
 	//添加数据
 	collection.Amount = amountFlot
 	collection.ActualAmount = amountFlot
@@ -86,19 +76,52 @@ func CollectionAmount(c *gin.Context) {
 	collection.Currency = cpd.Currency
 	collection.Callback = 1
 	collection.OwnOrder = "Mer" + time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(1000))
-	collection.BankId = upiBank.ID
 	collection.Date = time.Now().Format("2006-01-02")
 	collection.ReleaseTime = time.Now().Unix() + config.ReleaseTime*60
-	collection.Upi = upiBank.Upi
 	i := time.Now().Unix() + config.ExpireTime
 	collection.ExpireTime = i
-	err = collection.Add(mysql.DB)
-	if err != nil {
-		tools.ReturnErr101Code(c, err.Error())
+	is := strconv.FormatInt(i, 10)
+
+	//判断模式
+	//对冲优先级最高
+	var UpiString string
+	if mer.HedgeSwitch == 1 {
+
+	}
+	//跑分
+	if mer.RunSwitch == 1 && UpiString == "" {
+		runner := model.Runner{}
+		//collection.Upi = upiBank.Upi
+		UpiString, err = runner.SnagTheOrder(mysql.DB, collection)
+		if err == nil {
+			tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", UpiString, cpd.Amount, collection.OwnOrder, is), "ok")
+		}
+
+		if err != nil {
+			fmt.Println(err.Error())
+
+		}
+		UpiString = "test"
+	}
+	//正常三方
+	if UpiString == "" {
+		ch2 := modelPay.Channel{ID: ch.ID}
+		upiBank, err := ch2.GetUpi(mysql.DB)
+		if err != nil {
+			tools.ReturnErr101Code(c, err.Error())
+			return
+		}
+		collection.Upi = upiBank.Upi
+		collection.BankId = upiBank.ID
+		err = collection.Add(mysql.DB)
+		if err != nil {
+			tools.ReturnErr101Code(c, err.Error())
+			return
+		}
+
+		mysql.DB.Model(&modelPay.ChannelBank{}).Where("bank_id=?", upiBank.ID).UpdateColumn("frequency", gorm.Expr("frequency + ?", 1))
+		tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", upiBank.Upi, cpd.Amount, collection.OwnOrder, is), "ok")
 		return
 	}
-	is := strconv.FormatInt(i, 10)
-	mysql.DB.Model(&modelPay.ChannelBank{}).Where("bank_id=?", upiBank.ID).UpdateColumn("frequency", gorm.Expr("frequency + ?", 1))
-	tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", upiBank.Upi, cpd.Amount, collection.OwnOrder, is), "ok")
-	return
+
 }

@@ -76,6 +76,7 @@ func PayAmount(c *gin.Context) {
 	collection.IFSC = cpd.IFSC
 	collection.Name = cpd.Name
 	collection.OwnOrder = "Mer" + time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(1000))
+
 	err := collection.Add(mysql.DB)
 	if err != nil {
 		tools.ReturnErr101Code(c, err.Error())

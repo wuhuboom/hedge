@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
@@ -38,19 +37,22 @@ func AgencyOperation(c *gin.Context) {
 		//对代收渠道进行验证
 		CArray := strings.Split(c.PostForm("collection_channel"), "@")
 		for _, s := range CArray {
-			err := mysql.DB.Where("id=? and  kinds =?", s, 1).First(&modelPay.Channel{}).Error
-			fmt.Println(err)
+			if s == "" {
+				continue
+			}
+			err := mysql.DB.Where("id=? and  kinds =? and status=1", s, 1).First(&modelPay.Channel{}).Error
 			if err != nil {
 				tools.ReturnErr101Code(c, "Illegal collection channel")
 				return
 			}
 		}
-
 		//代付渠道进行验证
 		PArray := strings.Split(c.PostForm("pay_channel"), "@")
 		for _, s := range PArray {
-			err := mysql.DB.Where("id=? and  kinds =?", s, 2).First(&modelPay.Channel{}).Error
-			fmt.Println(err)
+			if s == "" {
+				continue
+			}
+			err := mysql.DB.Where("id=? and  kinds =? and status=1", s, 2).First(&modelPay.Channel{}).Error
 			if err != nil {
 				tools.ReturnErr101Code(c, "Illegal collection channel")
 				return

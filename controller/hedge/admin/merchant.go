@@ -80,6 +80,20 @@ func MerchantOperation(c *gin.Context) {
 			return
 		}
 
+		if status, isExist := c.GetPostForm("hedge_switch"); isExist == true {
+			atop, _ := strconv.Atoi(status)
+			mysql.DB.Model(&model.Merchant{}).Where("id=?", id).Update(&model.Merchant{HedgeSwitch: atop})
+			tools.ReturnSuccess2000Code(c, "ok")
+			return
+		}
+
+		if status, isExist := c.GetPostForm("run_switch"); isExist == true {
+			atop, _ := strconv.Atoi(status)
+			mysql.DB.Model(&model.Merchant{}).Where("id=?", id).Update(&model.Merchant{RunSwitch: atop})
+			tools.ReturnSuccess2000Code(c, "ok")
+			return
+		}
+
 		//存在 mix  max
 		if minMoney, isExist := c.GetPostForm("min_money"); isExist == true {
 			if maxMoney, isExist := c.GetPostForm("max_money"); isExist == true {

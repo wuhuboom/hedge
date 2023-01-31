@@ -24,6 +24,21 @@ func Pay(c *gin.Context) {
 		tools.ReturnVerifyErrCode(c, err)
 		return
 	}
+
+	//进行筛选   跑分
+	var choose int = 2
+	if choose == 2 {
+		err := cpd.MD5CheckSign(mysql.DB, c.ClientIP())
+		if err != nil {
+			tools.ReturnErr101Code(c, err.Error())
+			return
+		}
+
+		tools.ReturnSuccess2000Code(c, "OK")
+
+		return
+	}
+
 	//   参数校验
 	paid, err := cpd.CheckSign(mysql.DB, c.ClientIP())
 	fmt.Println(paid.ExpirationTime)
@@ -50,7 +65,6 @@ func Pay(c *gin.Context) {
 	if err != nil {
 		return
 	}
-
 	go tools.HttpJsonPost(paid.NoticeUrl, marshal)
 	tools.ReturnSuccess2000DataCode(c, url, "ok")
 	return

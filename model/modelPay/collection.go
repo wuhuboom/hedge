@@ -35,7 +35,7 @@ type Collection struct {
 	Remark         string //备注
 	BankNum        string `gorm:"-"` //银行卡号
 	Date           string //日期
-	ReleaseTime    int64  // 释放时间
+	ReleaseTime    int64  //释放时间
 	ExpireTime     int64
 	Created        int64
 	Updated        int64

@@ -5,6 +5,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
 	eeor "github.com/wangyi/GinTemplate/error"
+	"github.com/wangyi/GinTemplate/model/modelPay"
 	"github.com/wangyi/GinTemplate/tools"
 	"math"
 	"strconv"
@@ -40,7 +41,11 @@ type Runner struct {
 	PaySwitch             int     `gorm:"default:2"`  //代付开关   1开  2关
 	ActiveGrade           int     `gorm:"default:60"` //活跃分数
 	CreditScore           int     `gorm:"default:60"` //信用分
+	Working               int     `gorm:"default:1"`  //1  待机   2  工作     //工作状态
+	CollectionTime        int     `gorm:"default:0"`  //代收次数
 	Remark                string  `gorm:"-"`
+
+	Col modelPay.Collection `gorm:"-"`
 }
 
 func CheckIsExistModelRunner(db *gorm.DB) {
@@ -157,7 +162,7 @@ func (r *Runner) ChangeCashPledge(db *gorm.DB) error {
 }
 
 // ChangeCollectionLimit 修改代收的额度     1.管理员操作  2玩家 接单    3订单失效释放订单
-func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool) error {
+func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) error {
 	db = db.Begin()
 	rr2 := Runner{}
 	err := db.Where("id=?", r.ID).First(&rr2).Error
@@ -200,15 +205,22 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool) error {
 			return err
 		}
 	}
-
-	////collection_limit  代收额度不够
-	//if rr2.CollectionLimit-r.CollectionLimit < 0 {
-	//	db.Rollback()
-	//	return eeor.OtherError("sorry,The collection line is not enough")
-	//}
-
 	ups := make(map[string]interface{})
 	ups["CollectionLimit"] = rr2.CollectionLimit + r.CollectionLimit
+	if kinds == 2 {
+		if IfSystem == false {
+			ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
+		}
+		//生成collection
+		r.Col.RunnerId = r.ID
+		r.Col.AgencyRunnerId = rr2.AgencyRunnerId
+		r.Col.Species = 3
+		err := r.Col.Add(db)
+		if err != nil {
+			db.Rollback()
+			return err
+		}
+	}
 	//更新代付代付额度
 	err = db.Model(&Runner{}).Where("id=? and  collection_limit =?", r.ID, rr2.CollectionLimit).Update(ups).Error
 	if err != nil {
@@ -220,12 +232,32 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool) error {
 		NowAmount:    rr2.CollectionLimit + r.CollectionLimit,
 		ChangeAmount: r.CollectionLimit,
 		FontAmount:   rr2.CollectionLimit,
-		Remark:       r.Remark}
+		Remark:       r.Remark, Kinds: kinds}
 	err = change.Add(db)
 	if err != nil {
 		db.Rollback()
 		return err
 	}
+
 	db.Commit()
 	return nil
+}
+
+// SnagTheOrder 拉群订单代理操作
+func (r *Runner) SnagTheOrder(db *gorm.DB, coll modelPay.Collection) (string, error) {
+	//判断代收通道的
+	upi := ""
+	db.Raw("SELECT * FROM runners  LEFT JOIN  agency_runners   on  runners.agency_runner_id=agency_runners.id WHERE   agency_runners.collection_channel LIKE  ?  AND  runners.status=1 AND  agency_runners.status =1  and   runners.working=2   AND  runners.collection_limit   >=?  ORDER BY  runners.collection_time asc  LIMIT  1", "%"+strconv.Itoa(coll.ChannelId)+"%", coll.Amount).Scan(&r)
+	if r.ID == 0 {
+		return upi, eeor.OtherError("No upi was matched. Procedure")
+	}
+	//修改 用户的余额
+	r.CollectionLimit = -coll.Amount
+	r.FreezeCollectionLimit = coll.Amount
+	r.Col = coll
+	err := r.ChangeCollectionLimit(db, false, 2)
+	if err != nil {
+		return "", err
+	}
+	return upi, nil
 }
