@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// AgencyOperation 代理操作
+// AgencyOperation 代理操作  (跑分代理)
 func AgencyOperation(c *gin.Context) {
 	action := c.Query("action")
 	if action == "check" {
@@ -199,6 +199,64 @@ func AgencyOperation(c *gin.Context) {
 			redis.Rdb.Set("CollectionLimit_"+AgencyRunner.Username, cp, 5*time.Second)
 			tools.ReturnSuccess2000Code(c, "OK")
 			return
+		}
+
+	}
+
+}
+
+// CollectionOperation 获取代理的订单(代收)
+func CollectionOperation(c *gin.Context) {
+	who, _ := c.Get("who")
+	whoMap := who.(model.Admin)
+	action := c.Query("action")
+	if action == "check" {
+		//查询bankCard
+		limit, _ := strconv.Atoi(c.PostForm("limit"))
+		page, _ := strconv.Atoi(c.PostForm("page"))
+		sl := make([]modelPay.Collection, 0)
+		db := mysql.DB.Where(" kinds=1")
+		var total int
+		//  状态
+		if kinds, IsE := c.GetPostForm("status"); IsE == true {
+			db = db.Where("status=?", kinds)
+		}
+		//用户名  runner_id
+		if username, isE := c.GetPostForm("username"); isE == true {
+			runner := model.Runner{Username: username}
+			db = db.Where("runner_id=?", runner.GetRunnerId(mysql.DB))
+		}
+		//填写代理名字
+		if aUsername, isE := c.GetPostForm("agency_runner_name"); isE == true {
+			runner := model.AgencyRunner{Username: aUsername}
+			db = db.Where("agency_runner_id=?", runner.GetId(mysql.DB))
+		}
+
+		db.Model(&modelPay.Collection{}).Count(&total)
+		db = db.Model(&modelPay.Collection{}).Offset((page - 1) * limit).Limit(limit).Order("updated desc")
+		db.Find(&sl)
+
+		for i, collection := range sl {
+			channel := modelPay.Channel{ID: collection.ChannelId}
+			sl[i].ChannelId = channel.GetChannelName(mysql.DB)
+			runner := model.Runner{ID: collection.RunnerId}
+			sl[i].RunnerName = runner.GetRunnerUsername(mysql.DB)
+		}
+		ReturnDataLIst2000(c, sl, total)
+		return
+	}
+
+	if action == "update" {
+		id := c.PostForm("id")
+		col := modelPay.Collection{}
+		err := mysql.DB.Where("id=? and agency_runner_id=?", id, whoMap.ID).First(&col).Error
+		if err != nil {
+			tools.ReturnErr101Code(c, "Order does not exist")
+			return
+		}
+		status, _ := strconv.Atoi(c.PostForm("status"))
+		if status == 2 {
+
 		}
 
 	}

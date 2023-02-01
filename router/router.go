@@ -55,6 +55,8 @@ func Setup() *gin.Engine {
 
 		//代理处理  AgencyOperation
 		ad.POST("/agencyOperation", admin2.AgencyOperation)
+		//CollectionOperation
+		ad.POST("/agencyCollectionOperation", admin2.CollectionOperation)
 
 		/***
 		  印度支付
@@ -136,6 +138,12 @@ func Setup() *gin.Engine {
 		run.POST("/getSlideshow", runner.GetSlideshow)
 		//GetReceiveCollectionOrder
 		run.POST("/getReceiveCollectionOrder", runner.GetReceiveCollectionOrder)
+		//SetUpi
+		run.POST("/setUpi", runner.SetUpi)
+		//ImWorking
+		run.POST("/imWorking", runner.ImWorking)
+		//ConfirmTheOrder
+		run.POST("/confirmTheOrder", runner.ConfirmTheOrder)
 
 	}
 
@@ -151,6 +159,8 @@ func Setup() *gin.Engine {
 		ay.POST("/setMyselfConfig", agency.SetMyselfConfig)
 		//SlideshowOperation
 		ay.POST("/slideshowOperation", agency.SlideshowOperation)
+		//CollectionOperation
+		ay.POST("/collectionOperation", agency.CollectionOperation)
 
 	}
 

@@ -88,6 +88,8 @@ func run(cmd *cobra.Command, args []string) {
 	defer redis.Close()
 	//go process.CheckExpirationPayOrder(mysql.DB)
 	go process.OverdueCollection(mysql.DB)
+	go process.CheckLastGetOrderTime(mysql.DB)
+	go process.ExpireCollection(mysql.DB)
 	router.Setup()
 }
 

@@ -74,3 +74,9 @@ func (ch *Channel) GetUpi(db *gorm.DB) (Bank, error) {
 	}
 	return Bank{}, eeor.OtherError("I'm sorry, I didn't find a match too")
 }
+
+func (ch *Channel) GetChannelName(db *gorm.DB) int {
+	db.Where("id=?", ch.ID).First(&ch)
+	return ch.ChannelName
+
+}

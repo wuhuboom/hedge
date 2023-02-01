@@ -32,16 +32,18 @@ type Collection struct {
 	BankId           int    //   这笔代付使用的  银行卡
 	Upi              string //Upi
 	//Bank             Bank   `gorm:"-"`
-	Remark         string //备注
-	BankNum        string `gorm:"-"` //银行卡号
-	Date           string //日期
-	ReleaseTime    int64  //释放时间
-	ExpireTime     int64
-	Created        int64
-	Updated        int64
-	Species        int `gorm:"default:1"` //1三方单子 2对冲  3跑单
-	AgencyRunnerId int
-	RunnerId       int
+	Remark           string //备注
+	BankNum          string `gorm:"-"` //银行卡号
+	Date             string //日期
+	ReleaseTime      int64  //释放时间
+	ExpireTime       int64
+	Created          int64
+	Updated          int64
+	Species          int `gorm:"default:1"` //1三方单子 2对冲  3跑单
+	AgencyRunnerId   int
+	RunnerId         int
+	RunnerName       string `gorm:"-"`
+	AgencyRunnerName string `gorm:"-"`
 }
 
 func CheckIsExistModelCollection(db *gorm.DB) {

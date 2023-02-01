@@ -99,9 +99,7 @@ func CollectionAmount(c *gin.Context) {
 
 		if err != nil {
 			fmt.Println(err.Error())
-
 		}
-		UpiString = "test"
 	}
 	//正常三方
 	if UpiString == "" {
@@ -118,7 +116,6 @@ func CollectionAmount(c *gin.Context) {
 			tools.ReturnErr101Code(c, err.Error())
 			return
 		}
-
 		mysql.DB.Model(&modelPay.ChannelBank{}).Where("bank_id=?", upiBank.ID).UpdateColumn("frequency", gorm.Expr("frequency + ?", 1))
 		tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", upiBank.Upi, cpd.Amount, collection.OwnOrder, is), "ok")
 		return

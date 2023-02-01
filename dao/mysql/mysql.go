@@ -62,6 +62,7 @@ func Init() error {
 	model.CheckIsExistModelAnnouncement(DB)
 	model.CheckIsExistModelRunnerAmountChange(DB)
 	model.CheckIsExistModelSlideshow(DB)
+	model.CheckIsExistModelRunnerUpi(DB)
 	////////////////////////////////////////////////////////////////////////模型初始化
 	return err
 }

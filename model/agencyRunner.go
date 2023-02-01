@@ -39,6 +39,7 @@ type AgencyRunner struct {
 	GoogleSwitch                int                `gorm:"default:1"`                    //谷歌开关     1开  2  关
 	JuniorWithdrawCommission    float64            `gorm:"default:0"`                    //下级提现手续费
 	CustomerServiceAddress      string             //客服地址
+	NumberOfBindBack            int                `gorm:"default:3"`
 	CollectionChannelArray      []modelPay.Channel `gorm:"-"`
 	PayChannelArray             []modelPay.Channel `gorm:"-"`
 }
@@ -51,6 +52,13 @@ func CheckIsExistModelAgencyRunner(db *gorm.DB) {
 		fmt.Println("数据不存在,所以我要先创建数据库")
 		db.CreateTable(&AgencyRunner{})
 	}
+}
+
+//获取id
+
+func (ar *AgencyRunner) GetId(db *gorm.DB) int {
+	db.Where("username=?", ar.Username).First(&ar)
+	return ar.ID
 }
 
 // Add 添加代理

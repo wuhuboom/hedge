@@ -60,7 +60,33 @@ func CheckExpirationPayOrder(db *gorm.DB) {
 
 func OverdueCollection(db *gorm.DB) {
 	for true {
-		db.Model(&modelPay.Collection{}).Where("status=?  and   expire_time  < ?", 1, time.Now().Unix()).Update(&modelPay.Collection{Status: 4})
+		db.Model(&modelPay.Collection{}).Where("status=?  and  species  =1 and expire_time  < ?", 1, time.Now().Unix()).Update(&modelPay.Collection{Status: 4})
 		time.Sleep(time.Second * 30)
+	}
+}
+
+// ExpireCollection 过期订单
+func ExpireCollection(db *gorm.DB) {
+
+	for true {
+		col := make([]modelPay.Collection, 0)
+		db.Where("species= 3  and  status=1 and kinds=1  and expire_time<?", time.Now().Unix()).Find(&col)
+		for _, collection := range col {
+			runner := model.Runner{ID: collection.RunnerId}
+			runner.Col.ID = collection.ID
+			runner.CollectionLimit = collection.Amount
+			runner.FreezeCollectionLimit = -collection.Amount
+			runner.ChangeCollectionLimit(db, false, 3)
+
+		}
+		time.Sleep(time.Second * 30)
+	}
+}
+
+// CheckLastGetOrderTime 离线玩家接单
+func CheckLastGetOrderTime(db *gorm.DB) {
+	for true {
+		db.Model(&model.Runner{}).Where("working=2 and last_get_order_time < ?", time.Now().Unix()).Update(&model.Runner{Working: 1})
+		time.Sleep(time.Second * 60)
 	}
 }

@@ -16,36 +16,36 @@ type Runner struct {
 	ID                    int    `gorm:"primaryKey"`
 	Username              string `gorm:"unique_index"`
 	Password              string
-	PayPassword           string  `gorm:"default:123123"` //提现密码
-	AgencyRunnerId        int     //代理账号
-	InvitationCode        string  `gorm:"unique_index"` //邀请码
-	RegisterTime          int64   //注册时间
-	Status                int     `gorm:"default:1"` //状态 1正常 2封
-	Superior              int     //上级 玩家
-	LeverTree             string  //上级树  @ 分割
-	CollectionPoint       float64 `gorm:"type:decimal(10,2)"`           //代收赢利点
-	PayPoint              float64 `gorm:"type:decimal(10,2)"`           //代付盈利点
-	CashPledge            float64 `gorm:"type:decimal(10,2);default:0"` //押金
-	CollectionLimit       float64 `gorm:"type:decimal(10,2);default:0"` //代收额度
-	FreezeCollectionLimit float64 `gorm:"type:decimal(10,2);default:0"` //冻结代收额度
-	PayLimit              float64 `gorm:"type:decimal(10,2);default:0"` //代付额度
-	Commission            float64 `gorm:"type:decimal(10,2);default:0"` //佣金
-	FreezeMoney           float64 `gorm:"type:decimal(10,2);default:0"` //提现冻结金额
-	JuniorPoint           float64 `gorm:"type:decimal(10,2)"`           //下级税点
-	WithdrawCommission    float64 `gorm:"type:decimal(10,2);default:0"` //提现手续费
-	Token                 string  `gorm:"unique_index"`                 //Token   唯一标识   长度  48位
-	Balance               float64 `gorm:"type:decimal(10,2);default:0"` //玩家余额
-	LastLoginTime         int64   //最后一次登陆时间
-	LastLoginIp           string  //最后一次登录的ip
-	LastLoginRegion       string  //最后一次登录地区
-	PaySwitch             int     `gorm:"default:2"`  //代付开关   1开  2关
-	ActiveGrade           int     `gorm:"default:60"` //活跃分数
-	CreditScore           int     `gorm:"default:60"` //信用分
-	Working               int     `gorm:"default:1"`  //1  待机   2  工作     //工作状态
-	CollectionTime        int     `gorm:"default:0"`  //代收次数
-	Remark                string  `gorm:"-"`
-
-	Col modelPay.Collection `gorm:"-"`
+	PayPassword           string              `gorm:"default:123123"` //提现密码
+	AgencyRunnerId        int                 //代理账号
+	InvitationCode        string              `gorm:"unique_index"` //邀请码
+	RegisterTime          int64               //注册时间
+	Status                int                 `gorm:"default:1"` //状态 1正常 2封
+	Superior              int                 //上级 玩家
+	LeverTree             string              //上级树  @ 分割
+	CollectionPoint       float64             `gorm:"type:decimal(10,2)"`           //代收赢利点
+	PayPoint              float64             `gorm:"type:decimal(10,2)"`           //代付盈利点
+	CashPledge            float64             `gorm:"type:decimal(10,2);default:0"` //押金
+	CollectionLimit       float64             `gorm:"type:decimal(10,2);default:0"` //代收额度
+	FreezeCollectionLimit float64             `gorm:"type:decimal(10,2);default:0"` //冻结代收额度
+	PayLimit              float64             `gorm:"type:decimal(10,2);default:0"` //代付额度
+	Commission            float64             `gorm:"type:decimal(10,2);default:0"` //佣金
+	FreezeMoney           float64             `gorm:"type:decimal(10,2);default:0"` //提现冻结金额
+	JuniorPoint           float64             `gorm:"type:decimal(10,2)"`           //下级税点
+	WithdrawCommission    float64             `gorm:"type:decimal(10,2);default:0"` //提现手续费
+	Token                 string              `gorm:"unique_index"`                 //Token   唯一标识   长度  48位
+	Balance               float64             `gorm:"type:decimal(10,2);default:0"` //玩家余额
+	LastLoginTime         int64               //最后一次登陆时间
+	LastLoginIp           string              //最后一次登录的ip
+	LastLoginRegion       string              //最后一次登录地区
+	PaySwitch             int                 `gorm:"default:2"`  //代付开关   1开  2关
+	ActiveGrade           int                 `gorm:"default:60"` //活跃分数
+	CreditScore           int                 `gorm:"default:60"` //信用分
+	Working               int                 `gorm:"default:1"`  //1  待机   2  工作     //工作状态
+	CollectionTime        int                 `gorm:"default:0"`  //代收次数
+	Remark                string              `gorm:"-"`
+	LastGetOrderTime      int64               `gorm:"default:0"` //最后一次获取订单的时间  也就是我要关闭  接单的按钮
+	Col                   modelPay.Collection `gorm:"-"`
 }
 
 func CheckIsExistModelRunner(db *gorm.DB) {
@@ -61,6 +61,11 @@ func CheckIsExistModelRunner(db *gorm.DB) {
 func (r *Runner) GetRunnerId(db *gorm.DB) int {
 	db.Where("username=?", r.Username).First(r)
 	return r.ID
+}
+
+func (r *Runner) GetRunnerUsername(db *gorm.DB) string {
+	db.Where("id=?", r.ID).First(r)
+	return r.Username
 }
 
 // Add 创建奔跑者
@@ -161,7 +166,7 @@ func (r *Runner) ChangeCashPledge(db *gorm.DB) error {
 	return db.Model(&Runner{}).Where("id=?", r.ID).Update(ups).Error
 }
 
-// ChangeCollectionLimit 修改代收的额度     1.管理员操作  2玩家 接单    3订单失效释放订单
+// ChangeCollectionLimit 修改代收的额度     1.管理员操作  2玩家 接单    3订单失效释放订单   4收款少于订单金额
 func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) error {
 	db = db.Begin()
 	rr2 := Runner{}
@@ -221,8 +226,29 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 			return err
 		}
 	}
-	//更新代付代付额度
-	err = db.Model(&Runner{}).Where("id=? and  collection_limit =?", r.ID, rr2.CollectionLimit).Update(ups).Error
+
+	if kinds == 3 {
+		ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
+		//修改订单 状态
+		err := db.Model(&modelPay.Collection{}).Where("id=?", r.Col.ID).Update(&modelPay.Collection{Status: 4}).Error
+		if err != nil {
+			db.Rollback()
+			return err
+		}
+	}
+
+	if kinds == 4 {
+		ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
+		err := db.Model(&modelPay.Collection{}).Where("id=?", r.Col.ID).Update(&modelPay.Collection{Status: 5, ActualAmount: r.Col.ActualAmount}).Error
+		if err != nil {
+			db.Rollback()
+			return err
+		}
+
+	}
+
+	//更新代付代付额度   状态必须是 等待支付
+	err = db.Model(&Runner{}).Where("id=? and  collection_limit =? and status=1", r.ID, rr2.CollectionLimit).Update(ups).Error
 	if err != nil {
 		db.Rollback()
 		return err
@@ -232,7 +258,7 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 		NowAmount:    rr2.CollectionLimit + r.CollectionLimit,
 		ChangeAmount: r.CollectionLimit,
 		FontAmount:   rr2.CollectionLimit,
-		Remark:       r.Remark, Kinds: kinds}
+		Remark:       r.Remark, Kinds: 2}
 	err = change.Add(db)
 	if err != nil {
 		db.Rollback()
@@ -251,13 +277,19 @@ func (r *Runner) SnagTheOrder(db *gorm.DB, coll modelPay.Collection) (string, er
 	if r.ID == 0 {
 		return upi, eeor.OtherError("No upi was matched. Procedure")
 	}
+	//获取这个人的 upi地址
+	UPP := RunnerUpi{}
+	db.Where("runner_id=? and  kind=1", r.ID).First(&UPP)
 	//修改 用户的余额
 	r.CollectionLimit = -coll.Amount
 	r.FreezeCollectionLimit = coll.Amount
 	r.Col = coll
+	r.Col.Upi = UPP.Address
 	err := r.ChangeCollectionLimit(db, false, 2)
 	if err != nil {
 		return "", err
 	}
+
+	upi = UPP.Address
 	return upi, nil
 }
