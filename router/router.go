@@ -57,6 +57,8 @@ func Setup() *gin.Engine {
 		ad.POST("/agencyOperation", admin2.AgencyOperation)
 		//CollectionOperation
 		ad.POST("/agencyCollectionOperation", admin2.CollectionOperation)
+		//总订单  OrderOperation
+		ad.POST("/orderOperation", admin2.OrderOperation)
 
 		/***
 		  印度支付

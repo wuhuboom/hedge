@@ -45,7 +45,6 @@ func CollectionOperation(c *gin.Context) {
 		if status, IsE := c.GetPostForm("merchant_order_num"); IsE == true {
 			db = db.Where("merchant_order_num=?", status)
 		}
-
 		//平台订单号
 		if status, IsE := c.GetPostForm("own_order"); IsE == true {
 			db = db.Where("own_order=?", status)
@@ -55,7 +54,33 @@ func CollectionOperation(c *gin.Context) {
 		if status, IsE := c.GetPostForm("proof_of_payment"); IsE == true {
 			db = db.Where("proof_of_payment=?", status)
 		}
+		//用户名  runner_id(奔跑者)
+		if username, isE := c.GetPostForm("username"); isE == true {
+			runner := model.Runner{Username: username}
+			db = db.Where("runner_id=?", runner.GetRunnerId(mysql.DB))
+		}
 
+		//填写代理名字
+		if aUsername, isE := c.GetPostForm("agency_runner_name"); isE == true {
+			runner := model.AgencyRunner{Username: aUsername}
+			db = db.Where("agency_runner_id=?", runner.GetId(mysql.DB))
+		}
+		//单子类型
+		if species, isE := c.GetPostForm("species"); isE == true {
+			db = db.Where("species=?", species)
+		}
+
+		//upi
+		if species, isE := c.GetPostForm("upi"); isE == true {
+			db = db.Where("upi=?", species)
+		}
+		//channel_id  通道名字
+		if species, isE := c.GetPostForm("channel_name"); isE == true {
+			atom, _ := strconv.Atoi(species)
+			channel := modelPay.Channel{ID: atom}
+			channel.GetChannelId(mysql.DB)
+			db = db.Where("channel_id=?", species)
+		}
 		db.Model(&modelPay.Collection{}).Count(&total)
 		db = db.Model(&modelPay.Collection{}).Offset((page - 1) * limit).Limit(limit).Order("created desc")
 		db.Find(&sl)
@@ -66,12 +91,15 @@ func CollectionOperation(c *gin.Context) {
 			mysql.DB.Where("id=?", bank.BankInformationId).First(&banIn)
 			sl[i].BankNum = bank.CardNum
 			sl[i].BankName = banIn.BankName
-
+			channel := modelPay.Channel{ID: collection.ChannelId}
+			sl[i].ChannelId = channel.GetChannelName(mysql.DB)
+			runner := model.Runner{ID: collection.RunnerId}
+			sl[i].RunnerName = runner.GetRunnerUsername(mysql.DB)
 		}
+
 		tools.ReturnDataLIst2000(c, sl, total)
 		return
 	}
-
 	//   操作订单状态 (失败/成功)
 	if action == "confirmationOfPayment" {
 		id := c.PostForm("id")

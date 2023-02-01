@@ -78,5 +78,9 @@ func (ch *Channel) GetUpi(db *gorm.DB) (Bank, error) {
 func (ch *Channel) GetChannelName(db *gorm.DB) int {
 	db.Where("id=?", ch.ID).First(&ch)
 	return ch.ChannelName
+}
 
+func (ch *Channel) GetChannelId(db *gorm.DB) int {
+	db.Where("channel_name=?", ch.ChannelName).First(&ch)
+	return ch.ID
 }
