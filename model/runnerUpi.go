@@ -11,7 +11,7 @@ type RunnerUpi struct {
 	ID             int    `gorm:"primaryKey"`
 	Kind           int    //1 跑分收款地址 2 提现收款地址 3 提现收款 U 地址
 	Address        string //
-	Status         int    `gorm:"type:default:1"` //1正常 2地址
+	Status         int    `gorm:"default:1"` //1正常 2地址
 	AgencyRunnerId int
 	RunnerId       int
 	Created        int64
