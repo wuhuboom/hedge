@@ -166,7 +166,8 @@ func (r *Runner) ChangeCashPledge(db *gorm.DB) error {
 	return db.Model(&Runner{}).Where("id=?", r.ID).Update(ups).Error
 }
 
-// ChangeCollectionLimit 修改代收的额度     1.管理员操作  2玩家 接单    3订单失效释放订单   4收款少于订单金额
+// ChangeCollectionLimit 修改代收的额度     1.管理员操作  2玩家 接单    3订单失效释放订单   4收款少于订单金额    5管理让订单失败(退还玩家额度)
+//  6  管理员让订单 支付成功
 func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) error {
 	db = db.Begin()
 	rr2 := Runner{}
@@ -212,6 +213,8 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 	}
 	ups := make(map[string]interface{})
 	ups["CollectionLimit"] = rr2.CollectionLimit + r.CollectionLimit
+
+	//2玩家 接单
 	if kinds == 2 {
 		if IfSystem == false {
 			ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
@@ -226,7 +229,7 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 			return err
 		}
 	}
-
+	//3订单失效释放订单
 	if kinds == 3 {
 		ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
 		//修改订单 状态
@@ -236,19 +239,38 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 			return err
 		}
 	}
-
+	//4收款少于订单金额
 	if kinds == 4 {
 		ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
-		err := db.Model(&modelPay.Collection{}).Where("id=?", r.Col.ID).Update(&modelPay.Collection{Status: 5, ActualAmount: r.Col.ActualAmount}).Error
+		err := db.Model(&modelPay.Collection{}).Where("id=?", r.Col.ID).Update(&modelPay.Collection{Status: 5, ActualAmount: r.Col.ActualAmount, Updated: time.Now().Unix()}).Error
 		if err != nil {
 			db.Rollback()
 			return err
 		}
 
 	}
+	//5管理让订单失败(退还玩家额度)
+	if kinds == 5 {
+		ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
+		err := db.Model(&modelPay.Collection{}).Where("id=?", r.Col.ID).Update(&modelPay.Collection{
+			Status:  3,
+			Updated: time.Now().Unix(), Remark: r.Remark}).Error
+		if err != nil {
+			db.Rollback()
+			return err
+		}
+	}
+	if kinds == 6 {
+		merchant := Merchant{MerchantNum: r.Col.MerChantNum}
+		err, _ := merchant.AmountChange(db, r.Col.ActualAmount, r.Col.ChannelId, r.Col.ID, r.Col.MerchantOrderNum, 3)
+		if err != nil {
+			db.Rollback()
+			return err
+		}
+	}
 
-	//更新代付代付额度   状态必须是 等待支付
-	err = db.Model(&Runner{}).Where("id=? and  collection_limit =? and status=1", r.ID, rr2.CollectionLimit).Update(ups).Error
+	//更新玩家的额度
+	err = db.Model(&Runner{}).Where("id=? and  collection_limit =? and  status =1", r.ID, rr2.CollectionLimit).Update(ups).Error
 	if err != nil {
 		db.Rollback()
 		return err

@@ -26,6 +26,11 @@ func MerchantOperation(c *gin.Context) {
 		db.Model(model.Merchant{}).Count(&total)
 		db = db.Model(&model.Merchant{}).Offset((page - 1) * limit).Limit(limit).Order("created desc")
 		db.Find(&sl)
+		for i, merchant := range sl {
+			gateway := model.Gateway{ID: merchant.GatewayId}
+			sl[i].Gateway = gateway.GetName(mysql.DB)
+		}
+
 		ReturnDataLIst2000(c, sl, total)
 		return
 	}
@@ -39,7 +44,7 @@ func MerchantOperation(c *gin.Context) {
 		mer.PayChannel = c.PostForm("pay_channel")
 		mer.PaidChannel = c.PostForm("paid_channel")
 		mer.Kinds, _ = strconv.Atoi(c.PostForm("kinds"))
-		mer.Gateway = c.PostForm("gateway")
+		mer.GatewayId, _ = strconv.Atoi(c.PostForm("gateway_id"))
 		mer.LoginPassword = c.PostForm("login_password")
 		mer.LoginPassword = tools.MD5(mer.LoginPassword)
 		mer.MaxPay, _ = strconv.ParseFloat(c.PostForm("max_pay"), 64)
@@ -133,8 +138,8 @@ func MerchantOperation(c *gin.Context) {
 		if status, isExist := c.GetPostForm("paid_channel"); isExist == true {
 			updated["PaidChannel"] = status
 		}
-		if status, isExist := c.GetPostForm("gateway"); isExist == true {
-			updated["Gateway"] = status
+		if status, isExist := c.GetPostForm("gateway_id"); isExist == true {
+			updated["GatewayId"], _ = strconv.Atoi(status)
 		}
 
 		//谷歌开关

@@ -9,8 +9,8 @@ import (
 	"time"
 )
 
+// Channel 通道处理
 func Channel(c *gin.Context) {
-
 	action := c.Query("action")
 	if action == "check" {
 		//查询bankCard
@@ -20,11 +20,19 @@ func Channel(c *gin.Context) {
 		db := mysql.DB
 		var total int
 		//条件
-
 		//状态
 		if status, isExist := c.GetPostForm("status"); isExist == true {
 			db = db.Where("status=?", status)
 		}
+		//1 代收通道  2代付通道
+		if status, isExist := c.GetPostForm("kinds"); isExist == true {
+			db = db.Where("kinds=?", status)
+		}
+		//currency   币种
+		if status, isExist := c.GetPostForm("currency"); isExist == true {
+			db = db.Where("currency=?", status)
+		}
+
 		db.Model(modelPay.Channel{}).Count(&total)
 		db = db.Model(&modelPay.Channel{}).Offset((page - 1) * limit).Limit(limit).Order("created desc")
 		db.Find(&sl)

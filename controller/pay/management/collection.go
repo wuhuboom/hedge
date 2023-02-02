@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/wangyi/GinTemplate/dao/mysql"
+	"github.com/wangyi/GinTemplate/dao/redis"
 	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/model/modelPay"
 	"github.com/wangyi/GinTemplate/tools"
@@ -109,6 +110,11 @@ func CollectionOperation(c *gin.Context) {
 			tools.ReturnErr101Code(c, err.Error())
 			return
 		}
+		result, _ := redis.Rdb.Get("confirmationOfPayment" + id).Result()
+		if result != "" {
+			tools.ReturnErr101Code(c, "Don't do the deposit operation at the specified time")
+			return
+		}
 
 		//  status  1等待支付  2支付成功  3失败
 		sta, _ := strconv.Atoi(c.PostForm("status"))
@@ -131,16 +137,31 @@ func CollectionOperation(c *gin.Context) {
 
 		//回调给 三方t
 		if sta == 3 {
-			// 充值失败
-			if err := mysql.DB.Model(&modelPay.Collection{}).Where("id=?", col.ID).Update(&modelPay.Collection{
-				Status: 3, Updated: time.Now().Unix()}).Error; err != nil {
-				tools.ReturnErr101Code(c, err.Error())
-				return
-			}
 			if tools.IsChinese(c.PostForm("remark")) {
 				tools.ReturnErr101Code(c, "remark is  not  Chinese")
 				return
 			}
+			//跑分 处理逻辑  // 充值失败
+			if col.Species == 3 {
+				//订单被管理驳回了    代理玩家要退还额度
+				runner := model.Runner{ID: col.RunnerId}
+				runner.CollectionLimit = col.ActualAmount
+				runner.FreezeCollectionLimit = -col.ActualAmount
+				runner.Col.ID = col.ID
+				err := runner.ChangeCollectionLimit(mysql.DB, false, 5)
+				if err != nil {
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+			} else {
+				// 正常三方 逻辑
+				if err := mysql.DB.Model(&modelPay.Collection{}).Where("id=?", col.ID).Update(&modelPay.Collection{
+					Status: 3, Updated: time.Now().Unix()}).Error; err != nil {
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+			}
+
 		} else {
 			ActualAmount, _ := strconv.ParseFloat(c.PostForm("actual_amount"), 64)
 			if ActualAmount <= 0 {
@@ -148,13 +169,30 @@ func CollectionOperation(c *gin.Context) {
 				return
 			}
 			//充值成功
-			merchant := model.Merchant{MerchantNum: col.MerChantNum}
-			err, _ := merchant.AmountChange(mysql.DB, ActualAmount, col.ChannelId, col.ID, col.MerchantOrderNum)
-			if err != nil {
-				tools.ReturnErr101Code(c, err.Error())
-				return
+			if col.Species == 3 {
+				//跑分逻辑
+				runner := model.Runner{ID: col.RunnerId}
+				runner.CollectionLimit = 0
+				runner.FreezeCollectionLimit = -ActualAmount
+				runner.Col.ID = col.ID
+				runner.Col.ChannelId = col.ChannelId
+				runner.Col.MerchantOrderNum = col.MerchantOrderNum
+				runner.Col.MerChantNum = col.MerChantNum
+				runner.Col.ActualAmount = ActualAmount
+				err := runner.ChangeCollectionLimit(mysql.DB, false, 6)
+				if err != nil {
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+			} else {
+				//普通三方逻辑
+				merchant := model.Merchant{MerchantNum: col.MerChantNum}
+				err, _ := merchant.AmountChange(mysql.DB, ActualAmount, col.ChannelId, col.ID, col.MerchantOrderNum, 1)
+				if err != nil {
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
 			}
-
 		}
 		callback := map[string]string{}
 		callback["merchant_order_num"] = col.MerchantOrderNum
@@ -186,6 +224,8 @@ func CollectionOperation(c *gin.Context) {
 			up.Callback = 3
 		}
 		mysql.DB.Model(&modelPay.Collection{}).Where("id=?", col.ID).Update(up)
+
+		redis.Rdb.Set("confirmationOfPayment"+id, "123", 5*time.Second)
 		tools.ReturnSuccess2000Code(c, "OK")
 		return
 	}

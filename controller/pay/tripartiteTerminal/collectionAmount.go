@@ -14,8 +14,7 @@ import (
 	"time"
 )
 
-//代收
-
+// CollectionAmount 代收订单拉起
 func CollectionAmount(c *gin.Context) {
 	var cpd CheckPayData
 	if err := c.BindJSON(&cpd); err != nil {
@@ -58,10 +57,10 @@ func CollectionAmount(c *gin.Context) {
 	}
 	//订单是否重复提交
 	collection := modelPay.Collection{MerchantOrderNum: cpd.MerchantOrderNum, MerChantNum: cpd.MerChantNum}
-	//if err := collection.MerchantOrderNumIsExist(mysql.DB); err == nil {
-	//	tools.ReturnErr101Code(c, "Order already exists")
-	//	return
-	//}
+	if err := collection.MerchantOrderNumIsExist(mysql.DB); err == nil {
+		tools.ReturnErr101Code(c, "Order already exists")
+		return
+	}
 
 	config := model.Config{}
 	err := mysql.DB.Where("id=?", 1).First(&config).Error

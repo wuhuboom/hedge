@@ -26,6 +26,7 @@ type Merchant struct {
 	GoogleCode           string  //谷歌 code
 	GoogleSwitch         int     `gorm:"default:2"` //谷歌开关  //1开  2关
 	Token                string  //登录
+	GatewayId            int     // 网关id
 	Gateway              string  //网关
 	AllAmount            float64 `gorm:"type:decimal(10,2)"` //总金额
 	AvailableAmount      float64 `gorm:"type:decimal(10,2)"` //可以用的金额
@@ -75,7 +76,7 @@ func (m *Merchant) ChannelIsExistOrOpenForCollection(db *gorm.DB) {
 }
 
 // AmountChange   kind  1代收 2代付
-func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, collectionId int, merOrder string) (error, Merchant) {
+func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, collectionId int, merOrder string, species int) (error, Merchant) {
 	//查询账户余额
 	common.MerchantChangeMoneyLock.RLock()
 	mer := Merchant{}
@@ -84,7 +85,6 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 		common.MerchantChangeMoneyLock.RUnlock()
 		return err, mer
 	}
-
 	//  获取渠道
 	ch := modelPay.Channel{}
 	err = db.Where("id=?", channelId).First(&ch).Error
@@ -95,7 +95,10 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 	common.MerchantChangeMoneyLock.RUnlock()
 	common.MerchantChangeMoneyLock.Lock()
 	defer common.MerchantChangeMoneyLock.Unlock()
-	db = db.Begin()
+
+	if species != 3 {
+		db = db.Begin()
+	}
 	update := make(map[string]interface{})
 	if ch.Kinds == 1 { //代收
 		update["AllAmount"] = mer.AllAmount + amount
@@ -117,7 +120,9 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 		sta := modelPay.Statistics{TodayCollectionAmount: amount, TodayCollectionCommission: amount * ch.Rate, MerchantNum: m.MerchantNum, TodayCollection: 1}
 		err := sta.Add(db, 1)
 		if err != nil {
-			db.Rollback()
+			if species != 3 {
+				db.Rollback()
+			}
 			return err, mer
 		}
 	} else if ch.Kinds == 2 { //代付
@@ -127,17 +132,23 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 		sta := modelPay.Statistics{TodayPayAmount: amount, TodayPayCommission: amount * ch.Rate, MerchantNum: m.MerchantNum, TodayPay: 1}
 		err := sta.Add(db, 2)
 		if err != nil {
-			db.Rollback()
+			if species != 3 {
+				db.Rollback()
+			}
 			return err, mer
 		}
 	}
 
 	err = db.Model(&Merchant{}).Where("id=?", mer.ID).Update(update).Error
 	if err != nil {
-		db.Rollback()
+		if species != 3 {
+			db.Rollback()
+		}
 		return err, mer
 	}
 
-	db.Commit()
+	if species != 3 {
+		db.Commit()
+	}
 	return nil, mer
 }

@@ -72,6 +72,8 @@ func Setup() *gin.Engine {
 		ad.POST("/channelBank", management.ChannelBank)
 		//CollectionOperation    //  获取代收 或者代付 订单
 		ad.POST("/collectionOperation", management.CollectionOperation)
+		//GatewayOperation
+		ad.POST("/gatewayOperation", management.GatewayOperation)
 
 	}
 
