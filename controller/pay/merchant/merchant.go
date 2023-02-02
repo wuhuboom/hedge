@@ -63,7 +63,10 @@ func Login(c *gin.Context) {
 			}
 		}
 	}
-
+	data := model.MerchantLogData{MerchantId: mer.ID, Content: "login success",
+		Username: mer.MerchantNum,
+		Kinds:    1, Ip: c.ClientIP()}
+	data.Add(mysql.DB)
 	redis.Rdb.Set("MerchantToken_"+mer.Token, mer.MerchantNum, 7*86400*time.Second)
 	tools.ReturnSuccess2000DataCode(c, mer, "Login success")
 	return
@@ -130,4 +133,74 @@ func GetFlowOfFunds(c *gin.Context) {
 	tools.ReturnDataLIst2000(c, sl, total)
 	return
 
+}
+
+// ChangeLoginPassword 修改登录密码
+func ChangeLoginPassword(c *gin.Context) {
+	who, _ := c.Get("who")
+	whoMap := who.(model.Merchant)
+	if len(c.PostForm("password")) < 6 {
+		tools.ReturnErr101Code(c, "The password contains a maximum of six characters")
+		return
+	}
+	merchant := model.Merchant{LoginPassword: c.PostForm("password"), ID: whoMap.ID}
+	err := merchant.ChangePassword(mysql.DB)
+	if err != nil {
+		tools.ReturnErr101Code(c, err)
+		return
+	}
+	tools.ReturnSuccess2000Code(c, "ok")
+	return
+}
+
+// GetLoginLogger 获取登录日志
+func GetLoginLogger(c *gin.Context) {
+	who, _ := c.Get("who")
+	whoMap := who.(model.Merchant)
+	action := c.Query("action")
+	if action == "check" {
+		//查询bankCard
+		limit, _ := strconv.Atoi(c.PostForm("limit"))
+		page, _ := strconv.Atoi(c.PostForm("page"))
+		sl := make([]model.MerchantLog, 0)
+		db := mysql.DB.Where("merchant_id=? and  kinds=1", whoMap.ID)
+		var total int
+		//条件
+
+		db.Model(&model.MerchantLog{}).Count(&total)
+		db = db.Model(&model.MerchantLog{}).Offset((page - 1) * limit).Limit(limit).Order("created desc")
+		db.Find(&sl)
+		tools.ReturnDataLIst2000(c, sl, total)
+		return
+	}
+}
+
+// ChangeTrcAddress 修改 回U地址
+func ChangeTrcAddress(c *gin.Context) {
+	who, _ := c.Get("who")
+	whoMap := who.(model.Merchant)
+	GoogleCode := c.PostForm("google_code")
+	TrcAddress := c.PostForm("trc_address")
+	if len(GoogleCode) != 6 {
+		tools.ReturnErr101Code(c, "Please fill in the Google Captcha")
+		return
+	}
+	if len(TrcAddress) != 34 {
+		tools.ReturnErr101Code(c, "Sorry, the address length is wrong")
+		return
+	}
+	//校验谷歌验证
+	verifyCode, _ := tools.NewGoogleAuth().VerifyCode(whoMap.GoogleCode, GoogleCode)
+	if !verifyCode {
+		tools.ReturnErr101Code(c, "Google verification failure")
+		return
+	}
+	merchant := model.Merchant{TrcAddress: TrcAddress}
+	err := merchant.ChangeTrcAddress(mysql.DB)
+	if err != nil {
+		tools.ReturnErr101Code(c, err)
+		return
+	}
+	tools.ReturnSuccess2000Code(c, "OK")
+	return
 }

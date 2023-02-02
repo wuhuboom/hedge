@@ -34,5 +34,5 @@ redis:
 
 
 config:
-  webUrl: "https://www.baidu.com"
+  webUrl: "https://inpay.gvfootball.com"
 

@@ -119,6 +119,13 @@ func Setup() *gin.Engine {
 		mer.POST("/getFlowOfFunds", merchant.GetFlowOfFunds)
 		//Statistics
 		mer.POST("/statistics", merchant.Statistics)
+		//ChangeLoginPassword 修改密码
+		mer.POST("/changeLoginPassword", merchant.ChangeLoginPassword)
+		//GetLoginLogger
+		mer.POST("/getLoginLogger", merchant.GetLoginLogger)
+		//ChangeTrcAddress
+		mer.POST("/changeTrcAddress", merchant.ChangeTrcAddress)
+
 
 	}
 	//UploadCertificate
@@ -167,6 +174,7 @@ func Setup() *gin.Engine {
 		ay.POST("/slideshowOperation", agency.SlideshowOperation)
 		//CollectionOperation
 		ay.POST("/collectionOperation", agency.CollectionOperation)
+
 
 	}
 

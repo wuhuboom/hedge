@@ -22,7 +22,7 @@ func CollectionAmount(c *gin.Context) {
 		return
 	}
 	mer := model.Merchant{}
-	if err := mysql.DB.Where("merchant_num=?", cpd.MerChantNum).First(&mer).Error; err != nil || mer.Kinds != 2 {
+	if err := mysql.DB.Where("merchant_num=?", cpd.MerChantNum).First(&mer).Error; err != nil  {
 		tools.ReturnErr101Code(c, "Illegal request")
 		return
 	}
@@ -85,7 +85,7 @@ func CollectionAmount(c *gin.Context) {
 	collection.OwnOrder = "Mer" + time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(1000))
 	collection.Date = time.Now().Format("2006-01-02")
 	collection.ReleaseTime = time.Now().Unix() + config.ReleaseTime*60
-	i := time.Now().Unix() + config.ExpireTime
+	i := time.Now().Unix() + config.ExpireTime*60
 	collection.ExpireTime = i
 	is := strconv.FormatInt(i, 10)
 

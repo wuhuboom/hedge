@@ -19,7 +19,8 @@ var Record struct {
 }
 
 func GetCountryForIp(TheIp string) (string, error) {
-	db, err := maxminddb.Open("GeoLite2-Country.mmdb")
+
+	db, err := maxminddb.Open("dao/mmdb/GeoLite2-City.mmdb")
 	if err != nil {
 		zap.L().Debug(err.Error())
 		return "", err

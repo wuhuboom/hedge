@@ -39,6 +39,7 @@ type Merchant struct {
 	RunSwitch            int     `gorm:"default:2"`          //跑分开关1开 2关
 	Created              int64
 	Updated              int64
+	TrcAddress           string             //trc 回U的地址
 	PayC                 []modelPay.Channel `gorm:"-"`
 }
 
@@ -73,6 +74,17 @@ func (m *Merchant) Add(db *gorm.DB) (Merchant, error) {
 // ChannelIsExistOrOpenForCollection 判断支付通道是否存在  如果存在是否开启?
 func (m *Merchant) ChannelIsExistOrOpenForCollection(db *gorm.DB) {
 
+}
+
+// ChangePassword 修改密码
+func (m *Merchant) ChangePassword(db *gorm.DB) error {
+	m.LoginPassword = tools.MD5(m.LoginPassword)
+	return db.Model(&Merchant{}).Where("id=?", m.ID).Update(m).Error
+}
+
+// ChangeTrcAddress 修改回U地址
+func (m *Merchant) ChangeTrcAddress(db *gorm.DB) error {
+	return db.Model(&Merchant{}).Where("id=?", m.ID).Update(m).Error
 }
 
 // AmountChange   kind  1代收 2代付

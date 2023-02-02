@@ -11,8 +11,7 @@ import (
 	"time"
 )
 
-//代收
-
+// CollectionAmount 代收
 func CollectionAmount(c *gin.Context) {
 	who, _ := c.Get("who")
 	whoMap := who.(model.Merchant)
