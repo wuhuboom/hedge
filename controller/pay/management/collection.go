@@ -130,7 +130,6 @@ func CollectionOperation(c *gin.Context) {
 		}
 
 		//回调给 三方t
-
 		if sta == 3 {
 			// 充值失败
 			if err := mysql.DB.Model(&modelPay.Collection{}).Where("id=?", col.ID).Update(&modelPay.Collection{
