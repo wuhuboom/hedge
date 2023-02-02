@@ -136,12 +136,10 @@
     var mybck = $.cookie('tokenMyb');
     if (mybck == "" || mybck == null) {
 
-
         window.top.location.href = "../../login.html";
 
     } else {
         var currParentDatas = eval('(' + parent.jsondata + ')')
-
 
         $("#merchant").text(currParentDatas.MerchantNum)
         $("#ips").val(currParentDatas.WhiteIps)
@@ -152,7 +150,6 @@
         $("#gateway").val(currParentDatas.Gateway)
         $("#min_pay").val(currParentDatas.MinPay)
         $("#max_pay").val(currParentDatas.MaxPay)
-
 
 
         var payChannelParant =  currParentDatas.PayChannel

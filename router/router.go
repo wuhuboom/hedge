@@ -148,6 +148,8 @@ func Setup() *gin.Engine {
 		run.POST("/imWorking", runner.ImWorking)
 		//ConfirmTheOrder
 		run.POST("/confirmTheOrder", runner.ConfirmTheOrder)
+		//LogOut
+		run.POST("/logOut", runner.LogOut)
 
 	}
 

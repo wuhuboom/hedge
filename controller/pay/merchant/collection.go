@@ -90,6 +90,12 @@ func CollectionAmount(c *gin.Context) {
 			tools.ReturnErr101Code(c, "Businesses don't exist")
 			return
 		}
+
+		if col.Status != 2 {
+			tools.ReturnErr101Code(c, "Sorry, you do not have permission to call back unpaid orders")
+			return
+		}
+
 		callback := map[string]string{}
 		callback["merchant_order_num"] = col.MerchantOrderNum
 		callback["channel_id"] = strconv.Itoa(col.ChannelId)

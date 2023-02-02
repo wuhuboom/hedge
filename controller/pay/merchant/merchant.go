@@ -1,6 +1,7 @@
 package merchant
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
@@ -76,12 +77,12 @@ func GetMe(c *gin.Context) {
 	// 代收通道
 	payArray := strings.Split(whoMap.PayChannel, "@")
 	for _, s := range payArray {
-
 		pay := modelPay.Channel{}
 		err := mysql.DB.Where("id =?", s).First(&pay).Error
 		if err == nil {
 			whoMap.PayC = append(whoMap.PayC, pay)
 		}
+
 	}
 	//代付
 	paidArray := strings.Split(whoMap.PaidChannel, "@")
@@ -92,7 +93,10 @@ func GetMe(c *gin.Context) {
 			whoMap.PayC = append(whoMap.PayC, pay)
 		}
 	}
+	gateway := model.Gateway{ID: whoMap.GatewayId}
 
+	whoMap.Gateway = gateway.Gateway
+	fmt.Println(whoMap)
 	tools.ReturnSuccess2000DataCode(c, whoMap, "OK")
 	return
 }

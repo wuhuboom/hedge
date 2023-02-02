@@ -26,6 +26,14 @@ func CollectionAmount(c *gin.Context) {
 		tools.ReturnErr101Code(c, "Illegal request")
 		return
 	}
+
+	ga := model.Gateway{}
+	err2 := mysql.DB.Where("id=?", mer.GatewayId).First(&ga).Error
+	if err2 != nil {
+		tools.ReturnErr101Code(c, "Illegal request")
+		return
+	}
+	mer.Gateway = ga.Gateway
 	if err := SignatureCollectionAmount(cpd, mer.ApiKey); err != nil {
 		tools.ReturnErr101Code(c, err.Error())
 		return

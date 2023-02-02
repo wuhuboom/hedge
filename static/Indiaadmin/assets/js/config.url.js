@@ -1,5 +1,5 @@
 //
-global_requestAddress = "";
+global_requestAddress = "http://127.0.0.1:8080";
 //登录接口
 global_requestloginAddress_js="/admin/v1/login";
 
@@ -22,12 +22,12 @@ global_requestAddress_js_merchant="/admin/v1/merchant";
 // 代收订单
 global_requestAddress_js_collectionOperation="/admin/v1/collectionOperation";
 
-
-
-
+//代理列表/添加代理/代理状态/普通修改/重置谷歌/操作代理押金/操作代付金额
+global_requestAddress_js_agencyOperation="/admin/v1/agencyOperation";
 
 // 获取系统配置
 global_requestAddress_js_configOperation="/admin/v1/configOperation";
+
 
 
 const timeArr = [{

@@ -20,8 +20,19 @@
 
 </head>
 <body class="childrenBody">
-<form class="layui-form">
+<form class="layui-form" lay-filter="add_proxy">
     <div class="layui-fluid" style="padding-bottom: 75px;">
+        <!-- <div class="layui-card">
+            <div class="layui-card-header">通道修改</div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">代收通道</label>
+                <div class="layui-input-block" id="Collection_channel"></div>
+                <div class="layui-form-mid" style="color: red;margin-left: 115px;"></div>
+            </div>
+
+        </div> -->
+
         <div class="layui-card">
             <div class="layui-card-header">通道配置</div>
             <div class="layui-card-body">
@@ -42,106 +53,121 @@
                 </div>
             </div>
         </div>
+
         <div class="layui-card">
-            <div class="layui-card-header">基本配置</div>
+            <div class="layui-card-header">代理用户基本信息</div>
             <div class="layui-card-body">
                 <div class="layui-form-item layui-row">
-                    <div class="layui-inline layui-col-md3">
-                        <label class="layui-form-label">商户号</label>
+                    <div class="layui-inline layui-col-md5">
+                        <label class="layui-form-label">用户名</label>
                         <div class="layui-input-block">
-                            <input type="text" class="layui-input " id="merchant" placeholder="请在此输入商户号">
+<!--                            <input type="text" class="layui-input" name="username" id="username" placeholder="请输入代理用户名">-->
+                            <input type="text" name="username" autocomplete="off" class="layui-input outline:none " readonly="true" style=" outline:none;border: none; " name="username" id="username" placeholder="请输入代理用户名">
                         </div>
                     </div>
 
-                    <div class="layui-inline layui-col-md3">
-                        <label class="layui-form-label">登录密码</label>
+                    <div class="layui-inline layui-col-md5">
+                        <label class="layui-form-label">密码</label>
                         <div class="layui-input-block">
-                            <input type="text" class="layui-input " id="login_password" placeholder="请在此输入登录密码">
+                            <input type="text" class="layui-input" name="password" id="password" placeholder="请输入代理密码">
                         </div>
                     </div>
 
-                    <div class="layui-inline layui-col-md3">
-                        <label class="layui-form-label">IP白名单</label>
+                    <div class="layui-inline layui-col-md5">
+                        <label class="layui-form-label">资金密码</label>
                         <div class="layui-input-block">
-                            <input type="text" class="layui-input " id="ips" placeholder="请在此输入IP白名单">
+                            <input type="text" lay-verify="number" class="layui-input" name="pay_password" id="pay_password" placeholder="请输入资金密码">
                         </div>
                     </div>
 
-                    <div class="layui-inline layui-col-md3">
-                        <label class="layui-form-label">最小金额</label>
-                        <div class="layui-input-block">
-                            <input type="text" class="layui-input " id="min_money" placeholder="请在此输入最小金额">
-                        </div>
-                    </div>
-
-                    <div class="layui-inline layui-col-md3">
-                        <label class="layui-form-label">最大金额</label>
-                        <div class="layui-input-block">
-                            <input type="text" class="layui-input " id="max_money" placeholder="请在此输入最大金额">
-                        </div>
-                    </div>
                 </div>
-
-
             </div>
         </div>
 
         <div class="layui-card">
-            <div class="layui-card-header">扩展配置</div>
+            <div class="layui-card-header">代收/代付修改</div>
             <div class="layui-card-body">
-
                 <div class="layui-form-item layui-row">
-                    <div class="layui-inline layui-col-md8">
-                        <label class="layui-form-label ">网关</label>
-                        <div class="layui-input-block">
-                            <input name="gateway" id="gateway" placeholder="请输入网关" class="layui-input"/>
-                        </div>
-                    </div>
-                    <div class="layui-inline layui-col-md4">
-                        <label class="layui-form-label ">最小代付</label>
-                        <div class="layui-input-block">
-                            <input name="min_pay" id="min_pay" placeholder="请输入最小代付" class="layui-input"/>
-                        </div>
-                    </div>
-                    <div class="layui-inline layui-col-md4">
-                        <label class="layui-form-label ">最大代付</label>
-                        <div class="layui-input-block">
-                            <input name="max_pay" id="max_pay" placeholder="请输入最大代付" class="layui-input"/>
-                        </div>
-                    </div>
-<!--                    <div class="layui-inline layui-col-md4">-->
-<!--                        <label class="layui-form-label ">谷歌开关:</label>-->
+<!--                    <div class="layui-inline layui-col-md3">-->
+<!--                        <label class="layui-form-label" style="color: #1e9fff">代收额度</label>-->
 <!--                        <div class="layui-input-block">-->
-<!--                            <input type="checkbox"  name="google_switch" lay-skin="switch"lay-filter="google_switch_filter" id="google_switch" lay-text="开启|关闭" checked>-->
+<!--                            <input type="text" class="layui-input " name="" id="collection_limit" placeholder="请在此输入代收通道">-->
 <!--                        </div>-->
 <!--                    </div>-->
+
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label" style="color: #1e9fff">代收盈利点</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input " name="collection_point" id="collection_point" placeholder="请在此输入代收盈利点">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label" style="color: #ff00fe">代付盈利点</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input " name="pay_point" id="pay_point" placeholder="请在此输入代付盈利点">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label">下级税点</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input " name="junior_point" id="junior_point" placeholder="请在此设置下级税点">
+                        </div>
+                    </div>
+
+<!--                    <div class="layui-inline layui-col-md3">-->
+<!--                        <label class="layui-form-label" style="color: #ff00fe">代付额度</label>-->
+<!--                        <div class="layui-input-block">-->
+<!--                            <input type="text" class="layui-input " name="" id="pay_limit" placeholder="请在此输入代付额度">-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label">提现手续费</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input " name="withdraw_commission" id="withdraw_commission" placeholder="请在此设置提现手续费">
+                        </div>
+                    </div>
                 </div>
 
             </div>
         </div>
 
-
         <div class="form-group-bottom text-right" style="margin-bottom: 20px">
-            <button class="layui-btn layui-btn-lg" lay-filter="comfireAdd" id="comfireAdd">确认添加</button>
+            <button class="layui-btn layui-btn-lg" lay-filter="comfireAdd" id="comfireAdd">确认修改</button>
             <button class="layui-btn layui-btn-lg layui-btn-primary" lay-filter="cancelAdd" id="cancelAdd">取消</button>
         </div>
 
     </div>
 </form>
 
-
 <script>
 
     var mybck = $.cookie('tokenMyb');
     if (mybck == "" || mybck == null) {
 
-
         window.top.location.href = "../../login.html";
 
     } else {
         var currParentDatas = eval('(' + parent.jsondata + ')')
+
+        var payChannelParant =  currParentDatas.CollectionChannel
+        payChannelParant = payChannelParant.split('@')
+        // console.log("payChannelParant",payChannelParant)
+        // var payChannelParantArray  =  eval('(' + payChannelParant.split('@') + ')');
+        var paidChannelParant =   currParentDatas.pay_channel
+        if(paidChannelParant){
+            paidChannelParant = paidChannelParant.split('@')
+        }
+        // console.log("paidChannelParant",paidChannelParant)
+
         var payChannelArrS = []
         var payingChannelArrS = []
+
+        var payChannelArrS = []
+        var payingChannelArrS = []
+        var Numbering
         layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice'], function () {
             var $ = layui.jquery;
             var layer = layui.layer;
@@ -152,7 +178,6 @@
             var admin = layui.admin;
             var xmSelect = layui.xmSelect;
             var notice = layui.notice;
-
 
             //获取数据添加到下拉框中
             var param = {};
@@ -170,12 +195,12 @@
                 success: function (res) {
                     if (res.code === 200) {
                         var returnDataArray = res.result
+                        console.log("11",returnDataArray);
                         var payHtml = ''
                         var paidHtml = ''
 
                         returnDataArray.forEach((item,index)=>{
                             if(item.Kinds === 2){ //2代付
-
                                 $("#paying_select").append('<input type="checkbox" name="payingCheck" id="'+item.ID+'" name="'+item.ID+'" value="' + item.ID + '" title="' + item.ChannelName + '">');
                             }else if(item.Kinds === 1){ //代收
 
@@ -184,99 +209,119 @@
 
                         })
 
+                        payChannelParant.forEach((item,index)=>{
+                            var opaythis =  $("input[name='payCheck']")
+                            // console.log("opaythis",opaythis)
+
+                            opaythis.each(function( indexT ) {
+                                if($(this).val() == item){
+                                    // console.log( indexT, $(this).attr('title'));
+                                    // opaythis[indexT].checked = true
+                                    $(this).attr("checked",true);
+                                }
+                            });
+
+                        })
+
+                        // paidChannelParant.forEach((item,index)=>{
+                        //     var opaythis =  $("input[name='payingCheck']")
+                        //     // console.log("opaythis",opaythis)
+                        //     opaythis.each(function( indexT ) {
+                        //         if($(this).val() == item){
+                        //             // console.log( indexT, $(this).attr('title'));
+                        //             // opaythis[indexT].checked = true
+                        //             $(this).attr("checked",true);
+                        //         }
+                        //     });
+
+                        // })
+
+
 
                         //重新渲染 固定写法
                         form.render("checkbox");
-
-
 
                     }
                 }
             })
 
-
+            //修改编辑赋值
+            form.val('add_proxy',{
+                "username":currParentDatas.Username,//用户名
+                "collection_point":currParentDatas.CollectionPoint,//代收盈利点
+                "pay_point":currParentDatas.PayPoint,//代付盈利点
+                "junior_point":currParentDatas.JuniorPoint,//下级税点
+                "withdraw_commission":currParentDatas.WithdrawCommission,//提现手续费
+            })
+            form.render();
 
             //确认按钮点击事件(这个功能已经实现,但是不知道是否接口问题,暂时修改无效)
             $("#comfireAdd").click(function () {
 
-                if(!$("#merchant").val()){
+              
+                if(!$("#collection_point").val()){
 
-                    layer.msg("商户号不允许为空!", {icon: 2});
+                    layer.msg("代收盈利点不允许为空!", {icon: 2});
                     return false
                 }
-
-                if(!$("#login_password").val()){
-
-                    layer.msg("登录密码不允许为空!", {icon: 2});
+                if(!$("#pay_point").val()){
+                    layer.msg("代付盈利点不允许为空!", {icon: 2});
                     return false
                 }
-
-                if(!$("#min_money").val()){
-
-                    layer.msg("最小金额不允许为空!", {icon: 2});
+               
+                if(!$("#junior_point").val()){
+                    layer.msg("下级税点不允许为空!", {icon: 2});
                     return false
                 }
-
-                if(!$("#max_money").val()){
-
-                    layer.msg("最大金额不允许为空!", {icon: 2});
+                if(!$("#withdraw_commission").val()){
+                    layer.msg("提现手续费不允许为空!", {icon: 2});
                     return false
                 }
-
-
-                if(!$("#gateway").val()){
-
-                    layer.msg("网关地址不允许为空!", {icon: 2});
-                    return false
-                }
-                if(!$("#min_pay").val()){
-                    layer.msg("代付最小金额不允许为空!", {icon: 2});
-                    return false
-                }
-                if(!$("#max_pay").val()){
-                    layer.msg("代付最大金额不允许为空!", {icon: 2});
-                    return false
-                }
+    
                 var param = {};
-                param['kinds'] = 2;
-                param['merchant'] = $("#merchant").val();
-                param['login_password'] = $('#login_password').val();
-                param['ips'] = $('#ips').val();
-                param['min_money'] = $('#min_money').val();
-                param['max_money'] = $('#max_money').val();
-                param['gateway'] = $('#gateway').val();
-                param['min_pay'] = $('#min_pay').val();
-                param['max_pay'] = $('#max_pay').val();
-                // param['google_switch'] = 1
+                // param['username'] =$("#username").val();
+                param['id']=currParentDatas.ID
+
+                if($("#password").val()){
+                    param['password'] = $("#password").val();
+                }
+
+                if($("#pay_password").val()){
+                    param['pay_password'] = $("#pay_password").val();
+                }
+
                 var arr_box = [];
                 var paying_arr_box = [];
                 var pay_selectStr = ""
                 var paying_selectStr = ""
-
                 $("input:checkbox[name='payCheck']:checked").each(function(i){
                     arr_box[i] = $(this).val();
                 });
                 pay_selectStr= arr_box.join('@')
-                // console.log("pay_selectStr",pay_selectStr)
 
                 $("input:checkbox[name='payingCheck']:checked").each(function(i){
                     paying_arr_box[i] = $(this).val();
                 });
                 paying_selectStr= paying_arr_box.join('@')
 
-
                 if(pay_selectStr){
-                    param['pay_channel'] = pay_selectStr
+                    param['collection_channel'] = pay_selectStr
                 }
 
                 if(paying_selectStr){
                     param['paid_channel'] = paying_selectStr
                 }
 
-                console.log("param",param)
+                param['collection_point'] = $('#collection_point').val();
+                param['pay_point'] = $('#pay_point').val();
+                // param['pay_limit'] = $('#pay_limit').val();
+                // param['collection_limit'] = $('#collection_limit').val();
+                param['junior_point'] = $('#junior_point').val();
+                param['withdraw_commission'] = $('#withdraw_commission').val();
+                // param['google_switch'] = 1
 
                 $.ajax({
-                    url: global_requestAddress + global_requestAddress_js_merchant + "?action=add",
+                    url: global_requestAddress + global_requestAddress_js_agencyOperation + "?action=update",
                     headers: {
                         "token": mybck,
                     },

@@ -89,3 +89,12 @@ func GetSlideshow(c *gin.Context) {
 	tools.ReturnSuccess2000DataCode(c, sl, "OK")
 	return
 }
+
+// LogOut 登出
+func LogOut(c *gin.Context) {
+	who, _ := c.Get("who")
+	whoMap := who.(model.Runner)
+	redis.Rdb.Del("RunnerToken_" + whoMap.Token)
+	tools.ReturnSuccess2000Code(c, "ok")
+	return
+}

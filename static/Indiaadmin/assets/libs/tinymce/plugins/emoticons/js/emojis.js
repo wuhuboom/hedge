@@ -3955,7 +3955,7 @@ window.tinymce.Resource.add("tinymce.plugins.emoticons", {
     category: "activity"
   },
   performing_arts: {
-    keywords: [ "acting", "theater", "drama" ],
+    keywords: [ "agent", "theater", "drama" ],
     "char": "\ud83c\udfad",
     fitzpatrick_scale: false,
     category: "activity"
