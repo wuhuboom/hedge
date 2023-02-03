@@ -80,6 +80,7 @@ func Register(c *gin.Context) {
 	return
 }
 
+// GetSlideshow 获取轮播图
 func GetSlideshow(c *gin.Context) {
 	who, _ := c.Get("who")
 	whoMap := who.(model.Runner)
@@ -96,5 +97,13 @@ func LogOut(c *gin.Context) {
 	whoMap := who.(model.Runner)
 	redis.Rdb.Del("RunnerToken_" + whoMap.Token)
 	tools.ReturnSuccess2000Code(c, "ok")
+	return
+}
+
+func GetMe(c *gin.Context) {
+	who, _ := c.Get("who")
+	whoMap := who.(model.Runner)
+	whoMap.PayPassword = "******"
+	tools.ReturnSuccess2000DataCode(c, whoMap, "OK")
 	return
 }

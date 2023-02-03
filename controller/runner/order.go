@@ -26,6 +26,7 @@ func GetReceiveCollectionOrder(c *gin.Context) {
 	return
 }
 
+// ImWorking 我正在工作
 func ImWorking(c *gin.Context) {
 	who, _ := c.Get("who")
 	whoMap := who.(model.Runner)
@@ -42,6 +43,13 @@ func ImWorking(c *gin.Context) {
 	err := mysql.DB.Where("runner_id=? and kind=1", whoMap.ID).First(&model.RunnerUpi{}).Error
 	if err != nil {
 		tools.ReturnErr101Code(c, "Bind the working upi first")
+		return
+	}
+
+	//判断 是要有资格接单
+
+	if whoMap.CollectionLimit < 500 {
+		tools.ReturnErr101Code(c, "Your collection balance is not enough")
 		return
 	}
 

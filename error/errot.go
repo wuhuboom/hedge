@@ -9,6 +9,7 @@
 package eeor
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -54,6 +55,7 @@ func ErrHandler() gin.HandlerFunc {
 			if err := recover(); err != nil {
 				var Err *Error
 
+				fmt.Println(err)
 				if e, ok := err.(*Error); ok {
 					Err = e
 				} else if e, ok := err.(error); ok {

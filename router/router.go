@@ -74,7 +74,8 @@ func Setup() *gin.Engine {
 		ad.POST("/collectionOperation", management.CollectionOperation)
 		//GatewayOperation
 		ad.POST("/gatewayOperation", management.GatewayOperation)
-
+		//GetStatistics
+		ad.POST("/getStatistics", management.GetStatistics)
 	}
 
 	paid := r.Group("/paid/v1")
@@ -126,7 +127,6 @@ func Setup() *gin.Engine {
 		//ChangeTrcAddress
 		mer.POST("/changeTrcAddress", merchant.ChangeTrcAddress)
 
-
 	}
 	//UploadCertificate
 	us := r.Group("/user/v2", LimitIpRequestSameUrlForUser())
@@ -136,28 +136,18 @@ func Setup() *gin.Engine {
 	//Runner
 	run := r.Group("/runner/v2", PermissionToCheckForRunner(), LimitIpRequestSameUrlForUser())
 	{
-		//runner  is  register
 		run.POST("/register", runner.Register)
 		run.POST("/login", runner.Login)
-		//GenerateCaptcha
 		run.POST("/generateCaptcha", runner.GenerateCaptcha)
-		//GetAnnouncement
 		run.POST("/getAnnouncement", runner.GetAnnouncement)
-		//GetCustomerServiceAddress
 		run.POST("/getCustomerServiceAddress", runner.GetCustomerServiceAddress)
-		//GetSlideshow
 		run.POST("/getSlideshow", runner.GetSlideshow)
-		//GetReceiveCollectionOrder
 		run.POST("/getReceiveCollectionOrder", runner.GetReceiveCollectionOrder)
-		//SetUpi
 		run.POST("/setUpi", runner.SetUpi)
-		//ImWorking
 		run.POST("/imWorking", runner.ImWorking)
-		//ConfirmTheOrder
 		run.POST("/confirmTheOrder", runner.ConfirmTheOrder)
-		//LogOut
 		run.POST("/logOut", runner.LogOut)
-
+		run.POST("/getMe", runner.GetMe)
 	}
 
 	ay := r.Group("/agency/v2", PermissionToCheckForAgency())
@@ -174,7 +164,6 @@ func Setup() *gin.Engine {
 		ay.POST("/slideshowOperation", agency.SlideshowOperation)
 		//CollectionOperation
 		ay.POST("/collectionOperation", agency.CollectionOperation)
-
 
 	}
 
@@ -308,6 +297,13 @@ func PermissionToCheckForMerchant() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
+
+			if ad.Status != 1 {
+				tools.JsonWrite(c, -101, nil, "The account has been disabled")
+				c.Abort()
+				return
+			}
+
 			c.Set("who", ad)
 			c.Next()
 		}

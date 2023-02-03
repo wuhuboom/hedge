@@ -88,7 +88,7 @@ func (m *Merchant) ChangeTrcAddress(db *gorm.DB) error {
 }
 
 // AmountChange   kind  1代收 2代付
-func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, collectionId int, merOrder string, species int) (error, Merchant) {
+func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, collectionId int, merOrder string, species int, col modelPay.Collection) (error, Merchant) {
 	//查询账户余额
 	common.MerchantChangeMoneyLock.RLock()
 	mer := Merchant{}
@@ -137,6 +137,7 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 			}
 			return err, mer
 		}
+
 	} else if ch.Kinds == 2 { //代付
 		update["AvailableAmount"] = mer.AvailableAmount - amount - (amount * ch.Rate)
 		update["PayCommission"] = amount*ch.Rate + mer.PayCommission
@@ -149,6 +150,23 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 			}
 			return err, mer
 		}
+	}
+
+	// 佣金处理(代理-总代-商户)
+	commission := Commission{
+		Species:        species,
+		RunnerId:       col.RunnerId,
+		AgencyRunnerId: col.AgencyRunnerId,
+		ActualAmount:   col.ActualAmount,
+		CollectionId:   col.ID,
+		MerRate:        ch.Rate,
+		PayType:        1, Commission: amount * ch.Rate}
+	err = commission.ChangeCommission(db)
+	if err != nil {
+		if species != 3 {
+			db.Rollback()
+		}
+		return err, Merchant{}
 	}
 
 	err = db.Model(&Merchant{}).Where("id=?", mer.ID).Update(update).Error

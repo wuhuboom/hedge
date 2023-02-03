@@ -666,3 +666,52 @@
 2023-02-02T23:36:55.552+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
 2023-02-02T23:59:07.744+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
 2023-02-03T00:08:21.791+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-02-03T13:57:27.689+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-02-03T14:04:27.032+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-02-03T14:08:30.837+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-02-03T14:52:28.031+0800	[35mDEBUG[0m	cmd/server.go:75	LaLa
+2023-02-03T17:12:39.609+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:12:49.550+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:12:50.443+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:12:51.408+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:12:52.199+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:12:53.021+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:12:53.654+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:12:54.190+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:12:54.707+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:12:55.233+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:12:55.759+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:12:58.409+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:12:59.159+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:12:59.731+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:13:07.912+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:13:08.700+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:13:09.108+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:13:09.560+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:14:40.297+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :Error 1062: Duplicate entry '' for key 'collections.uix_collections_own_order'
+2023-02-03T17:18:47.884+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:48.684+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:49.423+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:50.011+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:50.454+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:50.942+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:51.617+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:52.118+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:52.738+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:53.273+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:53.904+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:54.656+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:55.226+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:55.830+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:56.403+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:57.041+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T17:18:57.757+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T22:32:31.450+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T22:32:32.219+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T22:32:32.791+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T22:32:34.862+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T22:32:35.555+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T22:32:38.290+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T22:34:06.688+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T22:34:07.233+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough
+2023-02-03T22:34:07.681+0800	[31mERROR[0m	tools/tools.go:293	ForFunc :The collection line is not enough

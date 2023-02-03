@@ -5,14 +5,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
-	"github.com/wangyi/GinTemplate/dao/mmdb"
+	"math/rand"
 	"reflect"
+	"strconv"
 	"testing"
 )
 
 func TestAsciiKey(t *testing.T) {
 
-	fmt.Println(mmdb.GetCountryForIp("45.250.236.27"))
+	for i := 0; i < 10000; i++ {
+		fmt.Println(strconv.Itoa(rand.Intn(1000)))
+	}
+
 }
 
 func TestCheckImageFile(t *testing.T) {

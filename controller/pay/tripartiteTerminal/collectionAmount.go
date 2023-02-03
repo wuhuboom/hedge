@@ -21,8 +21,10 @@ func CollectionAmount(c *gin.Context) {
 		tools.ReturnVerifyErrCode(c, err)
 		return
 	}
+
+	fmt.Println(cpd.Amount)
 	mer := model.Merchant{}
-	if err := mysql.DB.Where("merchant_num=?", cpd.MerChantNum).First(&mer).Error; err != nil  {
+	if err := mysql.DB.Where("merchant_num=?", cpd.MerChantNum).First(&mer).Error; err != nil {
 		tools.ReturnErr101Code(c, "Illegal request")
 		return
 	}
@@ -82,7 +84,14 @@ func CollectionAmount(c *gin.Context) {
 	collection.ChannelId = ch.ID
 	collection.Currency = cpd.Currency
 	collection.Callback = 1
-	collection.OwnOrder = "Mer" + time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(1000))
+	parseInt, _ := strconv.ParseInt(cpd.Amount, 10, 64)
+	rand.Seed(time.Now().Unix() + parseInt + rand.Int63n(4000))
+	//strconv.ParseInt(cpd.Amount, 10, 64)
+	//collection.OwnOrder = "Mer" + time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(1000))
+
+	timestamp := strconv.FormatInt(time.Now().UnixNano()/1e6, 10)
+	collection.OwnOrder = "Mer" + timestamp + strconv.Itoa(rand.Intn(1000))
+	fmt.Println(collection.OwnOrder)
 	collection.Date = time.Now().Format("2006-01-02")
 	collection.ReleaseTime = time.Now().Unix() + config.ReleaseTime*60
 	i := time.Now().Unix() + config.ExpireTime*60
@@ -103,10 +112,13 @@ func CollectionAmount(c *gin.Context) {
 		if err == nil {
 			tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", UpiString, cpd.Amount, collection.OwnOrder, is), "ok")
 		}
-
 		if err != nil {
 			fmt.Println(err.Error())
 		}
+		//tools.ReturnErr101Code(c, "noOrder")
+		//UpiString = "test"
+		//return
+
 	}
 	//正常三方
 	if UpiString == "" {
@@ -123,9 +135,14 @@ func CollectionAmount(c *gin.Context) {
 			tools.ReturnErr101Code(c, err.Error())
 			return
 		}
+		//每日统计
 		mysql.DB.Model(&modelPay.ChannelBank{}).Where("bank_id=?", upiBank.ID).UpdateColumn("frequency", gorm.Expr("frequency + ?", 1))
 		tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", upiBank.Upi, cpd.Amount, collection.OwnOrder, is), "ok")
+		sta := modelPay.Statistics{TodayAllAmount: amountFlot, MerchantNum: mer.MerchantNum, TodayAllCollection: 1}
+		sta.Add(mysql.DB, 3)
 		return
 	}
+	sta := modelPay.Statistics{TodayAllAmount: amountFlot, MerchantNum: mer.MerchantNum, TodayAllCollection: 1}
+	sta.Add(mysql.DB, 3)
 
 }

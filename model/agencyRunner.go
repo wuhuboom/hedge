@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
+	eeor "github.com/wangyi/GinTemplate/error"
 	"github.com/wangyi/GinTemplate/model/modelPay"
 	"github.com/wangyi/GinTemplate/tools"
 	"time"
@@ -42,6 +43,7 @@ type AgencyRunner struct {
 	NumberOfBindBack            int                `gorm:"default:3"`
 	CollectionChannelArray      []modelPay.Channel `gorm:"-"`
 	PayChannelArray             []modelPay.Channel `gorm:"-"`
+	RunnerId                    int                `gorm:"-"` //奔跑者id
 }
 
 func CheckIsExistModelAgencyRunner(db *gorm.DB) {
@@ -54,8 +56,7 @@ func CheckIsExistModelAgencyRunner(db *gorm.DB) {
 	}
 }
 
-//获取id
-
+// GetId 获取id
 func (ar *AgencyRunner) GetId(db *gorm.DB) int {
 	db.Where("username=?", ar.Username).First(&ar)
 	return ar.ID
@@ -125,5 +126,32 @@ func (ar *AgencyRunner) ChangeCollectionLimit(db *gorm.DB, changeMoney float64, 
 		return err
 	}
 	db.Commit()
+	return nil
+}
+
+// ChangeCommission 修改佣金和余额
+func (ar *AgencyRunner) ChangeCommission(db *gorm.DB) error {
+	ag := AgencyRunner{}
+	err := db.Where("id=?", ar.ID).First(&ag).Error
+	if err != nil {
+		return eeor.OtherError("ChangeCommission:" + err.Error())
+	}
+	//修改佣金
+	var ups map[string]interface{}
+	ups["Commission"] = ag.Commission + ar.Commission
+	//生成账变账单
+	change := AgencyAccountChange{
+		AgencyRunnerId: ar.ID,
+		RunnerId:       ar.RunnerId,
+		NowAmount:      ag.Commission + ar.Commission,
+		ChangeAmount:   ar.Commission,
+		FontAmount:     ag.Commission, Kinds: 4}
+	err = change.Add(db)
+	if err != nil {
+		return err
+	}
+
+	//修改奔跑者 佣金
+
 	return nil
 }

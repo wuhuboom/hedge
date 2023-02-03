@@ -19,6 +19,7 @@ type AgencyAccountChange struct {
 	RecordId                int
 	Remark                  string
 	Created                 int64
+	CollectionId            int
 }
 
 func CheckIsExistModelAgencyAccountChange(db *gorm.DB) {

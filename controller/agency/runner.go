@@ -129,13 +129,11 @@ func RunnerOperation(c *gin.Context) {
 				tools.ReturnErr101Code(c, err.Error())
 				return
 			}
+			redis.Rdb.Set("CollectionLimit"+runner.Username, "123", 5*time.Second)
 			tools.ReturnSuccess2000Code(c, "OK")
 			return
 		}
-
 		//修改佣金  +  -
-
-		//
 
 	}
 

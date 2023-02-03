@@ -219,15 +219,18 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 		if IfSystem == false {
 			ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
 		}
-		//生成collection
-		r.Col.RunnerId = r.ID
-		r.Col.AgencyRunnerId = rr2.AgencyRunnerId
-		r.Col.Species = 3
-		err := r.Col.Add(db)
-		if err != nil {
-			db.Rollback()
-			return err
+		if IfSystem == false {
+			//生成collection
+			r.Col.RunnerId = r.ID
+			r.Col.AgencyRunnerId = rr2.AgencyRunnerId
+			r.Col.Species = 3
+			err := r.Col.Add(db)
+			if err != nil {
+				db.Rollback()
+				return err
+			}
 		}
+
 	}
 	//3订单失效释放订单
 	if kinds == 3 {
@@ -260,17 +263,18 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 			return err
 		}
 	}
+	// 管理员让订单 支付成功
 	if kinds == 6 {
+		ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
 		merchant := Merchant{MerchantNum: r.Col.MerChantNum}
-		err, _ := merchant.AmountChange(db, r.Col.ActualAmount, r.Col.ChannelId, r.Col.ID, r.Col.MerchantOrderNum, 3)
+		err, _ := merchant.AmountChange(db, r.Col.ActualAmount, r.Col.ChannelId, r.Col.ID, r.Col.MerchantOrderNum, 3, r.Col)
 		if err != nil {
 			db.Rollback()
 			return err
 		}
 	}
-
 	//更新玩家的额度
-	err = db.Model(&Runner{}).Where("id=? and  collection_limit =? and  status =1", r.ID, rr2.CollectionLimit).Update(ups).Error
+	err = db.Model(&Runner{}).Where("id=? and  collection_limit =? and  status =1 and  freeze_collection_limit=? ", r.ID, rr2.CollectionLimit, rr2.FreezeCollectionLimit).Update(ups).Error
 	if err != nil {
 		db.Rollback()
 		return err
@@ -315,3 +319,5 @@ func (r *Runner) SnagTheOrder(db *gorm.DB, coll modelPay.Collection) (string, er
 	upi = UPP.Address
 	return upi, nil
 }
+
+// ChangeCommissionAndBalance 修改佣金和账户余额

@@ -13,8 +13,7 @@ import (
 	"time"
 )
 
-//操作订单
-
+// CollectionOperation 操作订单
 func CollectionOperation(c *gin.Context) {
 	action := c.Query("action")
 	if action == "check" {
@@ -168,17 +167,22 @@ func CollectionOperation(c *gin.Context) {
 				tools.ReturnErr101Code(c, "actual_amount must  have")
 				return
 			}
+			if ActualAmount > col.ActualAmount {
+				tools.ReturnErr101Code(c, "The actual amount cannot be greater than the order amount")
+				return
+			}
 			//充值成功
 			if col.Species == 3 {
 				//跑分逻辑
 				runner := model.Runner{ID: col.RunnerId}
 				runner.CollectionLimit = 0
 				runner.FreezeCollectionLimit = -ActualAmount
-				runner.Col.ID = col.ID
-				runner.Col.ChannelId = col.ChannelId
-				runner.Col.MerchantOrderNum = col.MerchantOrderNum
-				runner.Col.MerChantNum = col.MerChantNum
-				runner.Col.ActualAmount = ActualAmount
+				//runner.Col.ID = col.ID
+				//runner.Col.ChannelId = col.ChannelId
+				//runner.Col.MerchantOrderNum = col.MerchantOrderNum
+				//runner.Col.MerChantNum = col.MerChantNum
+				//runner.Col.ActualAmount = ActualAmount
+				runner.Col = col
 				err := runner.ChangeCollectionLimit(mysql.DB, false, 6)
 				if err != nil {
 					tools.ReturnErr101Code(c, err.Error())
@@ -187,7 +191,7 @@ func CollectionOperation(c *gin.Context) {
 			} else {
 				//普通三方逻辑
 				merchant := model.Merchant{MerchantNum: col.MerChantNum}
-				err, _ := merchant.AmountChange(mysql.DB, ActualAmount, col.ChannelId, col.ID, col.MerchantOrderNum, 1)
+				err, _ := merchant.AmountChange(mysql.DB, ActualAmount, col.ChannelId, col.ID, col.MerchantOrderNum, 1, col)
 				if err != nil {
 					tools.ReturnErr101Code(c, err.Error())
 					return
@@ -245,6 +249,11 @@ func CollectionOperation(c *gin.Context) {
 		err = mysql.DB.Where(" merchant_num= ?", col.MerChantNum).First(&mer).Error
 		if err != nil {
 			tools.ReturnErr101Code(c, "Businesses don't exist")
+			return
+		}
+
+		if mer.Status != 2 {
+			tools.ReturnErr101Code(c, "The order has not been paid")
 			return
 		}
 
