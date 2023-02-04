@@ -180,6 +180,16 @@ func SetMyselfConfig(c *gin.Context) {
 	if ca, isE := c.GetPostForm("junior_point"); isE == true {
 		ups["JuniorPoint"], _ = strconv.ParseFloat(ca, 64)
 	}
+
+	//min_withdraw 代理最小提现金额
+	if ca, isE := c.GetPostForm("min_withdraw"); isE == true {
+		ups["MinWithdraw"], _ = strconv.ParseFloat(ca, 64)
+	}
+
+	///exchange_rate
+	if ca, isE := c.GetPostForm("exchange_rate"); isE == true {
+		ups["ExchangeRate"], _ = strconv.ParseFloat(ca, 64)
+	}
 	err := mysql.DB.Model(&model.AgencyRunner{}).Where("id=?", whoMap.ID).Update(ups).Error
 	if err != nil {
 		tools.ReturnErr101Code(c, "sorry, "+err.Error())

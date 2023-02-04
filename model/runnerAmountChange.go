@@ -17,6 +17,7 @@ type RunnerAmountChange struct {
 	CollectionId int
 	Remark       string
 	Created      int64
+	RecordId     int
 	Col          modelPay.Collection `gorm:"-"`
 }
 

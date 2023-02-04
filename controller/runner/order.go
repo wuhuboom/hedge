@@ -52,9 +52,8 @@ func ImWorking(c *gin.Context) {
 	}
 
 	//判断 是要有资格接单
-
 	if whoMap.CollectionLimit < 500 {
-		tools.ReturnErr101Code(c, "Your collection balance is not enough")
+		tools.ReturnErr101Code(c, "Your collection balance is not enough,The balance needs to be at least 500")
 		return
 	}
 
@@ -68,6 +67,7 @@ func ImWorking(c *gin.Context) {
 		tools.ReturnErr101Code(c, err)
 		return
 	}
+
 	tools.ReturnSuccess2000Code(c, c.PostForm("work"))
 	return
 }

@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/wangyi/GinTemplate/controller/hedge/admin"
 	"github.com/wangyi/GinTemplate/dao/mmdb"
@@ -225,18 +226,68 @@ func Withdraw(c *gin.Context) {
 	whoMap := who.(model.Runner)
 	//判断提现卡的类型
 	kind, _ := strconv.Atoi(c.PostForm("kinds"))
+	amount, _ := strconv.ParseFloat(c.PostForm("amount"), 64)
 	if kind != 2 && kind != 3 {
 		tools.ReturnErr101Code(c, "The withdrawal type is incorrect")
 		return
 	}
+	if amount < 0 {
+		tools.ReturnErr101Code(c, "your withdrawal amount mush be greater then zero ")
+		return
+	}
+	if amount > whoMap.Balance {
+		tools.ReturnErr101Code(c, "sorry,your balance is not enough")
+		return
+	}
 	//判断是是否绑定
 	UPI := model.RunnerUpi{}
-	err := mysql.DB.Where("kinds= ? and runner_id=?", kind, whoMap.ID).First(&UPI).Error
+	err := mysql.DB.Where("kind= ? and runner_id=?", kind, whoMap.ID).First(&UPI).Error
 	if err != nil {
 		tools.ReturnErr101Code(c, "Please bind your withdrawal bank card first")
 		return
 	}
 
-	//
+	//判断最小提现金额
+	ag := model.AgencyRunner{}
+	mysql.DB.Where("id=?", whoMap.AgencyRunnerId).First(&ag)
+	if amount < ag.MinWithdraw {
+		tools.ReturnErr101Code(c, fmt.Sprintf("Minimum withdrawal amount  is  %2.f", ag.MinWithdraw))
+		return
 
+	}
+	//更新最新余额
+	ups := map[string]interface{}{}
+	db := mysql.DB.Begin()
+	ups["Balance"] = whoMap.Balance - amount
+	ups["FreezeMoney"] = whoMap.FreezeMoney + amount
+	err = db.Model(&model.Runner{}).Where("id=? and  balance=? and freeze_money=?", whoMap.ID, whoMap.Balance, whoMap.FreezeMoney).Update(ups).Error
+	if err != nil {
+		tools.ReturnErr101Code(c, "Sorry, system error, please withdraw again")
+		return
+	}
+	//生成账单
+	record := model.Record{
+		RunnerId:       whoMap.ID,
+		AgencyRunnerId: whoMap.AgencyRunnerId,
+		Kinds:          1,
+		Amount:         amount, WithdrawalMethod: kind}
+	err = record.Add(db)
+	if err != nil {
+		db.Rollback()
+		tools.ReturnErr101Code(c, "Sorry, system error, please withdraw again")
+		return
+	}
+	//生成账变
+	fmt.Println(record)
+	//账变
+	change := model.RunnerAmountChange{RunnerId: whoMap.ID, NowAmount: whoMap.Balance - amount, FontAmount: whoMap.Balance, ChangeAmount: amount, Kinds: 6, RecordId: record.ID}
+	err = change.Add(db)
+	if err != nil {
+		db.Rollback()
+		tools.ReturnErr101Code(c, "Sorry, system error, please withdraw again")
+		return
+	}
+	db.Commit()
+	tools.ReturnSuccess2000Code(c, "Successful  withdraw,waiting  for  management review")
+	return
 }

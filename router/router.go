@@ -156,6 +156,7 @@ func Setup() *gin.Engine {
 		run.POST("/getChangeAmount", runner.GetChangeAmount)
 		run.POST("/getCollectionDetail", runner.GetCollectionDetail)
 		run.POST("/getCollectionRecord", runner.GetCollectionRecord)
+		run.POST("/withdraw", runner.Withdraw)
 
 	}
 

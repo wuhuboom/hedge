@@ -67,6 +67,7 @@ func Init() error {
 	model.CheckIsExistModelMerchantLog(DB)
 	model.CheckIsExistModelAdminAccountChange(DB)
 	model.CheckIsExistModelRunnerStatistics(DB)
+	model.CheckIsExistModelRecord(DB)
 	////////////////////////////////////////////////////////////////////////模型初始化
 	return err
 }
