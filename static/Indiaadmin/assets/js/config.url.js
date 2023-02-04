@@ -1,5 +1,5 @@
 //
-global_requestAddress = "http://127.0.0.1:8080";
+global_requestAddress = "";
 //登录接口
 global_requestloginAddress_js="/admin/v1/login";
 
@@ -27,6 +27,9 @@ global_requestAddress_js_agencyOperation="/admin/v1/agencyOperation";
 
 // 获取系统配置
 global_requestAddress_js_configOperation="/admin/v1/configOperation";
+
+//获取网关/添加网关/修改网关地址
+global_requestAddress_js_gatewayOperation="/admin/v1/gatewayOperation";
 
 
 

@@ -84,10 +84,11 @@ func (co *Commission) ChangeCommission(db *gorm.DB) error {
 			if err != nil {
 				return err
 			}
+
 			//生成账变(佣金账变)
 			change := RunnerAmountChange{RunnerId: runner.ID,
 				Kinds: 4, CollectionId: co.CollectionId,
-				NowAmount: runner.Commission + runner.CollectionPoint*co.ActualAmount, FontAmount: runner.Commission, ChangeAmount: runner.CollectionPoint * co.ActualAmount}
+				NowAmount: runner.Commission + rate*co.ActualAmount, FontAmount: runner.Commission, ChangeAmount: rate * co.ActualAmount}
 			err := change.Add(db)
 			if err != nil {
 				return err
@@ -96,9 +97,17 @@ func (co *Commission) ChangeCommission(db *gorm.DB) error {
 			amountChange := RunnerAmountChange{RunnerId: runner.ID, Kinds: 6, CollectionId: co.CollectionId,
 				Remark: "rebate", NowAmount: runner.Balance + runner.CollectionPoint*co.ActualAmount, FontAmount: runner.Balance, ChangeAmount: runner.CollectionPoint * co.ActualAmount}
 			err = amountChange.Add(db)
+
 			if err != nil {
 				return err
 			}
+			statistics := RunnerStatistics{RunnerId: runner.ID,
+				AgencyRunnerId: runner.AgencyRunnerId, CollectionAmount: co.ActualAmount, CollectionCount: 1, Commission: rate * co.ActualAmount}
+			err = statistics.Add(db)
+			if err != nil {
+				return err
+			}
+
 			//存在上级
 			if runner.Superior != 0 {
 				runner2 := Runner{}
@@ -124,6 +133,13 @@ func (co *Commission) ChangeCommission(db *gorm.DB) error {
 				amountChange := RunnerAmountChange{RunnerId: runner2.ID, Kinds: 6, CollectionId: co.CollectionId,
 					Remark: "rebate", NowAmount: runner2.Balance + runner2.CollectionPoint*co.ActualAmount, FontAmount: runner2.Balance, ChangeAmount: runner2.CollectionPoint * co.ActualAmount}
 				err = amountChange.Add(db)
+				if err != nil {
+					return err
+				}
+
+				statistics := RunnerStatistics{RunnerId: runner.ID,
+					AgencyRunnerId: runner.AgencyRunnerId, CollectionAmount: co.ActualAmount, CollectionCount: 1, Commission: rate * co.ActualAmount}
+				err = statistics.Add(db)
 				if err != nil {
 					return err
 				}

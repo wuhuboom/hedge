@@ -117,7 +117,7 @@ func CollectionOperation(c *gin.Context) {
 
 		//  status  1等待支付  2支付成功  3失败
 		sta, _ := strconv.Atoi(c.PostForm("status"))
-		if sta != 2 && sta != 3 {
+		if sta != 2 {
 			tools.ReturnErr101Code(c, "Illegal request")
 			return
 		}
@@ -142,11 +142,15 @@ func CollectionOperation(c *gin.Context) {
 			}
 			//跑分 处理逻辑  // 充值失败
 			if col.Species == 3 {
+
+				//失败  必须要就订单 以及过期
+
 				//订单被管理驳回了    代理玩家要退还额度
 				runner := model.Runner{ID: col.RunnerId}
 				runner.CollectionLimit = col.ActualAmount
 				runner.FreezeCollectionLimit = -col.ActualAmount
 				runner.Col.ID = col.ID
+				runner.Col.Status = col.Status
 				err := runner.ChangeCollectionLimit(mysql.DB, false, 5)
 				if err != nil {
 					tools.ReturnErr101Code(c, err.Error())
@@ -154,7 +158,7 @@ func CollectionOperation(c *gin.Context) {
 				}
 			} else {
 				// 正常三方 逻辑
-				if err := mysql.DB.Model(&modelPay.Collection{}).Where("id=?", col.ID).Update(&modelPay.Collection{
+				if err := mysql.DB.Model(&modelPay.Collection{}).Where("id=? and status=?", col.ID, col.Status).Update(&modelPay.Collection{
 					Status: 3, Updated: time.Now().Unix()}).Error; err != nil {
 					tools.ReturnErr101Code(c, err.Error())
 					return
@@ -177,11 +181,6 @@ func CollectionOperation(c *gin.Context) {
 				runner := model.Runner{ID: col.RunnerId}
 				runner.CollectionLimit = 0
 				runner.FreezeCollectionLimit = -ActualAmount
-				//runner.Col.ID = col.ID
-				//runner.Col.ChannelId = col.ChannelId
-				//runner.Col.MerchantOrderNum = col.MerchantOrderNum
-				//runner.Col.MerChantNum = col.MerChantNum
-				//runner.Col.ActualAmount = ActualAmount
 				runner.Col = col
 				err := runner.ChangeCollectionLimit(mysql.DB, false, 6)
 				if err != nil {

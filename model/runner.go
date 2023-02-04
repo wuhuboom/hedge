@@ -185,13 +185,11 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 		//判断是否够用
 		ag := AgencyRunner{}
 		db.Where("id=?", r.AgencyRunnerId).First(&ag)
-
 		if r.CollectionLimit > 0 {
 			if ag.CollectionLimit < r.CollectionLimit {
 				return eeor.OtherError("The collection line is not enough")
 			}
 		}
-
 		//修改余额
 		apps := make(map[string]interface{})
 		apps["CollectionLimit"] = ag.CollectionLimit - r.CollectionLimit
@@ -213,11 +211,12 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 	}
 	ups := make(map[string]interface{})
 	ups["CollectionLimit"] = rr2.CollectionLimit + r.CollectionLimit
-
 	//2玩家 接单
 	if kinds == 2 {
 		if IfSystem == false {
 			ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
+			ups["CollectionTime"] = rr2.CollectionTime + 1
+			r.Remark = "关联订单:" + r.Col.OwnOrder + " 减少"
 		}
 		if IfSystem == false {
 			//生成collection
@@ -229,14 +228,21 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 				db.Rollback()
 				return err
 			}
+			//玩家统计
+			statistics := RunnerStatistics{RunnerId: r.ID, AgencyRunnerId: r.AgencyRunnerId, CollectionAllAmount: r.Col.Amount, CollectionAllCount: 1}
+			err = statistics.Add(db)
+			if err != nil {
+				db.Rollback()
+				return err
+			}
 		}
-
 	}
 	//3订单失效释放订单
 	if kinds == 3 {
 		ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
+		r.Remark = "关联订单:" + r.Col.OwnOrder + " 增加,原因订单过期未支付"
 		//修改订单 状态
-		err := db.Model(&modelPay.Collection{}).Where("id=?", r.Col.ID).Update(&modelPay.Collection{Status: 4}).Error
+		err := db.Model(&modelPay.Collection{}).Where("id=? and commission=?  and  status=1", r.Col.ID, r.Col.Commission).Update(&modelPay.Collection{Status: 4}).Error
 		if err != nil {
 			db.Rollback()
 			return err
@@ -255,7 +261,7 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 	//5管理让订单失败(退还玩家额度)
 	if kinds == 5 {
 		ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
-		err := db.Model(&modelPay.Collection{}).Where("id=?", r.Col.ID).Update(&modelPay.Collection{
+		err := db.Model(&modelPay.Collection{}).Where("id=? and  freeze_collection_limit=?  and status=?", r.Col.ID, rr2.FreezeCollectionLimit, r.Col.Status).Update(&modelPay.Collection{
 			Status:  3,
 			Updated: time.Now().Unix(), Remark: r.Remark}).Error
 		if err != nil {
@@ -284,7 +290,7 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 		NowAmount:    rr2.CollectionLimit + r.CollectionLimit,
 		ChangeAmount: r.CollectionLimit,
 		FontAmount:   rr2.CollectionLimit,
-		Remark:       r.Remark, Kinds: 2}
+		Remark:       r.Remark, Kinds: 2, CollectionId: r.Col.ID}
 	err = change.Add(db)
 	if err != nil {
 		db.Rollback()

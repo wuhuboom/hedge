@@ -124,12 +124,27 @@
 <!--数据表格操作工具栏-->
 <script type="text/html" id="orderListBar">
 <!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="check" style="background-color: #fb7299;color: #ffffff;"><i class="layui-icon layui-icon-form"></i>查看</a>-->
-    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="editbtn" ><i class="layui-icon layui-icon-edit"></i>修改</a>
-    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="CashPledge_edit" style="background-color: #1e9fff;color: #fff;border: 1px solid #1e9fff;">修改押金金额</a>
-    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="CollectionLimit_edit" style="background-color: #926dde;color: #fff;border: 1px solid #926dde;">修改代收额度</a>
-    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="resetGoogle" style="background-color: #ffba00;color: #fff;border: 1px solid #ffba00;">重置google</a>
-    <!--        <a class="layui-btn layui-btn-sm  " lay-event="changebtn" style="background-color: #009688"><i class="layui-icon layui-icon-edit"></i>权限设置</a>-->
-    <!--        <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="tixianbtn" style="background-color: #fbc472"><i class="layui-icon layui-icon-down"></i>提现下分</a>-->
+
+    <a class="layui-btn layui-btn-sm " style="background: #ffba00" data-dropdown="#userTbDrop{{d.LAY_INDEX}}"
+       no-shade="true">
+        操作<i class="layui-icon layui-icon-drop" style="font-size: 12px;margin-right: 0;"></i></a>
+    <!-- 下拉菜单 -->
+    <ul class="dropdown-menu-nav dropdown-bottom-center layui-hide  " id="userTbDrop{{d.LAY_INDEX}}">
+        <div class="dropdown-anchor"></div>
+        <li><a lay-event="editbtn">修改</a></li>
+        <li><a lay-event="CashPledge_edit">修改押金金额</a></li>
+        <li><a lay-event="CollectionLimit_edit">修改代收额度</a></li>
+        <li><a lay-event="resetGoogle">重置google</a></li>
+    </ul>
+
+
+<!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="editbtn" ><i class="layui-icon layui-icon-edit"></i>修改</a>-->
+<!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="CashPledge_edit" style="background-color: #1e9fff;color: #fff;border: 1px solid #1e9fff;">修改押金金额</a>-->
+<!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="CollectionLimit_edit" style="background-color: #926dde;color: #fff;border: 1px solid #926dde;">修改代收额度</a>-->
+<!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="resetGoogle" style="background-color: #ffba00;color: #fff;border: 1px solid #ffba00;">重置google</a>-->
+<!--    -->
+<!--        <a class="layui-btn layui-btn-sm  " lay-event="changebtn" style="background-color: #009688"><i class="layui-icon layui-icon-edit"></i>权限设置</a>-->
+<!--            <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="tixianbtn" style="background-color: #fbc472"><i class="layui-icon layui-icon-down"></i>提现下分</a>-->
 
 </script>
 
@@ -146,8 +161,8 @@
 
         var jsondata ;
         var agent_information
-        var local_storage_key = 'admin_agent_t_list';
-        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','treeTable'], function () {
+        var local_storage_key = 'admin_agent_t_list';//修改中间名称
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','treeTable','dropdown'], function () {
             var $ = layui.jquery;
             var layer = layui.layer;
             var form = layui.form;
@@ -157,9 +172,9 @@
             var xmSelect = layui.xmSelect;
             var notice = layui.notice;
             var treeTable = layui.treeTable
+            var dropdown = layui.dropdown;
 
             var log_login_request_param = {};
-            log_login_request_param['kinds']= '2';
             // log_login_request_param['token']= $.cookie('tokenMyb');
 
             /* 渲染表格 */
@@ -263,6 +278,8 @@
                             }
                         }},
                     {field: 'InvitationCode', title: '邀请码',  sort: true,align:"center",width: 150},
+                    {field: 'CollectionChannel', title: '代付通道',  sort: true,align:"center",width: 150},
+                    {field: 'CollectionChannel', title: '代收通道',  sort: true,align:"center",width: 150},
                     {field: 'CashPledge', title: '押金金额',  sort: true,align:"center",width: 150},
                     {field: 'CollectionPoint', title: '代收盈利点',  sort: true,align:"center",width: 150,templet:function (d) {
                         if (d.CollectionPoint !=0){
@@ -310,7 +327,7 @@
                     //         // return util.toDateString(d.Updated * 1000);
                     //     }},
                     // {field: 'WhiteIps', title: '白名单', edit:true, sort: true,align:"center"},
-                    {title: '操作', templet:'#orderListBar',fixed:"right",align:"center",width: 500}
+                    {title: '操作', templet:'#orderListBar',fixed:"right",align:"center",width: 130}
                 ]]
                 return col;
             }
@@ -869,7 +886,7 @@
                 else if (obj.event === 'editbtn') { // 修改
                     jsondata = JSON.stringify(currDatas)
                     var index = layui.layer.open({
-                        area: ['1200px', '670px'],
+                        area: ['1200px', '700px'],
                         fixed: false, //不固定
                         maxmin: false,
                         title : "代理编辑",
@@ -983,7 +1000,7 @@
             form.on('submit(addAdmin)', function (data) {
                 var index = layui.layer.open({
                     // area: ['600px', '500px'],
-                    area: ['1200px', '500px'],
+                    area: ['1200px', '750px'],
                     fixed: false, //不固定
                     maxmin: false,
                     title : "添加代理",

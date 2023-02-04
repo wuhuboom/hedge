@@ -152,15 +152,20 @@
     } else {
         var currParentDatas = eval('(' + parent.jsondata + ')')
 
-        var payChannelParant =  currParentDatas.CollectionChannel
-        payChannelParant = payChannelParant.split('@')
+        if(currParentDatas.CollectionChannel){
+            var payChannelParant =  currParentDatas.CollectionChannel
+            payChannelParant = payChannelParant.split('@')
+        }
+
         // console.log("payChannelParant",payChannelParant)
         // var payChannelParantArray  =  eval('(' + payChannelParant.split('@') + ')');
-        var paidChannelParant =   currParentDatas.pay_channel
-        if(paidChannelParant){
-            paidChannelParant = paidChannelParant.split('@')
+        if(currParentDatas.PayChannel){
+            var paidChannelParant =  currParentDatas.PayChannel
+            if(paidChannelParant){
+                paidChannelParant = paidChannelParant.split('@')
+            }
         }
-        // console.log("paidChannelParant",paidChannelParant)
+
 
         var payChannelArrS = []
         var payingChannelArrS = []
@@ -209,32 +214,39 @@
 
                         })
 
-                        payChannelParant.forEach((item,index)=>{
-                            var opaythis =  $("input[name='payCheck']")
-                            // console.log("opaythis",opaythis)
+                        if(payChannelParant){
+                            payChannelParant.forEach((item,index)=>{
+                                var opaythis =  $("input[name='payCheck']")
+                                // console.log("opaythis",opaythis)
 
-                            opaythis.each(function( indexT ) {
-                                if($(this).val() == item){
-                                    // console.log( indexT, $(this).attr('title'));
-                                    // opaythis[indexT].checked = true
-                                    $(this).attr("checked",true);
-                                }
-                            });
+                                opaythis.each(function( indexT ) {
+                                    if($(this).val() == item){
+                                        // console.log( indexT, $(this).attr('title'));
+                                        // opaythis[indexT].checked = true
+                                        $(this).attr("checked",true);
+                                    }
+                                });
 
-                        })
+                            })
+                        }
 
-                        // paidChannelParant.forEach((item,index)=>{
-                        //     var opaythis =  $("input[name='payingCheck']")
-                        //     // console.log("opaythis",opaythis)
-                        //     opaythis.each(function( indexT ) {
-                        //         if($(this).val() == item){
-                        //             // console.log( indexT, $(this).attr('title'));
-                        //             // opaythis[indexT].checked = true
-                        //             $(this).attr("checked",true);
-                        //         }
-                        //     });
 
-                        // })
+
+                        if(paidChannelParant){
+                            paidChannelParant.forEach((item,index)=>{
+                                var opaythis =  $("input[name='payingCheck']")
+                                // console.log("opaythis",opaythis)
+                                opaythis.each(function( indexT ) {
+                                    if($(this).val() == item){
+                                        // console.log( indexT, $(this).attr('title'));
+                                        // opaythis[indexT].checked = true
+                                        $(this).attr("checked",true);
+                                    }
+                                });
+
+                            })
+
+                        }
 
 
 

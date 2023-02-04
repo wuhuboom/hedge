@@ -12,48 +12,48 @@
 
     <style>
 
-            .currSerachBtn{
-                box-shadow: 0 15px 18px -6px rgb(45 140 240 / 65%) !important;
-            }
+        .currSerachBtn{
+            box-shadow: 0 15px 18px -6px rgb(45 140 240 / 65%) !important;
+        }
 
-            .currReloadBtn{
-                box-shadow: 0 15px 18px -6px rgb(146 109 222 / 65%) !important;
-            }
+        .currReloadBtn{
+            box-shadow: 0 15px 18px -6px rgb(146 109 222 / 65%) !important;
+        }
 
-            .layui-table-cell{
-                height:46px;
-                line-height: 46px;
+        .layui-table-cell{
+            height:46px;
+            line-height: 46px;
 
-                /*height: auto ;*/
-                /*white-space: normal;*/
-                /*word-wrap:break-word;*/
-            }
+            /*height: auto ;*/
+            /*white-space: normal;*/
+            /*word-wrap:break-word;*/
+        }
 
-            /*!** 数据表格中的select尺寸调整 *!*/
-            /*.layui-table-view .layui-table-cell .layui-select-title .layui-input {*/
-            /*    height: 28px;*/
-            /*    line-height: 28px;*/
-            /*}*/
+        /*!** 数据表格中的select尺寸调整 *!*/
+        /*.layui-table-view .layui-table-cell .layui-select-title .layui-input {*/
+        /*    height: 28px;*/
+        /*    line-height: 28px;*/
+        /*}*/
 
-            /*.layui-table-view [lay-size="lg"] .layui-table-cell .layui-select-title .layui-input {*/
-            /*    height: 40px;*/
-            /*    line-height: 40px;*/
-            /*}*/
+        /*.layui-table-view [lay-size="lg"] .layui-table-cell .layui-select-title .layui-input {*/
+        /*    height: 40px;*/
+        /*    line-height: 40px;*/
+        /*}*/
 
-            /*.layui-table-view [lay-size="lg"] .layui-table-cell .layui-select-title .layui-input {*/
-            /*    height: 40px;*/
-            /*    line-height: 40px;*/
-            /*}*/
+        /*.layui-table-view [lay-size="lg"] .layui-table-cell .layui-select-title .layui-input {*/
+        /*    height: 40px;*/
+        /*    line-height: 40px;*/
+        /*}*/
 
-            /*.layui-table-view [lay-size="sm"] .layui-table-cell .layui-select-title .layui-input {*/
-            /*    height: 20px;*/
-            /*    line-height: 20px;*/
-            /*}*/
+        /*.layui-table-view [lay-size="sm"] .layui-table-cell .layui-select-title .layui-input {*/
+        /*    height: 20px;*/
+        /*    line-height: 20px;*/
+        /*}*/
 
-            /*.layui-table-view [lay-size="sm"] .layui-table-cell .layui-btn-xs {*/
-            /*    height: 18px;*/
-            /*    line-height: 18px;*/
-            /*}*/
+        /*.layui-table-view [lay-size="sm"] .layui-table-cell .layui-btn-xs {*/
+        /*    height: 18px;*/
+        /*    line-height: 18px;*/
+        /*}*/
 
 
 
@@ -78,9 +78,9 @@
                         <button class="layui-btn icon-btn currSerachBtn" lay-filter="addGropeTask" id="addGropeTask" lay-submit style="background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);">
                             <i class="layui-icon">&#xe624;</i>添加
                         </button>
-<!--                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit >-->
-<!--                            <i class="layui-icon">&#xe615;</i>搜索-->
-<!--                        </button>-->
+                        <!--                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit >-->
+                        <!--                            <i class="layui-icon">&#xe615;</i>搜索-->
+                        <!--                        </button>-->
                         <button class="layui-btn icon-btn currReloadBtn" lay-filter="reloadData" lay-submit style="background-color: #926dde;border-color: #926dde;">
                             <i class="layui-icon layui-icon-refresh"></i>刷新数据
                         </button>
@@ -107,7 +107,7 @@
 <!--数据表格操作工具栏-->
 <script type="text/html" id="orderListBar">
     <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="channeldetail" style="background-color: #ffba00"><i class="layui-icon layui-icon-app"></i>查看</a>
-<!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="deleteBtn" style="background-color: #f96868 "><i class="layui-icon layui-icon-delete"></i>删除</a>-->
+    <!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="deleteBtn" style="background-color: #f96868 "><i class="layui-icon layui-icon-delete"></i>删除</a>-->
 </script>
 
 <script>
@@ -137,14 +137,15 @@
 
 
 
-
             var log_login_request_param = {};
-            log_login_request_param['kinds']="1"
-
-
-
+            log_login_request_param['kinds']= '2';
             // log_login_request_param['overlay_id']= 0;
             // log_login_request_param['token']= $.cookie('tokenMyb');
+
+
+
+
+
             /* 渲染表格 */
             var insTb = table.render({
                 elem: '#userTable',
@@ -157,6 +158,7 @@
                     statusCode: 200,
                     dataName: 'result',
                 },
+
                 where:log_login_request_param,
                 // toolbar: ['<p>',
                 //     '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
@@ -164,13 +166,14 @@
                 //     '</p>'].join(''),
                 cellMinWidth: 100,
                 page :  { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
-                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip','data'] //自定义分页布局
                     //,curr: 5 //设定初始在第 5 页
                     ,groups: 10 //只显示 1 个连续页码
                     ,first: "首页" //不显示首页
                     ,last: "尾页"//不显示尾页
                 },
                 height : "full-100",
+
                 limit : 20,
                 limits : [20,30,50,100],
                 // id : "systemLog",
@@ -208,7 +211,7 @@
                     {field: 'Created', title: '创建时间',align:"center",width:175, sort: true, templet: function (d) {
                             // return util.toDateString(d.Created* 1000);
                             return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
-                    }},
+                        }},
                     // {
                     //     field: 'Updated', title: '更新时间',align:"center",width:175, templet: function (d) {
                     //         // return util.toDateString(d.Updated* 1000);
@@ -373,7 +376,7 @@
                     url: global_requestAddress+global_requestAddress_js_channel+"?action=update",
                     data: param,
                     headers:{
-                      token:mybck
+                        token:mybck
                     },
                     type: "POST",
                     dataType: "json",

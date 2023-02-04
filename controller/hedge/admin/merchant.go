@@ -114,7 +114,6 @@ func MerchantOperation(c *gin.Context) {
 		}
 
 		//max   min  pay
-
 		if minMoney, isExist := c.GetPostForm("min_pay"); isExist == true {
 			if maxMoney, isExist := c.GetPostForm("max_pay"); isExist == true {
 				Min, _ := strconv.ParseFloat(minMoney, 64)
@@ -149,6 +148,21 @@ func MerchantOperation(c *gin.Context) {
 
 		mysql.DB.Model(&model.Merchant{}).Where("id=?", id).Update(updated)
 		tools.ReturnSuccess2000Code(c, "ok")
+		return
+	}
+	//重置谷歌
+	if action == "resetGoogle" {
+
+		id := c.PostForm("id")
+		//判断这个商户号是否存在?
+		mer := model.Merchant{}
+		err := mysql.DB.Where("id=?", id).First(&mer).Error
+		if err != nil {
+			tools.ReturnErr101Code(c, "sorry ,the  merchant is not  exist")
+			return
+		}
+		mysql.DB.Model(&model.Merchant{}).Where("id=?", id).Update(map[string]interface{}{"GoogleCode": ""})
+		tools.ReturnSuccess2000Code(c, "OK")
 		return
 	}
 

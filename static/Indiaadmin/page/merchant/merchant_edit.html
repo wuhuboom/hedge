@@ -93,31 +93,41 @@
 
                 <div class="layui-form-item layui-row">
                     <div class="layui-inline layui-col-md8">
-                        <label class="layui-form-label ">网关</label>
-                        <div class="layui-input-block">
-                            <input name="gateway" id="gateway" placeholder="请输入网关" class="layui-input"/>
+                        <label class="layui-form-label ">网关地址</label>
+<!--                        <div class="layui-input-block">-->
+<!--                            <input name="gateway" id="gateway" placeholder="请输入网关" class="layui-input"/>-->
+<!--                        </div>-->
+
+                        <div class="layui-inline" style="width: 620px">
+                            <select id="gateway" name="gateway">
+                                <option value="">选择网关地址</option>
+                            </select>
                         </div>
+
                     </div>
+
                     <div class="layui-inline layui-col-md4">
                         <label class="layui-form-label ">最小代付</label>
                         <div class="layui-input-block">
                             <input name="min_pay" id="min_pay" placeholder="请输入最小代付" class="layui-input"/>
                         </div>
                     </div>
+
                     <div class="layui-inline layui-col-md4">
                         <label class="layui-form-label ">最大代付</label>
                         <div class="layui-input-block">
                             <input name="max_pay" id="max_pay" placeholder="请输入最大代付" class="layui-input"/>
                         </div>
                     </div>
+
                     <div class="layui-inline layui-col-md4">
                         <label class="layui-form-label ">谷歌开关:</label>
                         <div class="layui-input-block">
                             <input type="checkbox"  name="google_switch" lay-skin="switch"lay-filter="google_switch_filter" id="google_switch" lay-text="开启|关闭" checked>
                         </div>
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
 
@@ -147,7 +157,7 @@
         $("#min_money").val(currParentDatas.MinMoney)
         $("#max_money").val(currParentDatas.MaxMoney)
 
-        $("#gateway").val(currParentDatas.Gateway)
+
         $("#min_pay").val(currParentDatas.MinPay)
         $("#max_pay").val(currParentDatas.MaxPay)
 
@@ -162,7 +172,7 @@
 
         var payChannelArrS = []
         var payingChannelArrS = []
-
+        var CC
         layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice'], function () {
             var $ = layui.jquery;
             var layer = layui.layer;
@@ -211,12 +221,22 @@
                 data: []
             })
 
+            var gatewaySel = xmSelect.render({
+                el: '#gateway',
+                autoRow: true,
+                theme: {
+                    color: '#6739b6',
+                },
+                data: []
+            })
+
 
             //获取数据添加到下拉框中
             var param = {};
             param.page = 1
             param.limit = 3000
 
+            //通道
             $.ajax({
                 url: global_requestAddress + global_requestAddress_js_channel + "?action=check",
                 headers: {
@@ -265,6 +285,7 @@
                         paySel.setValue(payChannelParant)
 
 
+
                         payingSel.update({
                             autoRow: true,
                             filterable: true,
@@ -286,6 +307,49 @@
                 }
             })
 
+            //下拉选项赋值(网关地址)
+            $.ajax({
+                //动态获取下拉选项的接口，返回数据主要是id+name
+                url: global_requestAddress+global_requestAddress_js_gatewayOperation+"?action=check",
+                dataType: 'json',
+                type: 'POST',
+                headers: {
+                    "token": mybck
+                },
+                data:param,
+                success: function (data) {
+
+                    // var returnDataArray = data.result
+                    // $("#gateway").empty();
+                    // $('#gateway').append(new Option('选择网关地址', ''));// 下拉菜单里添加元素
+                    // $.each(returnDataArray, function (index, item) {
+                    //     $('#gateway').append(new Option(item.Gateway, item.ID));// 下拉菜单里添加元素
+                    // });
+                    //
+                    // //利用val值来设置的时候
+                    // $("#gateway").val(currParentDatas.GatewayId)
+                    // //利用标题来设置的时候
+                    // // $('#vip_filter').find('option:contains(' + currParentDatas.VipId + ')').prop('selected',true);
+                    // //重新渲染 固定写法
+                    // form.render("select");
+
+
+
+                    let str="<option value=''>选择网关地址</option>";
+                    for(let i of data.result){
+                        //组装数据
+                        str+=`<option value='${i.ID}'>${i.Gateway}</option>`;
+                    }
+                    //jquery赋值方式
+                    $("#gateway").html(str);
+
+                    // $('#gateway').children('option[value="'+ currParentDatas.GatewayId  +'"]').attr('selected','');
+                    $("#gateway").val(currParentDatas.GatewayId)
+
+                    //重新渲染生效
+                    form.render();
+                }
+            });
 
 
 
@@ -324,7 +388,7 @@
                 param['max_money'] = $('#max_money').val();
                 param['ips'] = $('#ips').val();
 
-                param['gateway'] = $('#gateway').val();
+                param['gateway_id'] = $('#gateway').val();
                 param['min_pay'] = $('#min_pay').val();
                 param['max_pay'] = $('#max_pay').val();
                 param['google_switch'] = $('#google_switch').val();
@@ -358,7 +422,6 @@
                 }else{
                     param['paid_channel'] = ""
                 }
-
 
 
 
@@ -401,25 +464,19 @@
                 parent.layer.close(index);
                 // window.parent.location.reload();
 
-
                 return false;
 
             })
 
             //监听谷歌验证开关
             form.on('switch(google_switch_filter)', function(data){
-
-
                 if(data.elem.checked){
                     $("#google_switch").attr("value", '1');
                     // console.log(data.value);
                 }else{
                     $("#google_switch").attr("value", '2');
                 }
-
             })
-
-
         })
     }
 </script>

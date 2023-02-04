@@ -3,23 +3,23 @@ package model
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/wangyi/GinTemplate/model/modelPay"
 	"time"
 )
 
 type AgencyAccountChange struct {
-	ID                      int     `gorm:"primaryKey"`
-	AgencyRunnerId          int     //代理id
-	RunnerId                int     //奔跑者id
-	NowAmount               float64 `gorm:"type:decimal(10,2)"` //变化后的金额
-	ChangeAmount            float64 `gorm:"type:decimal(10,2)"` //变化金额
-	FontAmount              float64 `gorm:"type:decimal(10,2)"` //变化之前金额
-	Kinds                   int     //1押金 2代收额度  3代付额度 4佣金   5提现
-	RunnerCollectionOrderId int
-	RunnerPayOrderId        int
-	RecordId                int
-	Remark                  string
-	Created                 int64
-	CollectionId            int
+	ID             int     `gorm:"primaryKey"`
+	AgencyRunnerId int     //代理id
+	RunnerId       int     //奔跑者id
+	NowAmount      float64 `gorm:"type:decimal(10,2)"` //变化后的金额
+	ChangeAmount   float64 `gorm:"type:decimal(10,2)"` //变化金额
+	FontAmount     float64 `gorm:"type:decimal(10,2)"` //变化之前金额
+	Kinds          int     //1押金 2代收额度  3代付额度 4佣金   5提现
+	RecordId       int
+	Remark         string
+	Created        int64
+	CollectionId   int
+	Col            modelPay.Collection `gorm:"-"`
 }
 
 func CheckIsExistModelAgencyAccountChange(db *gorm.DB) {

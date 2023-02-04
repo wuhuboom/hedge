@@ -72,14 +72,15 @@
     <!-- 侧边栏 -->
     <div class="layui-side">
         <div class="layui-side-scroll">
-            <ul class="layui-nav layui-nav-tree arrow2" lay-filter="admin-side-nav" lay-shrink="_all">
+<!--            lay-shrink="_all"-->
+            <ul class="layui-nav layui-nav-tree arrow2" lay-filter="admin-side-nav" >
 
                 <li class="layui-nav-item">
-                    <a lay-href="page/console/console.html"><i class="layui-icon layui-icon-home"></i>&emsp;<cite>控制台</cite></a>
+                    <a lay-href="page/console/console.html"><i class="layui-icon layui-icon-home"></i>&emsp;<cite>首页</cite></a>
                 </li>
 
                 <li class="layui-nav-item">
-                    <a><i class="layui-icon layui-icon-username"></i>&emsp;<cite>代理操作</cite></a>
+                    <a><i class="layui-icon layui-icon-username"></i>&emsp;<cite>代理管理</cite></a>
                     <dl class="layui-nav-child">
                         <dd><a lay-href="page/agent/agent.html">代理列表</a></dd>
                     </dl>
@@ -95,7 +96,8 @@
                 <li class="layui-nav-item">
                     <a><i class="layui-icon layui-icon-note"></i>&emsp;<cite>通道管理</cite></a>
                     <dl class="layui-nav-child">
-                        <dd><a lay-href="page/channel/channel.html">通道信息</a></dd>
+                        <dd><a lay-href="page/channel/channel.html">代收通道</a></dd>
+                        <dd><a lay-href="page/channel/PaymentChannel.html">代付通道</a></dd>
                         <dd><a lay-href="page/channel/bank.html">银行信息</a></dd>
                         <dd><a lay-href="page/channel/bank_card.html">银行卡信息</a></dd>
                     </dl>
@@ -120,7 +122,9 @@
                     <a><i class="layui-icon">&#xe620;</i>&emsp;<cite>系统管理</cite></a>
                     <dl class="layui-nav-child">
                         <dd><a lay-href="page/system/systemParameter.html">系统设置</a></dd>
+                        <dd><a lay-href="page/system/GatewayProxy.html">网关代理</a></dd>
                     </dl>
+
                 </li>
 
 

@@ -7,6 +7,7 @@ import (
 	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/model/modelPay"
 	"github.com/wangyi/GinTemplate/tools"
+	"go.uber.org/zap"
 	"strconv"
 	"time"
 )
@@ -67,17 +68,19 @@ func OverdueCollection(db *gorm.DB) {
 
 // ExpireCollection 过期订单
 func ExpireCollection(db *gorm.DB) {
-
 	for true {
 		col := make([]modelPay.Collection, 0)
 		db.Where("species= 3  and  status=1 and kinds=1  and expire_time<?", time.Now().Unix()).Find(&col)
 		for _, collection := range col {
 			runner := model.Runner{ID: collection.RunnerId}
-			runner.Col.ID = collection.ID
+			runner.Col = collection
 			runner.CollectionLimit = collection.Amount
 			runner.FreezeCollectionLimit = -collection.Amount
-			runner.ChangeCollectionLimit(db, false, 3)
-
+			err := runner.ChangeCollectionLimit(db, false, 3)
+			if err != nil {
+				zap.L().Debug("ExpireCollection  err" + err.Error())
+				return
+			}
 		}
 		time.Sleep(time.Second * 30)
 	}

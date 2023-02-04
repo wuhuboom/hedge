@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+
+    <!-- js部分 -->
+    <script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+    <script type="text/javascript" src="../../assets/js/common.js?v=318"></script>
+
+    <script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
+    <script type="text/javascript" src="../../assets/js/config.url.js"></script>
+
+</head>
+<body class="childrenBody">
+<form class="layui-form" lay-filter="add_proxy">
+    <div class="layui-fluid" style="padding-bottom: 75px;">
+        <!-- <div class="layui-card">
+            <div class="layui-card-header">通道修改</div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">代收通道</label>
+                <div class="layui-input-block" id="Collection_channel"></div>
+                <div class="layui-form-mid" style="color: red;margin-left: 115px;"></div>
+            </div>
+
+        </div> -->
+
+<!--        <div class="layui-card">-->
+<!--            <div class="layui-card-header">通道配置</div>-->
+<!--            <div class="layui-card-body">-->
+<!--                <div class="layui-form-item layui-row">-->
+<!--                    <div class="layui-inline layui-col-md5">-->
+<!--                        <label class="layui-form-label">代收通道</label>-->
+<!--                        <div class="layui-input-block">-->
+<!--                            <div id="pay_select" ></div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    <div class="layui-inline layui-col-md5">-->
+<!--                        <label class="layui-form-label">代付通道</label>-->
+<!--                        <div class="layui-input-block">-->
+<!--                            <div id="paying_select"></div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+        <div class="layui-card">
+            <div class="layui-card-header">网关编辑</div>
+            <div class="layui-card-body">
+                <div class="layui-form-item layui-row">
+                    <div class="layui-inline layui-col-md5">
+                        <label class="layui-form-label">网关名称</label>
+                        <div class="layui-input-block">
+                        <input type="text" class="layui-input" name="gateway_name" id="gateway_name" placeholder="请输入网关名称">
+<!--                            <input type="text" name="username" autocomplete="off" class="layui-input outline:none " readonly="true" style=" outline:none;border: none; " name="username" id="username" placeholder="请输入代理用户名">-->
+                        </div>
+                    </div>
+
+                    <div class="layui-inline layui-col-md5">
+                        <label class="layui-form-label">网关地址</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" name="gateway_address" id="gateway_address" placeholder="请输入网关地址">
+                        </div>
+                    </div>
+
+<!--                    <div class="layui-inline layui-col-md5">-->
+<!--                        <label class="layui-form-label">资金密码</label>-->
+<!--                        <div class="layui-input-block">-->
+<!--                            <input type="text" lay-verify="number" class="layui-input" name="pay_password" id="pay_password" placeholder="请输入资金密码">-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+                </div>
+            </div>
+        </div>
+
+<!--        <div class="layui-card">-->
+<!--            <div class="layui-card-header">代收/代付修改</div>-->
+<!--            <div class="layui-card-body">-->
+<!--                <div class="layui-form-item layui-row">-->
+<!--                    &lt;!&ndash;                    <div class="layui-inline layui-col-md3">&ndash;&gt;-->
+<!--                    &lt;!&ndash;                        <label class="layui-form-label" style="color: #1e9fff">代收额度</label>&ndash;&gt;-->
+<!--                    &lt;!&ndash;                        <div class="layui-input-block">&ndash;&gt;-->
+<!--                    &lt;!&ndash;                            <input type="text" class="layui-input " name="" id="collection_limit" placeholder="请在此输入代收通道">&ndash;&gt;-->
+<!--                    &lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--                    &lt;!&ndash;                    </div>&ndash;&gt;-->
+
+<!--                    <div class="layui-inline layui-col-md3">-->
+<!--                        <label class="layui-form-label" style="color: #1e9fff">代收盈利点</label>-->
+<!--                        <div class="layui-input-block">-->
+<!--                            <input type="text" class="layui-input " name="collection_point" id="collection_point" placeholder="请在此输入代收盈利点">-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    <div class="layui-inline layui-col-md3">-->
+<!--                        <label class="layui-form-label" style="color: #ff00fe">代付盈利点</label>-->
+<!--                        <div class="layui-input-block">-->
+<!--                            <input type="text" class="layui-input " name="pay_point" id="pay_point" placeholder="请在此输入代付盈利点">-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    <div class="layui-inline layui-col-md3">-->
+<!--                        <label class="layui-form-label">下级税点</label>-->
+<!--                        <div class="layui-input-block">-->
+<!--                            <input type="text" class="layui-input " name="junior_point" id="junior_point" placeholder="请在此设置下级税点">-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash;                    <div class="layui-inline layui-col-md3">&ndash;&gt;-->
+<!--                    &lt;!&ndash;                        <label class="layui-form-label" style="color: #ff00fe">代付额度</label>&ndash;&gt;-->
+<!--                    &lt;!&ndash;                        <div class="layui-input-block">&ndash;&gt;-->
+<!--                    &lt;!&ndash;                            <input type="text" class="layui-input " name="" id="pay_limit" placeholder="请在此输入代付额度">&ndash;&gt;-->
+<!--                    &lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--                    &lt;!&ndash;                    </div>&ndash;&gt;-->
+
+<!--                    <div class="layui-inline layui-col-md3">-->
+<!--                        <label class="layui-form-label">提现手续费</label>-->
+<!--                        <div class="layui-input-block">-->
+<!--                            <input type="text" class="layui-input " name="withdraw_commission" id="withdraw_commission" placeholder="请在此设置提现手续费">-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--            </div>-->
+<!--        </div>-->
+
+        <div class="form-group-bottom text-right" style="margin-bottom: 20px">
+            <button class="layui-btn layui-btn-lg" lay-filter="comfireAdd" id="comfireAdd">确认修改</button>
+            <button class="layui-btn layui-btn-lg layui-btn-primary" lay-filter="cancelAdd" id="cancelAdd">取消</button>
+        </div>
+
+    </div>
+</form>
+
+<script>
+
+    var mybck = $.cookie('tokenMyb');
+    if (mybck == "" || mybck == null) {
+
+        window.top.location.href = "../../login.html";
+
+    } else {
+        var currParentDatas = eval('(' + parent.jsondata + ')')
+
+        // var payChannelParant =  currParentDatas.CollectionChannel
+        // payChannelParant = payChannelParant.split('@')
+        // // console.log("payChannelParant",payChannelParant)
+        // // var payChannelParantArray  =  eval('(' + payChannelParant.split('@') + ')');
+        // var paidChannelParant =   currParentDatas.pay_channel
+        // if(paidChannelParant){
+        //     paidChannelParant = paidChannelParant.split('@')
+        // }
+        // console.log("paidChannelParant",paidChannelParant)
+
+        var payChannelArrS = []
+        var payingChannelArrS = []
+
+        var payChannelArrS = []
+        var payingChannelArrS = []
+        var Numbering
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            // var layer = parent.layer === undefined ? layui.layer : top.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var util = layui.util;
+            var admin = layui.admin;
+            var xmSelect = layui.xmSelect;
+            var notice = layui.notice;
+
+            //获取数据添加到下拉框中
+            var param = {};
+            param.page = 1
+            param.limit = 3000
+
+            // $.ajax({
+            //     url: global_requestAddress + global_requestAddress_js_channel + "?action=check",
+            //     headers: {
+            //         "token": mybck
+            //     },
+            //     dataType: 'json',
+            //     type: 'post',
+            //     data: param,
+            //     success: function (res) {
+            //         if (res.code === 200) {
+            //             var returnDataArray = res.result
+            //             console.log("11",returnDataArray);
+            //             var payHtml = ''
+            //             var paidHtml = ''
+            //
+            //             returnDataArray.forEach((item,index)=>{
+            //                 if(item.Kinds === 2){ //2代付
+            //                     $("#paying_select").append('<input type="checkbox" name="payingCheck" id="'+item.ID+'" name="'+item.ID+'" value="' + item.ID + '" title="' + item.ChannelName + '">');
+            //                 }else if(item.Kinds === 1){ //代收
+            //
+            //                     $("#pay_select").append('<input type="checkbox" name="payCheck" id="'+item.ID+'" name="'+item.ID+'" value="' + item.ID + '" title="' + item.ChannelName + '">');
+            //                 }
+            //
+            //             })
+            //
+            //             payChannelParant.forEach((item,index)=>{
+            //                 var opaythis =  $("input[name='payCheck']")
+            //                 // console.log("opaythis",opaythis)
+            //
+            //                 opaythis.each(function( indexT ) {
+            //                     if($(this).val() == item){
+            //                         // console.log( indexT, $(this).attr('title'));
+            //                         // opaythis[indexT].checked = true
+            //                         $(this).attr("checked",true);
+            //                     }
+            //                 });
+            //
+            //             })
+            //
+            //             // paidChannelParant.forEach((item,index)=>{
+            //             //     var opaythis =  $("input[name='payingCheck']")
+            //             //     // console.log("opaythis",opaythis)
+            //             //     opaythis.each(function( indexT ) {
+            //             //         if($(this).val() == item){
+            //             //             // console.log( indexT, $(this).attr('title'));
+            //             //             // opaythis[indexT].checked = true
+            //             //             $(this).attr("checked",true);
+            //             //         }
+            //             //     });
+            //
+            //             // })
+            //
+            //
+            //
+            //             //重新渲染 固定写法
+            //             form.render("checkbox");
+            //
+            //         }
+            //     }
+            // })
+
+            //修改编辑赋值
+
+            form.val('add_proxy',{
+                "gateway_name":currParentDatas.Name,//网关名称
+                "gateway_address":currParentDatas.Gateway,//网关地址
+            })
+            form.render();
+
+            //确认按钮点击事件(这个功能已经实现,但是不知道是否接口问题,暂时修改无效)
+            $("#comfireAdd").click(function () {
+                if(!$("#gateway_name").val()){
+                    layer.msg("网关名称不允许为空!", {icon: 2});
+                    return false
+                }
+
+                if(!$("#gateway_address").val()){
+                    layer.msg("网关地址不允许为空!", {icon: 2});
+                    return false
+                }
+                //
+                // if(!$("#junior_point").val()){
+                //     layer.msg("下级税点不允许为空!", {icon: 2});
+                //     return false
+                // }
+                // if(!$("#withdraw_commission").val()){
+                //     layer.msg("提现手续费不允许为空!", {icon: 2});
+                //     return false
+                // }
+
+                var param = {};
+                // param['username'] =$("#username").val();
+                param['id']=currParentDatas.ID
+
+                // if($("#password").val()){
+                //     param['password'] = $("#password").val();
+                // }
+                //
+                // if($("#pay_password").val()){
+                //     param['pay_password'] = $("#pay_password").val();
+                // }
+
+                // var arr_box = [];
+                // var paying_arr_box = [];
+                // var pay_selectStr = ""
+                // var paying_selectStr = ""
+                // $("input:checkbox[name='payCheck']:checked").each(function(i){
+                //     arr_box[i] = $(this).val();
+                // });
+                // pay_selectStr= arr_box.join('@')
+                //
+                // $("input:checkbox[name='payingCheck']:checked").each(function(i){
+                //     paying_arr_box[i] = $(this).val();
+                // });
+                // paying_selectStr= paying_arr_box.join('@')
+                //
+                // if(pay_selectStr){
+                //     param['collection_channel'] = pay_selectStr
+                // }
+                //
+                // if(paying_selectStr){
+                //     param['paid_channel'] = paying_selectStr
+                // }
+
+                param['name'] = $('#gateway_name').val();
+                param['gateway'] = $('#gateway_address').val();
+                // param['pay_limit'] = $('#pay_limit').val();
+                // param['collection_limit'] = $('#collection_limit').val();
+                // param['junior_point'] = $('#junior_point').val();
+                // param['withdraw_commission'] = $('#withdraw_commission').val();
+                // param['google_switch'] = 1
+
+                $.ajax({
+                    url: global_requestAddress + global_requestAddress_js_gatewayOperation + "?action=update",
+                    headers: {
+                        "token": mybck,
+                    },
+                    data: param,
+                    type: "POST",
+                    dataType: "json",
+                    success: function (addResult) {
+
+                        if (addResult.code === 200) {
+                            // layer.msg(addResult.msg);
+                            notice.msg(addResult.msg, {icon: 1});
+                            setTimeout(function () {
+                                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                                parent.layer.close(index);
+                                // window.parent.location.reload();
+                            }, 1300)
+
+                        } else {
+                            notice.msg(addResult.msg, {icon: 2});
+                        }
+
+                    },
+                });
+
+
+
+                // parent.local.reload();
+                return false;
+            })
+
+
+            //取消内容点击事件
+            $("#cancelAdd").click(function () {
+
+                // layer.msg("取消操作");
+                notice.msg('取消操作!', {icon: 5});
+                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                parent.layer.close(index);
+                // window.parent.location.reload();
+
+
+                return false;
+
+            })
+
+        })
+    }
+</script>
+</body>
+</html>

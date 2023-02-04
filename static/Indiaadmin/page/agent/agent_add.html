@@ -24,13 +24,23 @@
     <div class="layui-fluid" style="padding-bottom: 75px;">
         <div class="layui-card">
             <div class="layui-card-header">通道设置</div>
+            <div class="layui-card-body">
+                <div class="layui-form-item layui-row">
+                    <div class="layui-inline layui-col-md5">
+                        <label class="layui-form-label">代收通道</label>
+                        <div class="layui-input-block">
+                            <div id="pay_select" ></div>
+                        </div>
+                    </div>
 
-            <div class="layui-form-item">
-                <label class="layui-form-label">代收通道</label>
-                <div class="layui-input-block" id="Collection_channel"></div>
-                <div class="layui-form-mid" style="color: red;margin-left: 115px;"></div>
+                    <div class="layui-inline layui-col-md5">
+                        <label class="layui-form-label">代付通道</label>
+                        <div class="layui-input-block">
+                            <div id="paying_select"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
         </div>
         <div class="layui-card">
             <div class="layui-card-header">代理用户基本信息</div>
@@ -201,10 +211,10 @@
                         returnDataArray.forEach((item,index)=>{
                             if(item.Kinds === 2){ //2代付
 
-                                $("#Collection_channel").append('<input type="checkbox" name="payingCheck" id="'+item.ID+'" name="'+item.ID+'" value="' + item.ID + '" title="' + item.ChannelName + '">');
+                                $("#pay_select").append('<input type="checkbox" name="payingCheck" id="'+item.ID+'" name="'+item.ID+'" value="' + item.ID + '" title="' + item.ChannelName + '">');
                             }else if(item.Kinds === 1){ //代收
 
-                                $("#Collection_channel").append('<input type="checkbox" name="payCheck" id="'+item.ID+'" name="'+item.ID+'" value="' + item.ID + '" title="' + item.ChannelName + '">');
+                                $("#paying_select").append('<input type="checkbox" name="payCheck" id="'+item.ID+'" name="'+item.ID+'" value="' + item.ID + '" title="' + item.ChannelName + '">');
                             }
 
                         })
@@ -331,7 +341,7 @@
                 }
 
 
-                console.log("param",param)
+                // console.log("param",param)
 
 
                 $.ajax({

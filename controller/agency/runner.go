@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// RunnerOperation 操作奔跑者
 func RunnerOperation(c *gin.Context) {
 	who, _ := c.Get("who")
 	whoMap := who.(model.AgencyRunner)
@@ -117,12 +118,18 @@ func RunnerOperation(c *gin.Context) {
 		}
 		//修改代收金额
 		if CollectionLimit, isE := c.GetPostForm("collection_limit"); isE == true {
+			remark := c.PostForm("remark")
+			if remark == "" {
+				tools.ReturnErr101Code(c, "the parameter remark cannot be left empty ")
+				return
+			}
 			result, _ := redis.Rdb.Get("CollectionLimit" + runner.Username).Result()
 			if result != "" {
 				tools.ReturnErr101Code(c, "Don't do the deposit operation at the specified time")
 				return
 			}
 			runner.CollectionLimit, _ = strconv.ParseFloat(CollectionLimit, 64)
+			runner.Remark = remark
 			//修改代收额度
 			err := tools.ForFunc(runner.ChangeCollectionLimit, mysql.DB, true, 2)
 			if err != nil {

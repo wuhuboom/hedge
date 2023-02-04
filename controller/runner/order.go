@@ -18,6 +18,11 @@ func GetReceiveCollectionOrder(c *gin.Context) {
 	status := c.PostForm("status")
 	mysql.DB.Where("runner_id=?  and  status =?", whoMap.ID, status).Find(&col)
 
+	for i, _ := range col {
+		col[i].NoticeUrl = ""
+		col[i].CallbackContent = ""
+	}
+
 	//更新时间
 	if whoMap.Working == 2 {
 		mysql.DB.Model(&model.Runner{}).Where("id=?", whoMap.ID).Update(&model.Runner{LastGetOrderTime: time.Now().Unix() + 5*60})

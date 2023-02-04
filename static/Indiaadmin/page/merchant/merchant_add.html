@@ -91,30 +91,41 @@
             <div class="layui-card-body">
 
                 <div class="layui-form-item layui-row">
+
                     <div class="layui-inline layui-col-md8">
                         <label class="layui-form-label ">网关</label>
-                        <div class="layui-input-block">
-                            <input name="gateway" id="gateway" placeholder="请输入网关" class="layui-input"/>
+<!--                        <div class="layui-input-block">-->
+<!--                            <input name="gateway" id="gateway" placeholder="请输入网关" class="layui-input"/>-->
+<!--                        </div>-->
+                        <div class="layui-inline" style="width: 620px">
+                            <select id="gateway" name="gateway">
+                                <option value="">选择网关地址</option>
+                            </select>
                         </div>
+
                     </div>
+
                     <div class="layui-inline layui-col-md4">
                         <label class="layui-form-label ">最小代付</label>
                         <div class="layui-input-block">
                             <input name="min_pay" id="min_pay" placeholder="请输入最小代付" class="layui-input"/>
                         </div>
                     </div>
+
                     <div class="layui-inline layui-col-md4">
                         <label class="layui-form-label ">最大代付</label>
                         <div class="layui-input-block">
                             <input name="max_pay" id="max_pay" placeholder="请输入最大代付" class="layui-input"/>
                         </div>
                     </div>
-<!--                    <div class="layui-inline layui-col-md4">-->
-<!--                        <label class="layui-form-label ">谷歌开关:</label>-->
-<!--                        <div class="layui-input-block">-->
-<!--                            <input type="checkbox"  name="google_switch" lay-skin="switch"lay-filter="google_switch_filter" id="google_switch" lay-text="开启|关闭" checked>-->
-<!--                        </div>-->
+
+<!--                <div class="layui-inline layui-col-md4">-->
+<!--                    <label class="layui-form-label ">谷歌开关:</label>-->
+<!--                    <div class="layui-input-block">-->
+<!--                        <input type="checkbox"  name="google_switch" lay-skin="switch"lay-filter="google_switch_filter" id="google_switch" lay-text="开启|关闭" checked>-->
 <!--                    </div>-->
+<!--                </div>-->
+
                 </div>
 
             </div>
@@ -142,7 +153,7 @@
         var currParentDatas = eval('(' + parent.jsondata + ')')
         var payChannelArrS = []
         var payingChannelArrS = []
-        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice'], function () {
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice','laydate'], function () {
             var $ = layui.jquery;
             var layer = layui.layer;
             // var layer = parent.layer === undefined ? layui.layer : top.layer;
@@ -159,6 +170,7 @@
             param.page = 1
             param.limit = 3000
 
+            //通道请求数据
             $.ajax({
                 url: global_requestAddress + global_requestAddress_js_channel + "?action=check",
                 headers: {
@@ -194,7 +206,28 @@
                 }
             })
 
-
+            //网关地址数据
+            $.ajax({
+                //动态获取下拉选项的接口，返回数据主要是id+name
+                url: global_requestAddress+global_requestAddress_js_gatewayOperation+"?action=check",
+                dataType: 'json',
+                type: 'POST',
+                headers: {
+                    "token": mybck
+                },
+                data:param,
+                success: function (data) {
+                    let str="<option value=''>选择网关地址</option>";
+                    for(let i of data.result){
+                        //组装数据
+                        str+=`<option value='${i.ID}'>${i.Gateway}</option>`;
+                    }
+                    //jquery赋值方式
+                    $("#gateway").html(str);
+                    //重新渲染生效
+                    form.render();
+                }
+            });
 
             //确认按钮点击事件(这个功能已经实现,但是不知道是否接口问题,暂时修改无效)
             $("#comfireAdd").click(function () {
@@ -244,7 +277,14 @@
                 param['ips'] = $('#ips').val();
                 param['min_money'] = $('#min_money').val();
                 param['max_money'] = $('#max_money').val();
-                param['gateway'] = $('#gateway').val();
+
+
+                param['gateway_id'] = $('#gateway').val();
+
+
+
+
+
                 param['min_pay'] = $('#min_pay').val();
                 param['max_pay'] = $('#max_pay').val();
                 // param['google_switch'] = 1
@@ -273,8 +313,6 @@
                     param['paid_channel'] = paying_selectStr
                 }
 
-                console.log("param",param)
-
                 $.ajax({
                     url: global_requestAddress + global_requestAddress_js_merchant + "?action=add",
                     headers: {
@@ -284,7 +322,6 @@
                     type: "POST",
                     dataType: "json",
                     success: function (addResult) {
-
                         if (addResult.code === 200) {
                             // layer.msg(addResult.msg);
                             notice.msg(addResult.msg, {icon: 1});
@@ -297,16 +334,12 @@
                         } else {
                             notice.msg(addResult.msg, {icon: 2});
                         }
-
                     },
                 });
-
-
 
                 // parent.local.reload();
                 return false;
             })
-
 
             //取消内容点击事件
             $("#cancelAdd").click(function () {

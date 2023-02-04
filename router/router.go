@@ -76,6 +76,11 @@ func Setup() *gin.Engine {
 		ad.POST("/gatewayOperation", management.GatewayOperation)
 		//GetStatistics
 		ad.POST("/getStatistics", management.GetStatistics)
+		//AgencyChangeAmount
+		ad.POST("/agencyChangeAmount", management.AgencyChangeAmount)
+		//MerChangeAmount
+		ad.POST("/merChangeAmount", management.MerChangeAmount)
+
 	}
 
 	paid := r.Group("/paid/v1")
@@ -148,6 +153,10 @@ func Setup() *gin.Engine {
 		run.POST("/confirmTheOrder", runner.ConfirmTheOrder)
 		run.POST("/logOut", runner.LogOut)
 		run.POST("/getMe", runner.GetMe)
+		run.POST("/getChangeAmount", runner.GetChangeAmount)
+		run.POST("/getCollectionDetail", runner.GetCollectionDetail)
+		run.POST("/getCollectionRecord", runner.GetCollectionRecord)
+
 	}
 
 	ay := r.Group("/agency/v2", PermissionToCheckForAgency())

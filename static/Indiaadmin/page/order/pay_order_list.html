@@ -154,12 +154,20 @@
 
 <!--数据表格操作工具栏-->
 <script type="text/html" id="orderListBar">
+    {{#  if(d.Status !== 2){ }}
     <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="callbacksuccess" style="background-color: #ffba00"><i
             class="layui-icon layui-icon-ok"></i>回调成功</a>
-    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="confirpay" style="background-color: #ee00ff"><i
-            class="layui-icon layui-icon-windows"></i>审核</a>
     <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="detailBtn" style="background-color: #6891f9 "><i
             class="layui-icon layui-icon-transfer"></i>详情</a>
+    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="confirpay" style="background-color: #ee00ff"><i
+            class="layui-icon layui-icon-windows"></i>审核</a>
+    {{#  } else if(d.Status == 2){ }}
+    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="callbacksuccess" style="background-color: #ffba00"><i
+            class="layui-icon layui-icon-ok"></i>回调成功</a>
+
+    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="detailBtn" style="background-color: #6891f9 "><i
+            class="layui-icon layui-icon-transfer"></i>详情</a>
+    {{#  } }}
 </script>
 
 <script>

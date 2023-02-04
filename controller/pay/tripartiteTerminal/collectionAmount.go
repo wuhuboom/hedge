@@ -68,8 +68,8 @@ func CollectionAmount(c *gin.Context) {
 	//订单是否重复提交
 	collection := modelPay.Collection{MerchantOrderNum: cpd.MerchantOrderNum, MerChantNum: cpd.MerChantNum}
 	if err := collection.MerchantOrderNumIsExist(mysql.DB); err == nil {
-		tools.ReturnErr101Code(c, "Order already exists")
-		return
+		//tools.ReturnErr101Code(c, "Order already exists")
+		//return
 	}
 
 	config := model.Config{}
@@ -115,9 +115,8 @@ func CollectionAmount(c *gin.Context) {
 		if err != nil {
 			fmt.Println(err.Error())
 		}
-		//tools.ReturnErr101Code(c, "noOrder")
-		//UpiString = "test"
-		//return
+		
+		fmt.Println(UpiString)
 
 	}
 	//正常三方
