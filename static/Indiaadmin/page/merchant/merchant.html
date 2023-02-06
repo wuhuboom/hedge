@@ -288,7 +288,7 @@
                     {field: 'MaxMoney', title: '最大充值金额',  sort: true,align:"center"},
                     //AllAmount
                     {field: 'AllAmount', title: '账户余额',  sort: true,align:"center",width: 150},
-                    {field: 'CollectionCommission', title: '代收是续费',  sort: true,align:"center",width: 150},
+                    {field: 'CollectionCommission', title: '代收手续费',  sort: true,align:"center",width: 150},
                     //AvailableAmount
                     {field: 'AvailableAmount', title: '账户可用金额',  sort: true,align:"center",width: 150},
                     {field: 'FreezeAmount', title: '冻结金额',  sort: true,align:"center",width: 150},
@@ -303,8 +303,6 @@
                             }else{
 
                             }
-
-
                         }},
                     {field: 'GoogleCode', title: '谷歌验证码',  sort: true,align:"center",width: 150},
                     // {field: 'GoogleSwitch', title: 'GoogleSwitch',  sort: true,align:"center",width: 150},
@@ -441,7 +439,6 @@
                 var currentwx_id = parentTr.find(('td:eq(0)')).text().trim();
                 console.log("currentwx_id",currentwx_id)
 
-
                 var currStatusBool = obj.elem.checked;
                 // console.log("currStatusBool",currStatusBool)
                 var messageTitle = '';
@@ -532,10 +529,6 @@
                         layer.close(index);
                     }
                 })
-
-
-
-
 
             });
             //监听对冲开关按钮操作
@@ -770,11 +763,8 @@
                 var value = obj.value //得到修改后的值
                     ,data = obj.data //得到所在行所有键值
                     ,field = obj.field; //得到字段
-
                 // layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改值为：'+ util.escape(value));
-
                 // console.log("field",field)
-
                 var param = {};
                 if(field === "WhiteIps"){
                     param['ips'] = util.escape(value);
@@ -816,54 +806,11 @@
 
             });
 
-
             /* 表格工具条点击事件 */
             table.on('tool(userTable)', function (obj) {
                 var currDatas  = obj.data;
-                if (obj.event === 'changebtn') { // 修改
-                    // showEditModel(obj.data);
-
-                    jsondata = JSON.stringify(currDatas)
-                    var index = layui.layer.open({
-                        area: ['600px', '500px'],
-                        fixed: false, //不固定
-                        maxmin: false,
-                        title : "修改当前用户金额",
-                        skin: 'layui-layer-rim',//加上边框
-                        type : 2,
-                        content : "role_edit.html",
-                        success : function(layero, index){
-                            var body = layui.layer.getChildFrame('body', index);
-
-
-
-                            if(currDatas) {
-
-                                //不显示出来的回显数据
-                                body.find("#role_name").val(currDatas.RoleName);
-
-                            }
-
-
-                        },
-                        end : function() {//弹窗关闭后的回调函数
-                            //利用laypage实现局部刷新,以下两种方式都可以
-                            // $(".layui-laypage-btn").click()
-                            //直接刷新当前修改的行
-                            $(".layui-laypage-btn")[0].click()
-
-
-                        }
-                    })
-                    window.sessionStorage.setItem("index",index);
-                    //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
-                    $(window).on("resize",function(){
-                        layui.layer.full(window.sessionStorage.getItem("index"));
-                    })
-
-                } else if (obj.event === 'resetgoogle') { // 重置谷歌
+                if (obj.event === 'resetGoogle') { // 重置谷歌
                     // jsondata = JSON.stringify(currDatas)
-
 
                     //弹窗组件
                     layer.open({
@@ -889,7 +836,7 @@
                             param.id = currDatas.ID
 
                                 $.ajax({
-                                url:global_requestAddress+global_requestAddress_js_admin+"?action=update",
+                                url:global_requestAddress+global_requestAddress_js_merchant+"?action=resetGoogle",
                                 method:'POST',
                                 data:param,
                                 dataType:"json",
@@ -897,7 +844,7 @@
                                     token:mybck,
                                 },
                                 success:function (res) {
-                                    if(res.code === 2000){  //
+                                    if(res.code === 200){  //
                                         notice.msg(res.msg, {icon: 1});
                                         //列表的刷新
                                         insTb.reload();
@@ -931,78 +878,10 @@
                         }
                     })
 
-
-
-
-
-                } else if (obj.event === 'yuebdbtn') { // 余额变动
-
+                }else if (obj.event === 'editbtn') { // 修改
                     jsondata = JSON.stringify(currDatas)
                     var index = layui.layer.open({
-                        area: ['1400px', '600px'],
-                        fixed: false, //不固定
-                        maxmin: false,
-                        title : "当前用户余额变动记录",
-                        skin: 'layui-layer-rim',//加上边框
-                        type : 2,
-                        content : "user_Insufficientbalancerecordlist.html",
-                        success : function(layero, index){
-                            // var body = layui.layer.getChildFrame('body', index);
-
-                        },
-                        end : function() {//弹窗关闭后的回调函数
-                            //利用laypage实现局部刷新,以下两种方式都可以
-                            // $(".layui-laypage-btn").click()
-                            //直接刷新当前修改的行
-                            // $(".layui-laypage-btn")[0].click()
-
-                        }
-                    })
-                    window.sessionStorage.setItem("index",index);
-                    //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
-                    $(window).on("resize",function(){
-                        layui.layer.full(window.sessionStorage.getItem("index"));
-                    })
-
-
-
-
-                }
-                else if (obj.event === 'tixianbtn') { // 余额变动
-
-                    jsondata = JSON.stringify(currDatas)
-                    var index = layui.layer.open({
-                        area: ['600px', '200px'],
-                        fixed: false, //不固定
-                        maxmin: false,
-                        title : "管理员给用户下分",
-                        skin: 'layui-layer-rim',//加上边框
-                        type : 2,
-                        content : "user_list_initiative_below.html",
-                        success : function(layero, index){
-                            var body = layui.layer.getChildFrame('body', index);
-
-                        },
-                        end : function() {//弹窗关闭后的回调函数
-                            //利用laypage实现局部刷新,以下两种方式都可以
-                            // $(".layui-laypage-btn").click()
-                            //直接刷新当前修改的行
-                            $(".layui-laypage-btn")[0].click()
-                        }
-                    })
-                    window.sessionStorage.setItem("index",index);
-                    //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
-                    $(window).on("resize",function(){
-                        layui.layer.full(window.sessionStorage.getItem("index"));
-                    })
-
-
-
-                }
-                else if (obj.event === 'editbtn') { // 充值
-                    jsondata = JSON.stringify(currDatas)
-                    var index = layui.layer.open({
-                        area: ['1200px', '500px'],
+                        area: ['1200px', '95%'],
                         fixed: false, //不固定
                         maxmin: false,
                         title : "编辑商户",
@@ -1010,10 +889,8 @@
                         type : 2,
                         content : "merchant_edit.html",
                         success : function(layero, index){
+
                             var body = layui.layer.getChildFrame('body', index);
-
-
-
                         },
                         end : function() {//弹窗关闭后的回调函数
                             //利用laypage实现局部刷新,以下两种方式都可以
@@ -1023,35 +900,12 @@
 
                         }
                     })
-                    window.sessionStorage.setItem("index",index);
-                    //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
-                    $(window).on("resize",function(){
-                        layui.layer.full(window.sessionStorage.getItem("index"));
-                    })
+
 
                 }
             });
-
-            /* 表格头工具栏点击事件 */
-            table.on('toolbar(userTable)', function (obj) {
-                if (obj.event === 'add') { // 添加
-                    showEditModel();
-                } else if (obj.event === 'del') { // 删除
-                    var checkRows = table.checkStatus('userTable');
-                    if (checkRows.data.length === 0) {
-                        layer.msg('请选择要删除的数据', {icon: 2});
-                        return;
-                    }
-                    var ids = checkRows.data.map(function (d) {
-                        return d.userId;
-                    });
-                    doDel({ids: ids});
-                }
-            });
-
 
              // 添加
-
             form.on('submit(addAdmin)', function (data) {
                 var index = layui.layer.open({
                     // area: ['600px', '500px'],
@@ -1073,23 +927,14 @@
                         $(".layui-laypage-btn")[0].click()
                     }
                 })
-                // window.sessionStorage.setItem("index",index);
-                // //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
-                // $(window).on("resize",function(){
-                //     layui.layer.full(window.sessionStorage.getItem("index"));
-                // })
+
 
                 return false;
             });
 
-
-
         });
 
     }
-
-
-
 </script>
 </body>
 </html>

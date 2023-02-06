@@ -100,7 +100,6 @@
 
                         <div class="layui-inline" style="width: 620px">
                             <select id="gateway" name="gateway">
-                                <option value="">选择网关地址</option>
                             </select>
                         </div>
 
@@ -221,15 +220,6 @@
                 data: []
             })
 
-            var gatewaySel = xmSelect.render({
-                el: '#gateway',
-                autoRow: true,
-                theme: {
-                    color: '#6739b6',
-                },
-                data: []
-            })
-
 
             //获取数据添加到下拉框中
             var param = {};
@@ -323,7 +313,7 @@
                     // $("#gateway").empty();
                     // $('#gateway').append(new Option('选择网关地址', ''));// 下拉菜单里添加元素
                     // $.each(returnDataArray, function (index, item) {
-                    //     $('#gateway').append(new Option(item.Gateway, item.ID));// 下拉菜单里添加元素
+                    //     $('#gateway').append(new Option(item.Name, item.ID));// 下拉菜单里添加元素
                     // });
                     //
                     // //利用val值来设置的时候
@@ -338,7 +328,7 @@
                     let str="<option value=''>选择网关地址</option>";
                     for(let i of data.result){
                         //组装数据
-                        str+=`<option value='${i.ID}'>${i.Gateway}</option>`;
+                        str+=`<option value='${i.ID}'>${i.Name}</option>`;
                     }
                     //jquery赋值方式
                     $("#gateway").html(str);

@@ -15,6 +15,12 @@ global_requestAddress_js_getFlowOfFunds="/merchant/v2/getFlowOfFunds";
 // 统计
 global_requestAddress_js_statistics="/merchant/v2/statistics";
 
+//登录日志
+global_requestAddress_js_getLoginLogger="/merchant/v2/getLoginLogger";
+//修改密码
+global_requestAddress_js_changeLoginPassword="/merchant/v2/changeLoginPassword";
+//修改回 U 地址
+global_requestAddress_js_changeTrcAddress="/merchant/v2/changeTrcAddress";
 
 
 const timeArr = [{

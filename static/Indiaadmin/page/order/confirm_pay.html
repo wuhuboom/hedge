@@ -80,6 +80,11 @@
             var upload = layui.upload;
 
 
+            form.val('formAdvForm',{
+                "remark":"OK",
+            })
+            form.render();
+
             //下拉框选择事件
             form.on("select(statusFilter)",function(data){
 
@@ -87,7 +92,15 @@
                 selectValue = data.value;
                 console.log("data",selectValue)
                 if(selectValue == 2){ //选择成功
+
                     $("#remark").val(currParentDatas.Remark)
+                    form.val('formAdvForm',{
+                        "remark":"OK",
+                    })
+                    form.render();
+
+
+
                 }else{
                     $("#remark").val("")
                 }
@@ -105,15 +118,12 @@
                     return  false
                 }
 
-
-
                 var param = {};
 
                 param['id'] = currParentDatas.ID;
                 param['status'] = data.field.status;
                 param['remark'] = data.field.remark;
                 param['actual_amount'] = data.field.actual_amount;
-
 
                 $.ajax({
                     url: global_requestAddress + global_requestAddress_js_collectionOperation + "?action=confirmationOfPayment",

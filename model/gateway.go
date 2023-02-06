@@ -29,5 +29,5 @@ func (ga *Gateway) Add(db *gorm.DB) error {
 // GetName 获取名字
 func (ga *Gateway) GetName(db *gorm.DB) string {
 	db.Where("id=?", ga.ID).First(ga)
-	return ga.Name
+	return ga.Gateway
 }

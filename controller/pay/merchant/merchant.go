@@ -1,7 +1,6 @@
 package merchant
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
@@ -97,9 +96,7 @@ func GetMe(c *gin.Context) {
 		}
 	}
 	gateway := model.Gateway{ID: whoMap.GatewayId}
-
-	whoMap.Gateway = gateway.Gateway
-	fmt.Println(whoMap)
+	whoMap.Gateway = gateway.GetName(mysql.DB)
 	tools.ReturnSuccess2000DataCode(c, whoMap, "OK")
 	return
 }

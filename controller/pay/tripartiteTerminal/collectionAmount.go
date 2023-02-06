@@ -35,7 +35,7 @@ func CollectionAmount(c *gin.Context) {
 		tools.ReturnErr101Code(c, "Illegal request")
 		return
 	}
-	mer.Gateway = ga.Gateway
+	mer.Gateway = strings.Replace(ga.Gateway, "api", "", 1)
 	if err := SignatureCollectionAmount(cpd, mer.ApiKey); err != nil {
 		tools.ReturnErr101Code(c, err.Error())
 		return
@@ -91,7 +91,6 @@ func CollectionAmount(c *gin.Context) {
 
 	timestamp := strconv.FormatInt(time.Now().UnixNano()/1e6, 10)
 	collection.OwnOrder = "Mer" + timestamp + strconv.Itoa(rand.Intn(1000))
-	fmt.Println(collection.OwnOrder)
 	collection.Date = time.Now().Format("2006-01-02")
 	collection.ReleaseTime = time.Now().Unix() + config.ReleaseTime*60
 	i := time.Now().Unix() + config.ExpireTime*60
@@ -110,12 +109,13 @@ func CollectionAmount(c *gin.Context) {
 		//collection.Upi = upiBank.Upi
 		UpiString, err = runner.SnagTheOrder(mysql.DB, collection)
 		if err == nil {
+
 			tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", UpiString, cpd.Amount, collection.OwnOrder, is), "ok")
 		}
 		if err != nil {
 			fmt.Println(err.Error())
 		}
-		
+
 		fmt.Println(UpiString)
 
 	}

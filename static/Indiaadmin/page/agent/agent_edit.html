@@ -200,7 +200,6 @@
                 success: function (res) {
                     if (res.code === 200) {
                         var returnDataArray = res.result
-                        console.log("11",returnDataArray);
                         var payHtml = ''
                         var paidHtml = ''
 
@@ -321,7 +320,7 @@
                 }
 
                 if(paying_selectStr){
-                    param['paid_channel'] = paying_selectStr
+                    param['pay_channel'] = paying_selectStr
                 }
 
                 param['collection_point'] = $('#collection_point').val();
@@ -347,6 +346,7 @@
                             notice.msg(addResult.msg, {icon: 1});
                             setTimeout(function () {
                                 var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+
                                 parent.layer.close(index);
                                 // window.parent.location.reload();
                             }, 1300)
@@ -370,11 +370,14 @@
 
                 // layer.msg("取消操作");
                 notice.msg('取消操作!', {icon: 5});
-                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-                parent.layer.close(index);
+
+                // 单个
+                parent.layer.close(parent.layer.index);
+                // 组合
+                // var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                // parent.layer.close(index);
+
                 // window.parent.location.reload();
-
-
                 return false;
 
             })

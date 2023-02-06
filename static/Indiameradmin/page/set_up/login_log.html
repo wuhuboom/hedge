@@ -12,22 +12,22 @@
 
     <style>
 
-            .currSerachBtn{
-                box-shadow: 0 15px 18px -6px rgb(45 140 240 / 65%) !important;
-            }
+        .currSerachBtn{
+            box-shadow: 0 15px 18px -6px rgb(45 140 240 / 65%) !important;
+        }
 
-            .currReloadBtn{
-                box-shadow: 0 15px 18px -6px rgb(146 109 222 / 65%) !important;
-            }
+        .currReloadBtn{
+            box-shadow: 0 15px 18px -6px rgb(146 109 222 / 65%) !important;
+        }
 
-            .layui-table-cell{
-                height:46px;
-                line-height: 46px;
+        .layui-table-cell{
+            height:46px;
+            line-height: 46px;
 
-                /*height: auto ;*/
-                /*white-space: normal;*/
-                /*word-wrap:break-word;*/
-            }
+            /*height: auto ;*/
+            /*white-space: normal;*/
+            /*word-wrap:break-word;*/
+        }
 
 
 
@@ -50,62 +50,62 @@
             <!-- 表格工具栏 -->
             <form class="layui-form toolbar">
                 <div class="layui-form-item">
-                    <div class="layui-inline">
-                        <label class="layui-form-label">商户订单号:</label>
-                        <div class="layui-input-inline">
-                            <input name="merchant_order_num" class="layui-input" placeholder="请输入商户订单号"/>
-                        </div>
-                    </div>
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">商户订单号:</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <input name="merchant_order_num" class="layui-input" placeholder="请输入商户订单号"/>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <div class="layui-inline">
-                        <label class="layui-form-label">三方订单:</label>
-                        <div class="layui-input-inline">
-                            <input name="own_order" class="layui-input" placeholder="三方订单号"/>
-                        </div>
-                    </div>
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">三方订单:</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <input name="own_order" class="layui-input" placeholder="三方订单号"/>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <div class="layui-inline">
-                        <label class="layui-form-label">状态:</label>
-                        <div class="layui-input-inline">
-                            <select name="status" id="status">
-                                <option value="999">所有</option>
-                                <option value="1">等待支付</option>
-                                <option value="2">支付成功</option>
-                                <option value="3">失败</option>
-                                <option value="4">已过期</option>
-                            </select>
-                        </div>
-                    </div>
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">状态:</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <select name="status" id="status">-->
+<!--                                <option value="999">所有</option>-->
+<!--                                <option value="1">等待支付</option>-->
+<!--                                <option value="2">支付成功</option>-->
+<!--                                <option value="3">失败</option>-->
+<!--                                <option value="4">已过期</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <div class="layui-inline">
-                        <label class="layui-form-label">回调状态:</label>
-                        <div class="layui-input-inline">
-                            <select name="callback" id="callback">
-                                <option value="777">所有</option>
-                                <option value="1">没有回调</option>
-                                <option value="2">回调成功</option>
-                                <option value="3">回调失败</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="layui-inline">
-                        <label class="layui-form-label">开始日期</label>
-                        <div class="layui-input-inline">
-                           <input type="text" class="layui-input" id="startDate" name="startDate" placeholder="yyyy-MM-dd HH:mm:ss">
-                        </div>
-                    </div>
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">回调状态:</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <select name="callback" id="callback">-->
+<!--                                <option value="777">所有</option>-->
+<!--                                <option value="1">没有回调</option>-->
+<!--                                <option value="2">回调成功</option>-->
+<!--                                <option value="3">回调失败</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">开始日期</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <input type="text" class="layui-input" id="startDate" name="startDate" placeholder="yyyy-MM-dd HH:mm:ss">-->
+<!--                        </div>-->
+<!--                    </div>-->
 
 
-                    <div class="layui-inline">
-                        <label class="layui-form-label">结束日期</label>
-                        <div class="layui-input-inline">
-                            <input type="text" class="layui-input" id="endDate" name="endDate" placeholder="yyyy-MM-dd HH:mm:ss">
-                        </div>
-                    </div>
+<!--                    <div class="layui-inline">-->
+<!--                        <label class="layui-form-label">结束日期</label>-->
+<!--                        <div class="layui-input-inline">-->
+<!--                            <input type="text" class="layui-input" id="endDate" name="endDate" placeholder="yyyy-MM-dd HH:mm:ss">-->
+<!--                        </div>-->
+<!--                    </div>-->
                     <div class="layui-inline">&emsp;
-<!--                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="addGropeTask" id="addGropeTask" lay-submit style="background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);">-->
-<!--                            <i class="layui-icon">&#xe624;</i>添加-->
-<!--                        </button>-->
+                        <!--                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="addGropeTask" id="addGropeTask" lay-submit style="background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);">-->
+                        <!--                            <i class="layui-icon">&#xe624;</i>添加-->
+                        <!--                        </button>-->
                         <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit >
                             <i class="layui-icon">&#xe615;</i>搜索
                         </button>
@@ -207,7 +207,7 @@
             var tableCols = tableSetCol(getTableCols(), local_storage_key);
             var insTb = table.render({
                 elem: '#userTable',
-                url: global_requestAddress + global_requestAddress_js_collection + "?action=check",
+                url: global_requestAddress + global_requestAddress_js_getLoginLogger + "?action=check",
                 method: 'post',
                 headers:{
                     token:mybck
@@ -216,8 +216,8 @@
                     statusCode: 200,
                     dataName: 'result',
                 },
-                toolbar: true,
-                defaultToolbar: ['filter'],
+                // toolbar: true,
+                // defaultToolbar: ['filter'],
                 where:log_login_request_param,
                 // toolbar: ['<p>',
                 //     '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
@@ -278,69 +278,75 @@
             //表格 头部数据函数封装
             function getTableCols() {
                 var col = [[
-                        // {type: 'checkbox'},
-                        {field: 'ID',title:'ID',sort: true,align:"center",width:70},
-                        {field: 'MerChantNum', title: '商家号',  sort: true,align:"center"},
-                        {field: 'MerchantOrderNum', title: '商家订单号', sort: true,align:"center",width:180},
-                        {field: 'Amount', title: '订单金额', sort: true,align:"center",width:120},
-                        {field: 'ActualAmount', title: '实际充值金额',  sort: true,align:"center",width:130},
-                        {field: 'Commission', title: '手续费', sort: true,align:"center"},
-                        {field: 'CallbackReturn', title: '回调返回信息', sort: true,align:"center",width:180},
-
-                        {field: 'NoticeUrl', title: '回调地址', sort: true,align:"center",width:180},
-                        {field: 'Currency', title: '币种', sort: true,align:"center"},
-                        {field: 'OwnOrder', title: '我方平台订单', sort: true,align:"center",width:180},
-
-                        // {field: 'BankName', title: '银行名', width:130,sort: true,align:"center", templet: function (d) {
-                        //         var vipHtml = '<div><div class="ew-select-fixed"><select lay-filter="templetBankSel">';
-                        //         layui.each(bankListArr, function (i, item) {
-                        //             if (d.BankInformationId === item.ID) {  // 这里加selected
-                        //                 vipHtml += ('<option  selected value="' + item.ID+ '">' + item.BankName + '</option>');
-                        //             } else {
-                        //                 vipHtml += ('<option  value="' + item.ID+ '">' + item.BankName + '</option>');
-                        //             }
-                        //         });
-                        //         vipHtml += '</select></div></div>';
-                        //         return vipHtml;
-                        //     }},
-                        {field: 'Callback', title: '回调状态', sort: true,align:"center",width:120,templet:function(d){
-                                if(d.Callback == "1"){//1没有回调
-                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #faa64b;border-color: #faa64b;">'+'没有回调'+'</button>'
-                                }else if(d.Callback == "2"){// 2回调成功
-                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #33cabb;border-color: #33cabb;">'+'回调成功'+'</button>'
-                                }else if(d.Callback == "3"){//3回调失败
-                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">'+'回调失败'+'</button>'
-                                }else{
-                                    return ''
-                                }
-                            }},
-                        {field: 'Status', title: '状态', sort: true,align:"center",templet:function(d){
-
-                                if(d.Status == "1"){//1等待支付
-                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #337ab7;border-color: #337ab7;">'+'等待支付'+'</button>'
-                                }else if(d.Status == "2"){//2支付成功
-                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #28a745;border-color: #28a745;">'+'支付成功'+'</button>'
-                                }else if(d.Status == "3"){// 3失败
-                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #993055;border-color: #993055;">'+'失败'+'</button>'
-                                }else if(d.Status == "4"){//已过期
-                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">'+'已过期'+'</button>'
-                                }else{
-                                    return ''
-                                }
-
-                            }},
-                        {field: 'Created', title: '创建时间',align:"center",width:175, sort: true, templet: function (d) {
-                                // return util.toDateString(d.Created* 1000);
-                                return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
-                            }},
-                        {
-                            field: 'Updated', title: '更新时间',align:"center",width:175, templet: function (d) {
-                                // return util.toDateString(d.Updated* 1000);
-                                return moment(d.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
-                            }, sort: true
-                        },
-                        {title: '操作', width:230, templet:'#orderListBar',fixed:"right",align:"center"}
-                    ]]
+                    // {type: 'checkbox'},
+                    {field: 'ID',title:'ID',sort: true,align:"center",width:70},
+                    {field: 'Content', title: '日志内容',  sort: true,align:"center"},
+                    // {field: 'MerchantId', title: 'MerchantId', sort: true,align:"center",width:180},
+                    {field: 'Kinds', title: '类型', sort: true,align:"center",width:120,templet:function(d){
+                        if (d.Kinds == "1") {
+                            return '<button class="layui-btn  layui-btn-sm" style="background-color: #3fb9e3;border-color: #3fb9e3;">' + '登录日志' + '</button>'
+                        }else {
+                            return d.Kinds
+                        }
+                        }},
+                    // {field: 'ActualAmount', title: '实际充值金额',  sort: true,align:"center",width:130},
+                    // {field: 'Commission', title: '手续费', sort: true,align:"center"},
+                    // {field: 'CallbackReturn', title: '回调返回信息', sort: true,align:"center",width:180},
+                    //
+                    // {field: 'NoticeUrl', title: '回调地址', sort: true,align:"center",width:180},
+                    // {field: 'Currency', title: '币种', sort: true,align:"center"},
+                    // {field: 'OwnOrder', title: '我方平台订单', sort: true,align:"center",width:180},
+                    //
+                    // // {field: 'BankName', title: '银行名', width:130,sort: true,align:"center", templet: function (d) {
+                    // //         var vipHtml = '<div><div class="ew-select-fixed"><select lay-filter="templetBankSel">';
+                    // //         layui.each(bankListArr, function (i, item) {
+                    // //             if (d.BankInformationId === item.ID) {  // 这里加selected
+                    // //                 vipHtml += ('<option  selected value="' + item.ID+ '">' + item.BankName + '</option>');
+                    // //             } else {
+                    // //                 vipHtml += ('<option  value="' + item.ID+ '">' + item.BankName + '</option>');
+                    // //             }
+                    // //         });
+                    // //         vipHtml += '</select></div></div>';
+                    // //         return vipHtml;
+                    // //     }},
+                    // {field: 'Callback', title: '回调状态', sort: true,align:"center",width:120,templet:function(d){
+                    //         if(d.Callback == "1"){//1没有回调
+                    //             return '<button class="layui-btn  layui-btn-sm" style="background-color: #faa64b;border-color: #faa64b;">'+'没有回调'+'</button>'
+                    //         }else if(d.Callback == "2"){// 2回调成功
+                    //             return '<button class="layui-btn  layui-btn-sm" style="background-color: #33cabb;border-color: #33cabb;">'+'回调成功'+'</button>'
+                    //         }else if(d.Callback == "3"){//3回调失败
+                    //             return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">'+'回调失败'+'</button>'
+                    //         }else{
+                    //             return ''
+                    //         }
+                    //     }},
+                    // {field: 'Status', title: '状态', sort: true,align:"center",templet:function(d){
+                    //
+                    //         if(d.Status == "1"){//1等待支付
+                    //             return '<button class="layui-btn  layui-btn-sm" style="background-color: #337ab7;border-color: #337ab7;">'+'等待支付'+'</button>'
+                    //         }else if(d.Status == "2"){//2支付成功
+                    //             return '<button class="layui-btn  layui-btn-sm" style="background-color: #28a745;border-color: #28a745;">'+'支付成功'+'</button>'
+                    //         }else if(d.Status == "3"){// 3失败
+                    //             return '<button class="layui-btn  layui-btn-sm" style="background-color: #993055;border-color: #993055;">'+'失败'+'</button>'
+                    //         }else if(d.Status == "4"){//已过期
+                    //             return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">'+'已过期'+'</button>'
+                    //         }else{
+                    //             return ''
+                    //         }
+                    //
+                    //     }},
+                    {field: 'Created', title: '创建时间',align:"center",width:175, sort: true, templet: function (d) {
+                            // return util.toDateString(d.Created* 1000);
+                            return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
+                        }},
+                    // {
+                    //     field: 'Updated', title: '更新时间',align:"center",width:175, templet: function (d) {
+                    //         // return util.toDateString(d.Updated* 1000);
+                    //         return moment(d.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
+                    //     }, sort: true
+                    // },
+                    // {title: '操作', width:230, templet:'#orderListBar',fixed:"right",align:"center"}
+                ]]
                 return col;
             }
 
@@ -405,7 +411,7 @@
                 // currTempObj.token = $.cookie('tokenMyb');
 
                 if (data.field.merchant_order_num){
-                    currTempObj.merchant_order_num = data.field.merchant_order_num
+                    currTempObj.merchant_order_num = data.field.merchant_num
                 }
 
                 if (data.field.own_order){
@@ -513,7 +519,7 @@
                     url: global_requestAddress+global_requestAddress_js_bank+"?action=update",
                     data: param,
                     headers:{
-                      token:mybck
+                        token:mybck
                     },
                     type: "POST",
                     dataType: "json",

@@ -131,6 +131,7 @@ func Setup() *gin.Engine {
 		mer.POST("/getLoginLogger", merchant.GetLoginLogger)
 		//ChangeTrcAddress
 		mer.POST("/changeTrcAddress", merchant.ChangeTrcAddress)
+		mer.POST("/withdraw", merchant.Withdraw)
 
 	}
 	//UploadCertificate
@@ -157,6 +158,8 @@ func Setup() *gin.Engine {
 		run.POST("/getCollectionDetail", runner.GetCollectionDetail)
 		run.POST("/getCollectionRecord", runner.GetCollectionRecord)
 		run.POST("/withdraw", runner.Withdraw)
+		run.POST("/getSubordinate", runner.GetSubordinate)
+		run.POST("/rankingList", runner.RankingList)
 
 	}
 

@@ -15,9 +15,8 @@ global_requestAddress_js_bankInformation="/admin/v1/bankInformation";
 //获取银行卡接口
 global_requestAddress_js_bank="/admin/v1/bank";
 
-//商户号管理
+//商户号管理/重置谷歌
 global_requestAddress_js_merchant="/admin/v1/merchant";
-
 
 // 代收订单
 global_requestAddress_js_collectionOperation="/admin/v1/collectionOperation";
@@ -30,8 +29,8 @@ global_requestAddress_js_configOperation="/admin/v1/configOperation";
 
 //获取网关/添加网关/修改网关地址
 global_requestAddress_js_gatewayOperation="/admin/v1/gatewayOperation";
-
-
+//首页每日数据/总数据
+global_requestAddress_js_getStatistics="/admin/v1/getStatistics";
 
 const timeArr = [{
 	name:'Asia/Shanghai',

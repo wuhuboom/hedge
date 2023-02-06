@@ -140,7 +140,9 @@ func MerchantOperation(c *gin.Context) {
 		if status, isExist := c.GetPostForm("gateway_id"); isExist == true {
 			updated["GatewayId"], _ = strconv.Atoi(status)
 		}
-
+		if status, isExist := c.GetPostForm("login_password"); isExist == true {
+			updated["LoginPassword"] = tools.MD5(status)
+		}
 		//谷歌开关
 		if status, isExist := c.GetPostForm("google_switch"); isExist == true {
 			updated["GoogleSwitch"], _ = strconv.Atoi(status)

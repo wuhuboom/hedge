@@ -18,6 +18,7 @@ type RunnerAmountChange struct {
 	Remark       string
 	Created      int64
 	RecordId     int
+	Date         string
 	Col          modelPay.Collection `gorm:"-"`
 }
 
@@ -33,5 +34,6 @@ func CheckIsExistModelRunnerAmountChange(db *gorm.DB) {
 
 func (rac *RunnerAmountChange) Add(db *gorm.DB) error {
 	rac.Created = time.Now().Unix()
+	rac.Date = time.Now().Format("2006-01-02")
 	return db.Save(rac).Error
 }

@@ -99,7 +99,7 @@
 <!--                        </div>-->
                         <div class="layui-inline" style="width: 620px">
                             <select id="gateway" name="gateway">
-                                <option value="">选择网关地址</option>
+
                             </select>
                         </div>
 
@@ -217,10 +217,10 @@
                 },
                 data:param,
                 success: function (data) {
-                    let str="<option value=''>选择网关地址</option>";
+                    let str="<option value=''>请选择网关</option>";
                     for(let i of data.result){
                         //组装数据
-                        str+=`<option value='${i.ID}'>${i.Gateway}</option>`;
+                        str+=`<option value='${i.ID}'>${i.Name}</option>`;
                     }
                     //jquery赋值方式
                     $("#gateway").html(str);
@@ -278,10 +278,7 @@
                 param['min_money'] = $('#min_money').val();
                 param['max_money'] = $('#max_money').val();
 
-
                 param['gateway_id'] = $('#gateway').val();
-
-
 
 
 

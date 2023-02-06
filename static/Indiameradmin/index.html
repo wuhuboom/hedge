@@ -58,7 +58,8 @@
                 </a>
                 <dl class="layui-nav-child">
                     <dd lay-unselect><a ew-href="page/template/user-info.html">个人中心</a></dd>
-                    <dd lay-unselect><a ew-event="psw">修改密码</a></dd>
+<!--                    ew-href="page/set_up/modify_password.html"-->
+                    <dd lay-unselect><a  id="editpwd">修改密码</a></dd>
                     <hr>
                     <dd lay-unselect><a ew-event="logout" data-url="./login.html">退出</a></dd>
                 </dl>
@@ -72,7 +73,8 @@
     <!-- 侧边栏 -->
     <div class="layui-side">
         <div class="layui-side-scroll">
-            <ul class="layui-nav layui-nav-tree arrow2" lay-filter="admin-side-nav" lay-shrink="_all">
+<!--            lay-shrink="_all"-->
+            <ul class="layui-nav layui-nav-tree arrow2" lay-filter="admin-side-nav" >
 
                 <li class="layui-nav-item">
                     <a lay-href="page/console/console.html"><i class="layui-icon layui-icon-home"></i>&emsp;<cite>首页</cite></a>
@@ -90,6 +92,16 @@
                     <a><i class="layui-icon layui-icon-note"></i>&emsp;<cite>订单管理</cite></a>
                     <dl class="layui-nav-child">
                         <dd><a lay-href="page/order/pay_order_list.html">代收订单</a></dd>
+                        <!--                        <dd><a lay-href="page/order/paid_order_list.html">代付订单</a></dd>-->
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item">
+                    <a><i class="layui-icon layui-icon-set"></i>&emsp;<cite>设置</cite></a>
+                    <dl class="layui-nav-child">
+                        <dd><a lay-href="page/set_up/login_log.html">登陆日志</a></dd>
+                        <dd><a lay-href="page/set_up/modify_password.html">修改密码</a></dd>
+                        <dd><a lay-href="page/set_up/Modify_back_to_U_address.html">修改回U地址</a></dd>
                         <!--                        <dd><a lay-href="page/order/paid_order_list.html">代付订单</a></dd>-->
                     </dl>
                 </li>
@@ -179,6 +191,19 @@
 
         let loadU = localStorage.getItem('dq_MerUsername')
         $("#loadingUserName").text(loadU)
+
+        $("#editpwd").click(function () {
+
+            index.openTab({
+                title: '修改密码',
+                url: 'page/set_up/modify_password.html',
+                end: function() {
+                    // insTb.reload();
+                }
+            });
+            return false
+        })
+
 
         // //获取配置数据
         // $.ajax({

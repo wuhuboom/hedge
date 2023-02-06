@@ -40,6 +40,7 @@ type Merchant struct {
 	Created              int64
 	Updated              int64
 	TrcAddress           string             //trc 回U的地址
+	WithdrawCommission   float64            `gorm:"type:decimal(10,2);default:0.06"` //提现手续费
 	PayC                 []modelPay.Channel `gorm:"-"`
 }
 
@@ -120,14 +121,13 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 		if err := db.Model(&modelPay.Collection{}).Where("id=?", collectionId).Update(map[string]interface{}{"ActualAmount": amount, "Commission": amount * ch.Rate, "Updated": time.Now().Unix(), "Status": 2}).Error; err != nil {
 			return err, mer
 		}
-		//更新账变
-		amountC := modelPay.AmountChange{MerchantNum: m.MerchantNum, Amount: amount, Before: mer.AllAmount,
-			After: mer.AllAmount + amount, Remark: "关联订单: " + merOrder}
+		//更新账变(总余额)
+		amountC := modelPay.AmountChange{MerchantNum: m.MerchantNum, Amount: amount * (1 - ch.Rate), Before: mer.AvailableAmount,
+			After: mer.AvailableAmount + amount*(1-ch.Rate), Remark: "关联订单: " + merOrder, Kinds: 1, CollectionId: col.ID}
 		if err := amountC.Add(db); err != nil {
 			db.Rollback()
 			return err, mer
 		}
-
 		//每日统计
 		sta := modelPay.Statistics{TodayCollectionAmount: amount, TodayCollectionCommission: amount * ch.Rate, MerchantNum: m.MerchantNum, TodayCollection: 1}
 		err := sta.Add(db, 1)
@@ -139,16 +139,43 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 		}
 
 	} else if ch.Kinds == 2 { //代付
-		update["AvailableAmount"] = mer.AvailableAmount - amount - (amount * ch.Rate)
-		update["PayCommission"] = amount*ch.Rate + mer.PayCommission
+		update["AvailableAmount"] = mer.AvailableAmount - amount - (amount * ch.Rate) //可用金额-金额-手续费
+		//update["PayCommission"] = amount*ch.Rate + mer.PayCommission
 		update["FreezeAmount"] = mer.FreezeAmount + amount + amount*ch.Rate
-		sta := modelPay.Statistics{TodayPayAmount: amount, TodayPayCommission: amount * ch.Rate, MerchantNum: m.MerchantNum, TodayPay: 1}
-		err := sta.Add(db, 2)
+		//每日统计
+		sta := modelPay.Statistics{
+			TodayAllPay:       1,
+			TodayPayAllAmount: amount,
+			MerchantNum:       m.MerchantNum}
+		err = sta.Add(db, 1)
 		if err != nil {
 			if species != 3 {
 				db.Rollback()
 			}
 			return err, mer
+		}
+		//形成账变
+		amountC := modelPay.AmountChange{
+			MerchantNum:  m.MerchantNum,
+			Amount:       -(amount + (amount * ch.Rate)),
+			Before:       mer.AvailableAmount,
+			After:        mer.AvailableAmount - amount - (amount * ch.Rate),
+			Remark:       "关联订单: " + merOrder,
+			Kinds:        1,
+			CollectionId: col.ID}
+		if err := amountC.Add(db); err != nil {
+			if species != 3 {
+				db.Rollback()
+			}
+			return err, mer
+		}
+		//创建代付订单
+		err = col.Add(db)
+		if err != nil {
+			if species != 3 {
+				db.Rollback()
+			}
+			return err, Merchant{}
 		}
 	}
 

@@ -63,15 +63,45 @@ func GetSubordinate(c *gin.Context) {
 		return
 
 	}
-
 	//团队接单明细
 
 	//团队充值明细
 	//团队提现明细
 	if action == "withdraw" {
-
+		db := mysql.DB
+		ls := make([]model.Record, 0)
+		if username, ise := c.GetPostForm("username"); ise == true {
+			runner := model.Runner{Username: username}
+			id := runner.GetRunnerId(mysql.DB)
+			err := mysql.DB.Where("id=? and superior=?", id, whoMap.ID).First(&model.Runner{}).Error
+			if err != nil {
+				tools.ReturnErr101Code(c, "the user is not exist")
+				return
+			}
+			//类型
+			if kinds, isE := c.GetPostForm("kinds"); isE == true {
+				db = db.Where("kinds=?", kinds)
+			}
+			db = db.Where("runner_id=?", id).Find(ls)
+			tools.ReturnSuccess2000DataCode(c, ls, "OK")
+			return
+		}
+		//查询下级的
+		runnerArray := make([]model.Runner, 0)
+		db.Where("superior=?", whoMap.ID).Find(&runnerArray)
+		var IdArray []int
+		for _, runner := range runnerArray {
+			IdArray = append(IdArray, runner.ID)
+		}
+		arc := make([]model.Runner, 0)
+		db = db.Where(IdArray)
+		if kinds, isE := c.GetPostForm("kinds"); isE == true {
+			db = db.Where("kinds=?", kinds)
+		}
+		db.Find(&arc)
+		tools.ReturnSuccess2000DataCode(c, arc, "OK")
+		return
 	}
-
 	//团队账变
 	if action == "amountChange" {
 		db := mysql.DB

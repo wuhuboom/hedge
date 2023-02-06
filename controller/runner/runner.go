@@ -291,3 +291,38 @@ func Withdraw(c *gin.Context) {
 	tools.ReturnSuccess2000Code(c, "Successful  withdraw,waiting  for  management review")
 	return
 }
+
+// RankingList 排行榜
+func RankingList(c *gin.Context) {
+	action := c.Query("action")
+	type Data struct {
+		Username   string  `json:"username"`
+		Commission float64 `json:"commission"`
+		Id         int     `json:"id"`
+	}
+	if action == "today" {
+		var data []Data
+		mysql.DB.Raw("SELECT SUM(change_amount),runner_id as id  FROM runner_amount_changes   WHERE  kinds=4   GROUP BY  runner_id   ORDER BY sum(change_amount)  LIMIT  10  ").Scan(&data)
+
+		for i, datum := range data {
+			runner := model.Runner{}
+			mysql.DB.Where("id=?", datum.Id).First(&runner)
+			data[i].Id = 0
+			data[i].Username = runner.Username[0:1] + "*****" + runner.Username[len(runner.Username)-2:]
+		}
+
+		tools.ReturnSuccess2000DataCode(c, data, "OK")
+		return
+	}
+
+	if action == "accumulative" {
+		data := make([]Data, 0)
+		mysql.DB.Raw("select username as username, commission as commission from runners where status=1 order by commission  desc ").Scan(&data)
+		for i, datum := range data {
+			data[i].Username = datum.Username[0:1] + "*****" + datum.Username[len(datum.Username)-2:]
+		}
+		tools.ReturnSuccess2000DataCode(c, data, "OK")
+		return
+	}
+
+}

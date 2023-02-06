@@ -29,14 +29,14 @@
                     <div class="layui-inline layui-col-md5">
                         <label class="layui-form-label">代收通道</label>
                         <div class="layui-input-block">
-                            <div id="pay_select" ></div>
+                            <div id="paying_select" ></div>
                         </div>
                     </div>
 
                     <div class="layui-inline layui-col-md5">
                         <label class="layui-form-label">代付通道</label>
                         <div class="layui-input-block">
-                            <div id="paying_select"></div>
+                            <div id="pay_select"></div>
                         </div>
                     </div>
                 </div>
@@ -334,10 +334,8 @@
                     param['collection_channel'] = pay_selectStr
                 }
 
-
-
                 if(paying_selectStr){
-                    param['paid_channel'] = paying_selectStr
+                    param['pay_channel'] = paying_selectStr
                 }
 
 

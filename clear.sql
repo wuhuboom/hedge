@@ -17,3 +17,7 @@ truncate runner_amount_changes;
 truncate runner_upis;
 truncate runners;
 truncate slideshows;
+truncate admin_account_changes;
+truncate merchant_logs;
+truncate records;
+truncate runner_statistics;

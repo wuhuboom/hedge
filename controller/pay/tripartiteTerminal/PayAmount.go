@@ -21,7 +21,7 @@ func PayAmount(c *gin.Context) {
 		return
 	}
 	mer := model.Merchant{}
-	if err := mysql.DB.Where("merchant_num=?", cpd.MerChantNum).First(&mer).Error; err != nil || mer.Kinds != 2 {
+	if err := mysql.DB.Where("merchant_num=?", cpd.MerChantNum).First(&mer).Error; err != nil {
 		tools.ReturnErr101Code(c, "Illegal request")
 		return
 	}
@@ -37,18 +37,24 @@ func PayAmount(c *gin.Context) {
 		return
 	}
 
-	//检查 通道id是否开通  或者存在
-	ChannelId, _ := strconv.Atoi(cpd.ChannelId)
-	payChannelArray := strings.Split(mer.PaidChannel, "@")
-	if tools.IsArray(payChannelArray, cpd.ChannelId) == false {
-		tools.ReturnErr101Code(c, "Illegal channel")
+	//判断   IFSC
+	if cpd.IFSC == "" {
+		tools.ReturnErr101Code(c, "IFSC  is  not  be empty")
 		return
 	}
 
 	//判断通道状态
 	ch := modelPay.Channel{}
-	if err := mysql.DB.Where("channel_name=?", cpd.ChannelId).First(&ch).Error; err != nil || ch.Status != 1 || ch.Kinds != 1 {
+	if err := mysql.DB.Where("channel_name=?", cpd.ChannelId).First(&ch).Error; err != nil || ch.Status != 1 || ch.Kinds != 2 {
 		tools.ReturnErr101Code(c, "Channel under maintenance")
+		return
+	}
+
+	//检查 通道id是否开通  或者存在
+	ChannelId := strconv.Itoa(ch.ID)
+	payChannelArray := strings.Split(mer.PaidChannel, "@")
+	if tools.IsArray(payChannelArray, ChannelId) == false {
+		tools.ReturnErr101Code(c, "Illegal channel")
 		return
 	}
 
@@ -64,20 +70,27 @@ func PayAmount(c *gin.Context) {
 		tools.ReturnErr101Code(c, "Order already exists")
 		return
 	}
+	//判断账户余额是否足够
+	if mer.AvailableAmount < amountFlot+amountFlot*ch.Rate {
+		tools.ReturnErr101Code(c, "Insufficient merchant balance")
+		return
+	}
 
 	//添加数据
 	collection.Amount = amountFlot
 	collection.NoticeUrl = cpd.NoticeUrl
-	collection.ChannelId = ChannelId
+	collection.ChannelId = ch.ID
 	collection.Currency = cpd.Currency
 	collection.Callback = 1
 	collection.BankName = cpd.BankName
 	collection.BankCode = cpd.BankCode
 	collection.IFSC = cpd.IFSC
 	collection.Name = cpd.Name
+	collection.Kinds = 2
 	collection.OwnOrder = "Mer" + time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(1000))
-
-	err := collection.Add(mysql.DB)
+	////创建订单
+	merchant := model.Merchant{MerchantNum: cpd.MerChantNum}
+	err, _ := merchant.AmountChange(mysql.DB, amountFlot, ch.ID, collection.ID, collection.OwnOrder, 1, collection)
 	if err != nil {
 		tools.ReturnErr101Code(c, err.Error())
 		return
