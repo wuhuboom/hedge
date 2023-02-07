@@ -141,7 +141,11 @@ func MerchantOperation(c *gin.Context) {
 			updated["GatewayId"], _ = strconv.Atoi(status)
 		}
 		if status, isExist := c.GetPostForm("login_password"); isExist == true {
-			updated["LoginPassword"] = tools.MD5(status)
+
+			if mer.LoginPassword != status {
+				updated["LoginPassword"] = tools.MD5(status)
+			}
+
 		}
 		//谷歌开关
 		if status, isExist := c.GetPostForm("google_switch"); isExist == true {

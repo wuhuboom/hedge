@@ -128,6 +128,8 @@
     <a class="layui-btn layui-btn-sm " style="background: #ffba00" data-dropdown="#userTbDrop{{d.LAY_INDEX}}"
        no-shade="true">
         操作<i class="layui-icon layui-icon-drop" style="font-size: 12px;margin-right: 0;"></i></a>
+
+    <a class="layui-btn layui-btn-sm layui-border-red" lay-event="account_change" ><i class="layui-icon layui-icon-table"></i>账变</a>
     <!-- 下拉菜单 -->
     <ul class="dropdown-menu-nav dropdown-bottom-center layui-hide  " id="userTbDrop{{d.LAY_INDEX}}">
         <div class="dropdown-anchor"></div>
@@ -213,15 +215,10 @@
      
                 done: function (res, curr, count) {
                     $('tr').css({'background-color': '#fff', 'color': '#191a1c'});
-
-
                     tableDone(this.elem, insTb.config.cols[0], local_storage_key)
-
                     // all_withdrawal
                 }
             });
-
-
                 //layui表格渲染后，事件需要重新绑定，并记录下筛选信息于localStorage
                 function tableDone(elem, col, key) {
                 elem.next().find('[lay-event="LAYTABLE_COLS"]').click(function (e) {
@@ -237,7 +234,6 @@
                                 key: 'local_config',
                                 value: local_config
                             };
-
                             // console.log("saveColsConfig",saveColsConfig)
                             layui.data(key, saveColsConfig);
                         })
@@ -327,7 +323,7 @@
                     //         // return util.toDateString(d.Updated * 1000);
                     //     }},
                     // {field: 'WhiteIps', title: '白名单', edit:true, sort: true,align:"center"},
-                    {title: '操作', templet:'#orderListBar',fixed:"right",align:"center",width: 130}
+                    {title: '操作', templet:'#orderListBar',fixed:"right",align:"center",width: 200}
                 ]]
                 return col;
             }
@@ -535,10 +531,6 @@
                     }
                 })
 
-
-
-
-
             });
             //监听谷歌开关按钮操作
             form.on('switch(Google_status)', function(obj){
@@ -686,24 +678,16 @@
                     type: "POST",
                     dataType: "json",
                     success: function (addResult) {
-
                         if (addResult.code === 200) {
-
                             notice.msg(addResult.msg, {icon: 1});
-
                         } else {
-
                             // layer.msg(addResult.msg);
                             notice.msg(addResult.msg, {icon: 2});
-
                         }
-
 
                     },
 
-
                 });
-
 
             });
             /* 表格工具条点击事件 */
@@ -781,9 +765,8 @@
                     //     content: '传入任意的文本或html' //这里content是一个普通的String
                     // });
                 }
-
-
-                else if (obj.event === 'editbtn') { // 修改
+                //代理编辑
+                else if (obj.event === 'editbtn') {
                     jsondata = JSON.stringify(currDatas)
                     var index = layer.open({
                         area: ['1200px', '700px'],
@@ -877,7 +860,32 @@
 
 
                 }
+                //账变
+                else if (obj.event === 'account_change'){
+                    jsondata = JSON.stringify(currDatas)
 
+                    var index = layui.layer.open({
+                        area: ['1200px', '800px'],
+                        fixed: false, //不固定
+                        maxmin: false,
+                        title : "账变信息",
+                        skin: 'layui-layer-rim',//加上边框
+                        type : 2,
+                        content : "account_change.html",
+                        success : function(layero, index){
+                            var body = layui.layer.getChildFrame('body', index);
+                            if(currDatas) {
+                            }
+                        },
+                        end : function() {//弹窗关闭后的回调函数
+                            //利用laypage实现局部刷新,以下两种方式都可以
+                            // $(".layui-laypage-btn").click()
+                            //直接刷新当前修改的行
+                            $(".layui-laypage-btn")[0].click()
+
+                        }
+                    })
+                }
 
 
 

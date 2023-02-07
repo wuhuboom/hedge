@@ -81,6 +81,14 @@
                             <input type="text" class="layui-input " id="max_money" placeholder="请在此输入最大金额">
                         </div>
                     </div>
+
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label">提现手续费</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input " id="withdraw_commission" placeholder="请在此输入提现手续费">
+                        </div>
+                    </div>
+
                 </div>
 
 
@@ -119,6 +127,8 @@
                         </div>
                     </div>
 
+
+
                     <div class="layui-inline layui-col-md4">
                         <label class="layui-form-label ">谷歌开关:</label>
                         <div class="layui-input-block">
@@ -149,7 +159,7 @@
 
     } else {
         var currParentDatas = eval('(' + parent.jsondata + ')')
-
+        // console.log(currParentDatas)
         $("#merchant").text(currParentDatas.MerchantNum)
         $("#ips").val(currParentDatas.WhiteIps)
         $("#login_password").val(currParentDatas.LoginPassword)
@@ -159,6 +169,7 @@
 
         $("#min_pay").val(currParentDatas.MinPay)
         $("#max_pay").val(currParentDatas.MaxPay)
+        $("#withdraw_commission").val(currParentDatas.WithdrawCommission)
 
 
         var payChannelParant =  currParentDatas.PayChannel
@@ -219,7 +230,6 @@
                 },
                 data: []
             })
-
 
             //获取数据添加到下拉框中
             var param = {};
@@ -341,8 +351,6 @@
                 }
             });
 
-
-
             //确认按钮点击事件(这个功能已经实现,但是不知道是否接口问题,暂时修改无效)
             $("#comfireEdit").click(function () {
 
@@ -382,6 +390,7 @@
                 param['min_pay'] = $('#min_pay').val();
                 param['max_pay'] = $('#max_pay').val();
                 param['google_switch'] = $('#google_switch').val();
+                param['withdraw_commission'] = $('#withdraw_commission').val();
 
                 var pay_selectArr = paySel.getValue("name");
                 var pay_selectArrValue = paySel.getValue("value");

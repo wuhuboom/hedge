@@ -258,7 +258,6 @@
                         }
                         $("#Status").append(statusHtml)
 
-
                         var callbackHtml = ''
                         if(returnDataArray.Callback === 1){
                             callbackHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #faa64b;border-color: #faa64b;">没有回调</button>'
@@ -267,6 +266,7 @@
                         }else if(returnDataArray.Callback === 3){
                             callbackHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #465161;border-color: #465161;">回调失败</button>'
                         }
+
                         $("#Callback").append(callbackHtml)
 
 

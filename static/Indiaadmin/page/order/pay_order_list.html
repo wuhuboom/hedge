@@ -387,7 +387,6 @@
                     },
                     {
                         field: 'Status', title: '状态', sort: true, align: "center", templet: function (d) {
-
                             if (d.Status == "1") {//1等待支付
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #337ab7;border-color: #337ab7;">' + '等待支付' + '</button>'
                             } else if (d.Status == "2") {//2支付成功
@@ -399,7 +398,6 @@
                             } else {
                                 return ''
                             }
-
                         }
                     },
                     {
@@ -511,14 +509,12 @@
                     currTempObj.status = data.field.status
                 }
 
-
                 if (data.field.callback === "777") {
 
 
                 } else {
                     currTempObj.callback = data.field.callback
                 }
-
 
                 var todayStartTime = new Date(new Date().toLocaleDateString()).getTime() / 1000 + 1
                 var todayEndTime = new Date(new Date().toLocaleDateString()).getTime() / 1000 + 24 * 60 * 60 - 1

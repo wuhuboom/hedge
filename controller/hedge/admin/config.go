@@ -40,6 +40,11 @@ func ConfigOperation(c *gin.Context) {
 			update["ReleaseTime"], _ = strconv.ParseFloat(status, 64)
 
 		}
+		//dollar_exchange_rate
+		if status, isE := c.GetPostForm("DollarExchangeRate"); isE == true {
+			update["DollarExchangeRate"], _ = strconv.ParseFloat(status, 64)
+
+		}
 		mysql.DB.Model(&model.Config{}).Where("id=?", 1).Update(update)
 		tools.ReturnSuccess2000Code(c, "OK")
 		return

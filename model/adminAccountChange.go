@@ -13,6 +13,7 @@ type AdminAccountChange struct {
 	FontAmount   float64 `gorm:"type:decimal(10,2)"` //变化之前金额
 	Kinds        int     //类型 1盈利金额  2累计押金
 	CollectionId int     //订单金额
+	RecordId     int
 	Created      int64
 }
 

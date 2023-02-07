@@ -88,7 +88,7 @@ func (m *Merchant) ChangeTrcAddress(db *gorm.DB) error {
 	return db.Model(&Merchant{}).Where("id=?", m.ID).Update(m).Error
 }
 
-// AmountChange   kind  1代收 2代付
+// AmountChange   kind  1代收 2代付(代收,代付)
 func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, collectionId int, merOrder string, species int, col modelPay.Collection) (error, Merchant) {
 	//查询账户余额
 	common.MerchantChangeMoneyLock.RLock()
@@ -195,8 +195,7 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 		}
 		return err, Merchant{}
 	}
-
-	err = db.Model(&Merchant{}).Where("id=?", mer.ID).Update(update).Error
+	err = db.Model(&Merchant{}).Where("id=? and available_amount =? and freeze_amount =?", mer.ID, mer.AvailableAmount, mer.FreezeAmount).Update(update).Error
 	if err != nil {
 		if species != 3 {
 			db.Rollback()
@@ -208,4 +207,16 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 		db.Commit()
 	}
 	return nil, mer
+}
+
+func (m *Merchant) Withdraw(db *gorm.DB) {
+
+	//成功订单
+	if m.Status == 2 {
+
+	} else {
+		//失败订单
+
+	}
+
 }

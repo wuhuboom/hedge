@@ -29,12 +29,7 @@
                 /*word-wrap:break-word;*/
             }
 
-
-
-
-
     </style>
-
 
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -50,6 +45,7 @@
             <!-- 表格工具栏 -->
             <form class="layui-form toolbar">
                 <div class="layui-form-item">
+
                     <div class="layui-inline">
                         <label class="layui-form-label">商户订单号:</label>
                         <div class="layui-input-inline">
@@ -88,6 +84,7 @@
                             </select>
                         </div>
                     </div>
+
                     <div class="layui-inline">
                         <label class="layui-form-label">开始日期</label>
                         <div class="layui-input-inline">
@@ -95,23 +92,27 @@
                         </div>
                     </div>
 
-
                     <div class="layui-inline">
                         <label class="layui-form-label">结束日期</label>
                         <div class="layui-input-inline">
                             <input type="text" class="layui-input" id="endDate" name="endDate" placeholder="yyyy-MM-dd HH:mm:ss">
                         </div>
                     </div>
+
                     <div class="layui-inline">&emsp;
+
 <!--                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="addGropeTask" id="addGropeTask" lay-submit style="background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);">-->
 <!--                            <i class="layui-icon">&#xe624;</i>添加-->
 <!--                        </button>-->
+
                         <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit >
                             <i class="layui-icon">&#xe615;</i>搜索
                         </button>
+
                         <button class="layui-btn icon-btn currReloadBtn" lay-filter="reloadData" lay-submit style="background-color: #926dde;border-color: #926dde;">
                             <i class="layui-icon layui-icon-refresh"></i>刷新数据
                         </button>
+
                     </div>
                 </div>
             </form>

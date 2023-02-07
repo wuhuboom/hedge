@@ -8,6 +8,7 @@
     <title>用户列表</title>
     <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
     <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+    <script type="text/javascript" src="../../assets/js/clipboard.min.js"></script>
     <script src="../../assets/js/moment.js"></script>
 
     <style>
@@ -76,27 +77,32 @@
                         <col>
                     </colgroup>
                     <tbody>
+
                         <tr>
                             <td>商户号</td>
-                            <td id="MerchantNum">
-
-                            </td>
+                            <td id="MerchantNum"></td>
                         </tr>
+
                         <tr>
                             <td>秘钥</td>
                             <td id="ApiKey"></td>
                         </tr>
+
                         <tr>
                             <td>对接地址</td>
-                            <td id="Gateway">
-
-                            </td>
+                            <td id="Gateway"></td>
                         </tr>
+
                         <tr>
                             <td>白名单</td>
-                            <td id="WhiteIps">
-                            </td>
+                            <td id="WhiteIps"></td>
                         </tr>
+
+                        <tr>
+                            <td>Trc回 U 地址</td>
+                            <td id="Trc"></td>
+                        </tr>
+
                     </tbody>
                 </table>
             </div>
@@ -203,23 +209,26 @@
                         var returnDataArray = res.result
                         $("#MerchantNum").text(returnDataArray.MerchantNum)
                         // <span className = "layui-badge"> 赤 < /span>
-                        let ipsArr = returnDataArray.WhiteIps.split('@')
-
+                        let ipsArr = returnDataArray.WhiteIps.split('@').filter(item => item != '')
 
                         let ipsHtml = ""
+                        // console.log("ipsArr",ipsArr)
                         ipsArr.forEach((item,index)=>{
                             if(index == 0){
                                 ipsHtml = ipsHtml + '<span class="layui-badge" > ' + item + '</span>'
                             }else{
                                 ipsHtml = ipsHtml + '<span class="layui-badge" style=\'margin-left: 10px\'> ' + item + '</span>'
                             }
-
                         })
-
-
                         $("#WhiteIps").append(ipsHtml)
-                        $("#ApiKey").text(returnDataArray.ApiKey)
+
+                        let apikeyhtml = returnDataArray.ApiKey
+                        apikeyhtml += '<button type="button" class="layui-btn layui-btn-sm layui-btn-radius" id="copyBtn" style="margin-left: 10px">复制</button>'
+
+                        $("#ApiKey").append(apikeyhtml)
+
                         $("#Gateway").text(returnDataArray.Gateway)
+                        $("#Trc").text(returnDataArray.TrcAddress)
 
                         let payCArr = returnDataArray.PayC
                         let paycHtml = ""
@@ -237,7 +246,6 @@
                             }else{
                                 paycHtml = paycHtml + '<td align="center"><span class="layui-badge layui-bg-black">关闭</span></td>'
                             }
-
                             if(item.Kinds === 1){
                                 paycHtml = paycHtml + '<td align="center"><span class="layui-badge layui-bg-orange">代收</span></td>'
                             }else{
@@ -254,13 +262,24 @@
                         // <td align="center">2020-06-01</td>
                         // <td align="center"><span></span></td>
                         // <td></td></tr>
-
                         // tablePay
                     }
                 }
             })
 
 
+            //复制内容监听函数
+            var clipboard2 = new ClipboardJS('#copyBtn', {
+                text: function () {
+                    return $("#ApiKey").text();
+                }
+            });
+            clipboard2.on('success', function (e) {
+                layer.msg("复制成功！");
+            });
+            clipboard2.on('error', function (e) {
+                layer.msg("复制失败！请手动复制")
+            });
 
 
             // var log_login_request_param = {};

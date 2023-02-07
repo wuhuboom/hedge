@@ -137,11 +137,8 @@
     //alert(document.cookie);
     // console.log("mybck",mybck)
     if(mybck == "" || mybck == null){
-
         window.top.location.href="../../login.html";
-
     }else{
-
         var jsondata ;
         var gatewaydata = [];
         var local_storage_key = 'admin_merchant_t_list';
@@ -175,7 +172,6 @@
                     gatewaydata = data.result
                 }
             });
-
 
             /* 渲染表格 */
             var tableCols = tableSetCol(getTableCols(), local_storage_key);
@@ -217,7 +213,6 @@
 
                 }
             });
-
 
             //layui表格渲染后，事件需要重新绑定，并记录下筛选信息于localStorage
             function tableDone(elem, col, key) {
@@ -318,13 +313,12 @@
                     {field: 'MinPay', title: '最小代付金额',  sort: true,align:"center",width: 150},
                     {field: 'PaidChannel', title: '代付渠道',  sort: true,align:"center",width: 150},
                     // {field: 'PayC', title: 'PayC',  sort: true,align:"center",width: 150},
-                    {field: 'PayChannel', title: '支付渠道',  sort: true,align:"center",width: 150},
+                    {field: 'PayChannel', title: '代收渠道',  sort: true,align:"center",width: 150},
                     {field: 'PayCommission', title: '代付手续费',  sort: true,align:"center",width: 150},
-
+                    {field: 'WithdrawCommission', title: '提现手续费',  sort: true,align:"center",width: 150},
                     {field: 'Token', title: 'Token',  sort: true,align:"center",width: 150},
                     // {field: 'WhiteIps', title: '白名单', sort: true,align:"center"},
                     {field: 'ApiKey', title: '支付秘钥', sort: true,align:"center",width: 150},
-
                     {field: 'Created', title: '创建时间',width:170, sort: true,align:"center",templet: function(d){
                             return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
                             // return util.toDateString(d.Created * 1000);
@@ -338,7 +332,6 @@
                 ]]
                 return col;
             }
-
             //layuitable reload或第一次加载的时候，根据存储的local_config 确定哪些列是否选中
             function tableSetCol(col, key) {
                 let colArr = col[0]
@@ -353,9 +346,6 @@
                 }
                 return [colArr];
             }
-
-
-
             /* 表格搜索 */
             var currTempObj;
             var bet_tb_this;
@@ -422,7 +412,6 @@
 
                 return false;
             });
-
             //监听开关按钮操作
             form.on('switch(table_status)', function(obj){
                 // console.log("obj",obj)
@@ -757,7 +746,6 @@
 
 
             });
-
             //监听单元格编辑
             table.on('edit(userTable)', function(obj){
                 var value = obj.value //得到修改后的值
@@ -805,13 +793,11 @@
 
 
             });
-
             /* 表格工具条点击事件 */
             table.on('tool(userTable)', function (obj) {
                 var currDatas  = obj.data;
                 if (obj.event === 'resetGoogle') { // 重置谷歌
                     // jsondata = JSON.stringify(currDatas)
-
                     //弹窗组件
                     layer.open({
                         // type: 2,
@@ -830,11 +816,9 @@
                         btn1: function(index, layero) {//确定事件
                             //点击第一个按钮处理逻辑
                             // layer.msg("1");
-
                             //进行ajax请求
                             var param={};
                             param.id = currDatas.ID
-
                                 $.ajax({
                                 url:global_requestAddress+global_requestAddress_js_merchant+"?action=resetGoogle",
                                 method:'POST',
@@ -857,10 +841,6 @@
                                     }
                                 }
                             })
-
-
-
-
                         },
                         btn2: function(index, layero){//取消事件
                             //点击第二个按钮处理逻辑
@@ -877,8 +857,9 @@
                             layer.close(index);
                         }
                     })
-
-                }else if (obj.event === 'editbtn') { // 修改
+                }
+                // 修改
+                else if (obj.event === 'editbtn') {
                     jsondata = JSON.stringify(currDatas)
                     var index = layui.layer.open({
                         area: ['1200px', '95%'],
@@ -889,7 +870,6 @@
                         type : 2,
                         content : "merchant_edit.html",
                         success : function(layero, index){
-
                             var body = layui.layer.getChildFrame('body', index);
                         },
                         end : function() {//弹窗关闭后的回调函数
@@ -897,14 +877,32 @@
                             // $(".layui-laypage-btn").click()
                             //直接刷新当前修改的行
                             $(".layui-laypage-btn")[0].click()
-
                         }
                     })
-
-
+                }
+                // 查看
+                else if (obj.event === 'check') {
+                    jsondata = JSON.stringify(currDatas)
+                    var index = layui.layer.open({
+                        area: ['1200px', '95%'],
+                        fixed: false, //不固定
+                        maxmin: false,
+                        title : "查看信息",
+                        skin: 'layui-layer-rim',//加上边框
+                        type : 2,
+                        content : "view_information.html",
+                        success : function(layero, index){
+                            var body = layui.layer.getChildFrame('body', index);
+                        },
+                        end : function() {//弹窗关闭后的回调函数
+                            //利用laypage实现局部刷新,以下两种方式都可以
+                            // $(".layui-laypage-btn").click()
+                            //直接刷新当前修改的行
+                            $(".layui-laypage-btn")[0].click()
+                        }
+                    })
                 }
             });
-
              // 添加
             form.on('submit(addAdmin)', function (data) {
                 var index = layui.layer.open({
@@ -931,7 +929,6 @@
 
                 return false;
             });
-
         });
 
     }

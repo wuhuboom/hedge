@@ -31,6 +31,9 @@ global_requestAddress_js_configOperation="/admin/v1/configOperation";
 global_requestAddress_js_gatewayOperation="/admin/v1/gatewayOperation";
 //首页每日数据/总数据
 global_requestAddress_js_getStatistics="/admin/v1/getStatistics";
+//账变
+global_requestAddress_js_agencyChangeAmount="/admin/v1/agencyChangeAmount";
+
 
 const timeArr = [{
 	name:'Asia/Shanghai',

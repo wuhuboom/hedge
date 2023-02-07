@@ -26,6 +26,11 @@ func Withdraw(c *gin.Context) {
 		db.Model(&model.Record{}).Count(&total)
 		db = db.Model(&model.Record{}).Offset((page - 1) * limit).Limit(limit).Order("created desc")
 		db.Find(&sl)
+		for i, record := range sl {
+			mer := model.Merchant{}
+			mysql.DB.Where("merchant_num=?", record.MerchantNum).First(&mer)
+			sl[i].TrcAddress = mer.TrcAddress
+		}
 		tools.ReturnDataLIst2000(c, sl, total)
 		return
 	}
@@ -33,10 +38,14 @@ func Withdraw(c *gin.Context) {
 		//提现金额
 		amount, _ := strconv.ParseFloat(c.PostForm("amount"), 64)
 		//判断余额
-		if whoMap.AvailableAmount < amount+amount*whoMap.WithdrawCommission {
+		if whoMap.AvailableAmount < amount+amount*whoMap.WithdrawCommission || amount <= 0 {
 			tools.ReturnErr101Code(c, "Insufficient account balance")
 			return
 		}
+
+		commission := amount * whoMap.WithdrawCommission
+		WithdrawAmount := amount
+		amount = amount + amount*whoMap.WithdrawCommission
 		//判断是否存在Trc 地址
 		if whoMap.TrcAddress == "" {
 			tools.ReturnErr101Code(c, "Please bind back to U address first")
@@ -44,33 +53,44 @@ func Withdraw(c *gin.Context) {
 		}
 		//减少金额
 		db := mysql.DB.Begin()
-		var ups map[string]interface{}
+		ups := make(map[string]interface{})
 		ups["AvailableAmount"] = whoMap.AvailableAmount - amount
 		ups["FreezeAmount"] = whoMap.FreezeAmount + amount
-		err := db.Model(&model.Merchant{}).Where("merchant_num=? and  freeze_amount =? and  available_amount=?", whoMap.MerchantNum, whoMap.FreezeAmount, whoMap.AvailableAmount).Update(ups).Error
+
+		err := db.Model(&model.Merchant{}).
+			Where("merchant_num=? and  freeze_amount =? and  available_amount=?", whoMap.MerchantNum, whoMap.FreezeAmount, whoMap.AvailableAmount).Update(ups).Error
 		if err != nil {
 			tools.ReturnErr101Code(c, err.Error())
 			return
 		}
 		//生成record
 		record := model.Record{
-			MerchantNum: whoMap.MerchantNum, Kinds: 1, WithdrawalMethod: 3, Amount: amount}
+			MerchantNum:      whoMap.MerchantNum,
+			Kinds:            1,
+			WithdrawalMethod: 3,
+			Amount:           WithdrawAmount, WithdrawalCommission: commission}
 
 		err = record.Add(db)
 		if err != nil {
+			db.Rollback()
 			tools.ReturnErr101Code(c, err.Error())
 			return
 		}
 		//账变
 		change := modelPay.AmountChange{
 			MerchantNum: whoMap.MerchantNum,
-			Amount:      amount, Before: whoMap.AvailableAmount,
-			After: whoMap.AvailableAmount - amount, Kinds: 1, RecordId: record.ID}
+			Amount:      amount,
+			Before:      whoMap.AvailableAmount,
+			After:       whoMap.AvailableAmount - amount,
+			Kinds:       1, RecordId: record.ID}
 		err = change.Add(db)
 		if err != nil {
+			db.Rollback()
 			tools.ReturnErr101Code(c, err.Error())
 			return
 		}
+
+		db.Commit()
 		tools.ReturnSuccess2000Code(c, "Submission completed, waiting for administrator review")
 		return
 	}

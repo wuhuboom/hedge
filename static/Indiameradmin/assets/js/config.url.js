@@ -280,4 +280,8 @@ function getCurrDate() {
 }
 
 
-
+// split去掉空数据
+String.prototype.Split = function (s)
+{
+	return this.split(s).filter(item => item != '');
+}

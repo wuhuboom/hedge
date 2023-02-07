@@ -80,6 +80,7 @@ func Setup() *gin.Engine {
 		ad.POST("/agencyChangeAmount", management.AgencyChangeAmount)
 		//MerChangeAmount
 		ad.POST("/merChangeAmount", management.MerChangeAmount)
+		ad.POST("/getRecord", management.GetRecord)
 
 	}
 

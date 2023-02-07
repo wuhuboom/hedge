@@ -9,21 +9,24 @@ import (
 )
 
 type Record struct {
-	ID               int    `gorm:"primaryKey"`
-	OrderNum         string `gorm:"unique_index"` //订单号
-	RunnerId         int
-	AgencyRunnerId   int
-	MerchantNum      string  //商户号
-	Amount           float64 `gorm:"type:decimal(10,2)"`
-	Kinds            int     //1提现
-	WithdrawalMethod int     `gorm:"default:2"` //2 提现收款地址 3 提现收款 U 地址
-	Created          int64
-	Updated          int64
-	Status           int `gorm:"default:1"` //状态 1 审核中 2审核通过 3审核失败
-	Remark           string
-	ActualAmount     int64   `gorm:"type:decimal(10,2);default:0"` //实际提现金额  U
-	ExchangeRate     float64 `gorm:"type:decimal(10,2);default:0"`
-	Date             string
+	ID                   int    `gorm:"primaryKey"`
+	OrderNum             string `gorm:"unique_index"` //订单号
+	RunnerId             int
+	AgencyRunnerId       int
+	MerchantNum          string  //商户号
+	Amount               float64 `gorm:"type:decimal(10,2)"`
+	Kinds                int     //1提现
+	WithdrawalMethod     int     `gorm:"default:2"` //2 提现收款地址 3 提现收款 U 地址
+	Created              int64
+	Updated              int64
+	Status               int `gorm:"default:1"` //状态 1 审核中 2审核通过 3审核失败
+	Remark               string
+	ActualAmount         float64 `gorm:"type:decimal(10,2);default:0"` //实际提现金额  U
+	ExchangeRate         float64 `gorm:"type:decimal(10,2);default:0"`
+	WithdrawalCommission float64 `gorm:"type:decimal(10,2);default:0"`
+	Date                 string
+	Certificate          string //凭证截图
+	TrcAddress           string `gorm:"-"`
 }
 
 func CheckIsExistModelRecord(db *gorm.DB) {
