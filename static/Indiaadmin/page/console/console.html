@@ -432,7 +432,7 @@
                         day_TodayPayAmount += item.TodayPayAmount
                     })
 
-                    $("#TodayCollection").text(day_TodayCollection)//今日代收笔数
+                    $("#TodayCollection").text(day_TodayCollection)//
                     $("#TodayCollectionAmount").text(day_TodayCollectionAmount)
                     $("#TodayCollectionCommission").text(day_TodayCollectionCommission)
                     $("#TodayPay").text(day_TodayPay)
@@ -478,16 +478,16 @@
                     // {field: 'ID',title:'ID',sort: true,align:"center",width:70},
                     {field: 'Date', title: '日期', sort: true,align:"center",width:120},
                     {field: 'MerchantNum', title: '商户号',  sort: true,align:"center"},
-                    {field: 'TodayCollection', title: '今日成功代收笔数', sort: true,align:"center",width:180},
-                    {field: 'TodayAllCollection', title: '今日总代收', sort: true,align:"center",width:180},
-                    {field: 'TodayAllAmount', title: '今日总代收金额', sort: true,align:"center",width:180},
-                    {field: 'TodayCollectionAmount', title: '今日成功代收金额', sort: true,align:"center",width:180},
-                    {field: 'TodayCollectionCommission', title: '今日代收手续费',  sort: true,align:"center",width:180},
-                    {field: 'TodayPay', title: '今日成功代付', sort: true,align:"center",width:130},
-                    {field: 'TodayAllPay', title: '今日总代付', sort: true,align:"center",width:130},
-                    {field: 'TodayPayAmount', title: '今日成功代付金额', sort: true,align:"center",width:180},
-                    {field: 'TodayPayAllAmount', title: '今日总代付金额', sort: true,align:"center",width:180},
-                    {field: 'TodayPayCommission', title: '今日代付手续费', sort: true,align:"center",width:180},
+                    {field: 'TodayCollection', title: '代收(成功)', sort: true,align:"center",width:180},
+                    {field: 'TodayAllCollection', title: '代收(总)', sort: true,align:"center",width:180},
+                    {field: 'TodayAllAmount', title: '代收金额(总)', sort: true,align:"center",width:180},
+                    {field: 'TodayCollectionAmount', title: '代收金额(成功)', sort: true,align:"center",width:180},
+                    {field: 'TodayCollectionCommission', title: '代收手续费',  sort: true,align:"center",width:180},
+                    {field: 'TodayPay', title: '代付(成功)', sort: true,align:"center",width:130},
+                    {field: 'TodayAllPay', title: '代付(总)', sort: true,align:"center",width:130},
+                    {field: 'TodayPayCommission', title: '代付手续费', sort: true,align:"center",width:180},
+                    {field: 'TodayPayAmount', title: '代付金额(成功)', sort: true,align:"center",width:180},
+                    {field: 'TodayPayAllAmount', title: '代付金额(总)', sort: true,align:"center",width:180},
 
                     // {field: 'Created', title: '创建时间',align:"center",width:175, sort: true, templet: function (d) {
                     //         // return util.toDateString(d.Created* 1000);

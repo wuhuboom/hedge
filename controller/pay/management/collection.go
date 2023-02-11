@@ -16,6 +16,8 @@ import (
 // CollectionOperation 操作订单
 func CollectionOperation(c *gin.Context) {
 	action := c.Query("action")
+	who, _ := c.Get("who")
+	whoMap := who.(model.Admin)
 	if action == "check" {
 		//查询bankCard
 		limit, _ := strconv.Atoi(c.PostForm("limit"))
@@ -117,7 +119,7 @@ func CollectionOperation(c *gin.Context) {
 
 		//  status  1等待支付  2支付成功  3失败
 		sta, _ := strconv.Atoi(c.PostForm("status"))
-		if sta != 2 {
+		if sta != 2 && col.Kinds == 1 {
 			tools.ReturnErr101Code(c, "Illegal request")
 			return
 		}
@@ -142,9 +144,7 @@ func CollectionOperation(c *gin.Context) {
 			}
 			//跑分 处理逻辑  // 充值失败
 			if col.Species == 3 {
-
 				//失败  必须要就订单 以及过期
-
 				//订单被管理驳回了    代理玩家要退还额度
 				runner := model.Runner{ID: col.RunnerId}
 				runner.CollectionLimit = col.ActualAmount
@@ -157,43 +157,129 @@ func CollectionOperation(c *gin.Context) {
 					return
 				}
 			} else {
-				// 正常三方 逻辑
-				if err := mysql.DB.Model(&modelPay.Collection{}).Where("id=? and status=?", col.ID, col.Status).Update(&modelPay.Collection{
-					Status: 3, Updated: time.Now().Unix()}).Error; err != nil {
-					tools.ReturnErr101Code(c, err.Error())
-					return
+				//代付订单
+				if col.Kinds == 2 {
+					//逻辑处理  1.修改订单状态  2.返回商户的可用额度
+					db := mysql.DB.Begin()
+					if err := db.Model(&modelPay.Collection{}).Where("id=? and status=?", col.ID, col.Status).Update(&modelPay.Collection{
+						Status: 3, Updated: time.Now().Unix()}).Error; err != nil {
+						tools.ReturnErr101Code(c, err.Error())
+						return
+					}
+					//修改商户
+					ups := make(map[string]interface{})
+					ups["AvailableAmount"] = mer.AvailableAmount + col.Commission + col.Amount
+					ups["FreezeAmount"] = mer.FreezeAmount - (col.Commission + col.Amount)
+					err := db.Model(&model.Merchant{}).Where("id=? and  available_amount  =? and freeze_amount=? ", mer.ID, mer.AvailableAmount, mer.FreezeAmount).Update(ups).Error
+					if err != nil {
+						db.Rollback()
+						tools.ReturnErr101Code(c, err.Error())
+						return
+					}
+
+					//账变
+					change := modelPay.AmountChange{
+						MerchantNum:  mer.MerchantNum,
+						CollectionId: col.ID,
+						Amount:       col.Commission + col.Amount,
+						Before:       mer.AvailableAmount,
+						After:        mer.AvailableAmount + col.Commission + col.Amount, Kinds: 1, Status: 2, Remark: "关联订单:" + col.OwnOrder}
+					err = change.Add(db)
+					if err != nil {
+						db.Rollback()
+						tools.ReturnErr101Code(c, err.Error())
+						return
+					}
+
+					db.Commit()
+				} else {
+					// 正常三方 逻辑
+					if err := mysql.DB.Model(&modelPay.Collection{}).Where("id=? and status=?", col.ID, col.Status).Update(&modelPay.Collection{
+						Status: 3, Updated: time.Now().Unix()}).Error; err != nil {
+						tools.ReturnErr101Code(c, err.Error())
+						return
+					}
 				}
+
 			}
 
-		} else {
+		} else { //订单处理成功
 			ActualAmount, _ := strconv.ParseFloat(c.PostForm("actual_amount"), 64)
 			if ActualAmount <= 0 {
 				tools.ReturnErr101Code(c, "actual_amount must  have")
 				return
 			}
-			if ActualAmount > col.ActualAmount {
+			if ActualAmount > col.Amount {
 				tools.ReturnErr101Code(c, "The actual amount cannot be greater than the order amount")
 				return
 			}
-			//充值成功
-			if col.Species == 3 {
-				//跑分逻辑
-				runner := model.Runner{ID: col.RunnerId}
-				runner.CollectionLimit = 0
-				runner.FreezeCollectionLimit = -ActualAmount
-				runner.Col = col
-				err := runner.ChangeCollectionLimit(mysql.DB, false, 6)
-				if err != nil {
-					tools.ReturnErr101Code(c, err.Error())
-					return
+			//if col.Status != 1 {
+			//	tools.ReturnErr101Code(c, "the order  status  is not right")
+			//	return
+			//}
+
+			//充值成功  代收逻辑
+			if col.Kinds == 2 {
+				if col.Species == 3 {
+					//代理收益逻辑
+
+				} else { //1.修改订单号成功  2.超管加钱 生成账变    3商户号修改冻结金额
+					db := mysql.DB.Begin()
+					err := db.Model(&modelPay.Collection{}).Where("id=? and status=? and  kinds=2", col.ID, col.Status).Update(&modelPay.Collection{Status: 2, Updated: time.Now().Unix()}).Error
+
+					if err != nil {
+						tools.ReturnErr101Code(c, err.Error())
+						return
+					}
+					admin := model.Admin{ID: whoMap.ID, Profit: col.Commission, CollectionId: col.ID}
+					err = admin.ChangeProfit(db)
+					if err != nil {
+						tools.ReturnErr101Code(c, err.Error())
+
+						db.Rollback()
+						return
+					}
+					ActualAmount = col.Amount
+					err = db.Model(&model.Merchant{}).Where("id=? and  freeze_amount=?", mer.ID, mer.FreezeAmount).
+						Update(map[string]interface{}{"FreezeAmount": mer.FreezeAmount - col.Amount - col.Commission}).Error
+
+					//zap.L().Debug(fmt.Sprintf("原始金额:%f,变化后的金额:%f,变化订单:%s", mer.FreezeAmount, mer.FreezeAmount-col.Amount-col.Commission, col.OwnOrder))
+					if err != nil {
+						tools.ReturnErr101Code(c, err.Error())
+						db.Rollback()
+						return
+					}
+					//修改每天统计
+					statistics := modelPay.Statistics{MerchantNum: col.MerChantNum, TodayPay: 1, TodayPayAmount: ActualAmount, TodayPayCommission: col.Commission}
+					err = statistics.Add(db, 2)
+					if err != nil {
+						db.Rollback()
+						tools.ReturnErr101Code(c, err.Error())
+						return
+					}
+					db.Commit()
+
 				}
+
 			} else {
-				//普通三方逻辑
-				merchant := model.Merchant{MerchantNum: col.MerChantNum}
-				err, _ := merchant.AmountChange(mysql.DB, ActualAmount, col.ChannelId, col.ID, col.MerchantOrderNum, 1, col)
-				if err != nil {
-					tools.ReturnErr101Code(c, err.Error())
-					return
+				if col.Species == 3 {
+					//跑分逻辑
+					runner := model.Runner{ID: col.RunnerId}
+					runner.CollectionLimit = 0
+					runner.FreezeCollectionLimit = -ActualAmount
+					runner.Col = col
+					err := runner.ChangeCollectionLimit(mysql.DB, false, 6)
+					if err != nil {
+						tools.ReturnErr101Code(c, err.Error())
+						return
+					}
+				} else { //普通三方逻辑
+					merchant := model.Merchant{MerchantNum: col.MerChantNum}
+					err, _ := merchant.AmountChange(mysql.DB, ActualAmount, col.ChannelId, col.ID, col.OwnOrder, 1, col)
+					if err != nil {
+						tools.ReturnErr101Code(c, err.Error())
+						return
+					}
 				}
 			}
 		}
@@ -227,12 +313,10 @@ func CollectionOperation(c *gin.Context) {
 			up.Callback = 3
 		}
 		mysql.DB.Model(&modelPay.Collection{}).Where("id=?", col.ID).Update(up)
-
 		redis.Rdb.Set("confirmationOfPayment"+id, "123", 5*time.Second)
 		tools.ReturnSuccess2000Code(c, "OK")
 		return
 	}
-
 	//回调
 	if action == "callback" {
 
@@ -304,6 +388,98 @@ func CollectionOperation(c *gin.Context) {
 		}
 		tools.ReturnSuccess2000DataCode(c, col, "OK")
 		return
+
+	}
+
+	//订单冲正
+	if action == "striking" {
+		id := c.PostForm("id")
+		col := modelPay.Collection{}
+		err := mysql.DB.Where("id=?", id).First(&col).Error
+		if err != nil {
+			tools.ReturnErr101Code(c, err.Error())
+			return
+		}
+		mer := model.Merchant{}
+		err = mysql.DB.Where("merchant_num=?", col.MerChantNum).First(&mer).Error
+		if err != nil {
+			tools.ReturnErr101Code(c, err.Error())
+			return
+		}
+		ch := modelPay.Channel{}
+		err = mysql.DB.Where("id=?", col.ChannelId).First(&ch).Error
+		if err != nil {
+			tools.ReturnErr101Code(c, err.Error())
+			return
+		}
+		//判断是否是跑分订单
+		if col.Species == 1 {
+			//判断是代付订单 还是代付订单
+			if col.Kinds == 1 {
+				if col.Status != 2 {
+					tools.ReturnErr101Code(c, "the order's status is not  right")
+					return
+				}
+				//减少总金额   可用金额  代收成功数量  代收成功金额   超管的盈利增加?
+
+				db := mysql.DB.Begin()
+				err := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 7, Updated: time.Now().Unix()}).Error
+				if err != nil {
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+				ups := make(map[string]interface{})
+				ups["AvailableAmount"] = mer.AvailableAmount - (col.ActualAmount - col.Commission)
+				ups["AllAmount"] = mer.AllAmount - col.ActualAmount
+				err = db.Model(&model.Merchant{}).Where("id=?  and  available_amount=? and  all_amount=? ", mer.ID, mer.AvailableAmount, mer.AllAmount).Update(ups).Error
+				if err != nil {
+					db.Rollback()
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+				//新增账变
+				change := modelPay.AmountChange{
+					MerchantNum: mer.MerchantNum,
+					Before:      mer.AvailableAmount,
+					Amount:      -(col.ActualAmount - col.Commission),
+					After:       mer.AvailableAmount - (col.ActualAmount - col.Commission), CollectionId: col.ID, Remark: "冲正:" + col.OwnOrder}
+				err = change.Add(db)
+				if err != nil {
+					db.Rollback()
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+				// 回退 每日统计
+				statistics := modelPay.Statistics{
+					TodayCollection:           -1,
+					TodayCollectionCommission: -col.Commission,
+					TodayCollectionAmount:     -col.ActualAmount, MerchantNum: mer.MerchantNum}
+				err = statistics.Add(db, 1)
+				if err != nil {
+					db.Rollback()
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+
+				//管理员的
+				admin := model.Admin{Profit: -col.Commission, CollectionId: col.ID}
+				err = admin.ChangeProfit(db)
+				if err != nil {
+					db.Rollback()
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+				db.Commit()
+				tools.ReturnSuccess2000Code(c, "OK")
+				return
+
+			} else {
+
+			}
+
+		} else { //跑分订单
+
+		}
 
 	}
 

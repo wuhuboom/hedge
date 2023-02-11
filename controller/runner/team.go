@@ -64,7 +64,6 @@ func GetSubordinate(c *gin.Context) {
 
 	}
 	//团队接单明细
-
 	//团队充值明细
 	//团队提现明细
 	if action == "withdraw" {

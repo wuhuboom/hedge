@@ -66,7 +66,6 @@ func Channel(c *gin.Context) {
 			tools.ReturnErr101Code(c, err.Error())
 			return
 		}
-
 		//状态单独修改
 		if status, isExist := c.GetPostForm("status"); isExist == true {
 			st, _ := strconv.Atoi(status)

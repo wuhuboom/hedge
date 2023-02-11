@@ -138,16 +138,32 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 			return err, mer
 		}
 
+		// 佣金处理(代理-总代-商户)
+		commission := Commission{
+			Species:        species,
+			RunnerId:       col.RunnerId,
+			AgencyRunnerId: col.AgencyRunnerId,
+			ActualAmount:   col.ActualAmount,
+			CollectionId:   col.ID,
+			MerRate:        ch.Rate,
+			PayType:        1, Commission: amount * ch.Rate}
+		err = commission.ChangeCommission(db)
+		if err != nil {
+			if species != 3 {
+				db.Rollback()
+			}
+			return err, Merchant{}
+		}
+
 	} else if ch.Kinds == 2 { //代付
 		update["AvailableAmount"] = mer.AvailableAmount - amount - (amount * ch.Rate) //可用金额-金额-手续费
-		//update["PayCommission"] = amount*ch.Rate + mer.PayCommission
 		update["FreezeAmount"] = mer.FreezeAmount + amount + amount*ch.Rate
 		//每日统计
 		sta := modelPay.Statistics{
 			TodayAllPay:       1,
 			TodayPayAllAmount: amount,
 			MerchantNum:       m.MerchantNum}
-		err = sta.Add(db, 1)
+		err = sta.Add(db, 4)
 		if err != nil {
 			if species != 3 {
 				db.Rollback()
@@ -179,22 +195,6 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 		}
 	}
 
-	// 佣金处理(代理-总代-商户)
-	commission := Commission{
-		Species:        species,
-		RunnerId:       col.RunnerId,
-		AgencyRunnerId: col.AgencyRunnerId,
-		ActualAmount:   col.ActualAmount,
-		CollectionId:   col.ID,
-		MerRate:        ch.Rate,
-		PayType:        1, Commission: amount * ch.Rate}
-	err = commission.ChangeCommission(db)
-	if err != nil {
-		if species != 3 {
-			db.Rollback()
-		}
-		return err, Merchant{}
-	}
 	err = db.Model(&Merchant{}).Where("id=? and available_amount =? and freeze_amount =?", mer.ID, mer.AvailableAmount, mer.FreezeAmount).Update(update).Error
 	if err != nil {
 		if species != 3 {
@@ -207,16 +207,4 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 		db.Commit()
 	}
 	return nil, mer
-}
-
-func (m *Merchant) Withdraw(db *gorm.DB) {
-
-	//成功订单
-	if m.Status == 2 {
-
-	} else {
-		//失败订单
-
-	}
-
 }

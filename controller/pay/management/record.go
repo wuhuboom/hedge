@@ -55,6 +55,8 @@ func GetRecord(c *gin.Context) {
 		tools.ReturnDataLIst2000(c, sl, total)
 		return
 	}
+
+	//审核
 	if action == "audit" {
 		id := c.PostForm("id")
 		result, _ := redis.Rdb.Get("CashOrder_" + id).Result()
@@ -88,7 +90,7 @@ func GetRecord(c *gin.Context) {
 		if status == 2 {
 			//实际转账金额  //实际转账汇率
 			exchangeRate, _ = strconv.ParseFloat(c.PostForm("exchange_rate"), 64)
-			if exchangeRate <= 0 || exchangeRate > 1 {
+			if exchangeRate == 0 {
 				tools.ReturnErr101Code(c, "exchange_rate is fail")
 				return
 			}
@@ -214,6 +216,58 @@ func GetRecord(c *gin.Context) {
 		tools.ReturnSuccess2000Code(c, "OK")
 		redis.Rdb.Set("CashOrder_"+id, "12233", 5*time.Second)
 		return
+	}
+	//修改
+	if action == "update" {
+		id := c.PostForm("id")
+		record := model.Record{}
+		err := mysql.DB.Where("id=?", id).First(&record).Error
+		if err != nil {
+			tools.ReturnErr101Code(c, "this record  is not exist")
+			return
+		}
+
+		//修改的内容
+		ups := make(map[string]interface{})
+		if actualAmount, isE := c.GetPostForm("actual_amount"); isE == true {
+			ups["ActualAmount"], _ = strconv.ParseFloat(actualAmount, 64)
+
+		}
+
+		//汇率
+		if actualAmount, isE := c.GetPostForm("exchange_rate"); isE == true {
+			ups["ExchangeRate"], _ = strconv.ParseFloat(actualAmount, 64)
+		}
+
+		//支付凭证
+		if certificate, isE := c.FormFile("certificate"); isE != nil {
+			//成功 需要上传  转账 凭证
+			nameArray := strings.Split(certificate.Filename, ".")
+			//判断文件夹是否存在
+			path := "./static/upload/" + time.Now().Format("20060102") + "/"
+			if noExist, _ := tools.IsFileNotExist(path); noExist {
+				if err := os.MkdirAll(path, 0777); err != nil {
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+			}
+			path = path + time.Now().Format("20060102150405") + nameArray[0] + "." + nameArray[1]
+			err = c.SaveUploadedFile(certificate, path)
+			if err != nil {
+				tools.ReturnErr101Code(c, err.Error())
+				return
+			}
+			ups["Certificate"] = path
+
+		}
+		err = mysql.DB.Model(&model.Record{}).Where("id=?", id).Update(ups).Error
+		if err != nil {
+			tools.ReturnErr101Code(c, err.Error())
+			return
+		}
+		tools.ReturnSuccess2000Code(c, "OK")
+		return
+
 	}
 
 }

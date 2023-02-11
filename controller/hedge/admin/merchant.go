@@ -3,9 +3,12 @@ package admin
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/wangyi/GinTemplate/dao/mysql"
+	"github.com/wangyi/GinTemplate/dao/redis"
 	"github.com/wangyi/GinTemplate/model"
+	"github.com/wangyi/GinTemplate/model/modelPay"
 	"github.com/wangyi/GinTemplate/tools"
 	"strconv"
+	"time"
 )
 
 // MerchantOperation 操作商户
@@ -140,8 +143,8 @@ func MerchantOperation(c *gin.Context) {
 		if status, isExist := c.GetPostForm("gateway_id"); isExist == true {
 			updated["GatewayId"], _ = strconv.Atoi(status)
 		}
+		//登录密码
 		if status, isExist := c.GetPostForm("login_password"); isExist == true {
-
 			if mer.LoginPassword != status {
 				updated["LoginPassword"] = tools.MD5(status)
 			}
@@ -150,6 +153,10 @@ func MerchantOperation(c *gin.Context) {
 		//谷歌开关
 		if status, isExist := c.GetPostForm("google_switch"); isExist == true {
 			updated["GoogleSwitch"], _ = strconv.Atoi(status)
+		}
+		//谷歌code
+		if status, isExist := c.GetPostForm("google_code"); isExist == true {
+			updated["GoogleCode"], _ = strconv.Atoi(status)
 		}
 
 		mysql.DB.Model(&model.Merchant{}).Where("id=?", id).Update(updated)
@@ -169,6 +176,57 @@ func MerchantOperation(c *gin.Context) {
 		}
 		mysql.DB.Model(&model.Merchant{}).Where("id=?", id).Update(map[string]interface{}{"GoogleCode": ""})
 		tools.ReturnSuccess2000Code(c, "OK")
+		return
+	}
+	//修改商户余额
+	if action == "available_amount" {
+
+		id := c.PostForm("id")
+		//判断这个商户号是否存在?
+		mer := model.Merchant{}
+		err := mysql.DB.Where("id=?", id).First(&mer).Error
+		if err != nil {
+			tools.ReturnErr101Code(c, "sorry ,the  merchant is not  exist")
+			return
+		}
+		result, _ := redis.Rdb.Get("available_amount_" + id).Result()
+		if result != "" {
+			tools.ReturnErr101Code(c, "Too fast. Try again later")
+			return
+		}
+
+		amount, _ := strconv.ParseFloat(c.PostForm("amount"), 64)
+		remark := c.PostForm("remark")
+		if remark == "" || amount == 0 {
+			tools.ReturnErr101Code(c, "The parameter cannot be empty")
+			return
+		}
+
+		if mer.AvailableAmount+amount < 0 {
+
+			tools.ReturnErr101Code(c, "sorry  ,available_amount can't be less than 0")
+			return
+		}
+
+		//修改可用余额
+		db := mysql.DB.Begin()
+		err = db.Model(&model.Merchant{}).Where("id=? and  available_amount=? ", mer.ID, mer.AvailableAmount).Update(map[string]interface{}{"AvailableAmount": mer.AvailableAmount + amount}).Error
+		if err != nil {
+			tools.ReturnErr101Code(c, err.Error())
+			return
+		}
+		change := modelPay.AmountChange{MerchantNum: mer.MerchantNum, Amount: amount, After: mer.AvailableAmount + amount, Before: mer.AvailableAmount, Remark: remark}
+		err = change.Add(db)
+		if err != nil {
+			tools.ReturnErr101Code(c, err.Error())
+			db.Rollback()
+			return
+		}
+		db.Commit()
+		tools.ReturnSuccess2000Code(c, "OK")
+
+		redis.Rdb.Set("available_amount_"+id, "---", 5*time.Second)
+
 		return
 	}
 

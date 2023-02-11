@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>代理列表</title>
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+    <script src="../../assets/js/moment.js"></script>
+
+    <style>
+
+        .currSerachBtn{
+            box-shadow: 0 15px 18px -6px rgb(45 140 240 / 65%) !important;
+        }
+
+        .currReloadBtn{
+            box-shadow: 0 15px 18px -6px rgb(146 109 222 / 65%) !important;
+        }
+
+        .layui-table-cell{
+            height:46px;
+            line-height: 46px;
+        }
+
+    </style>
+
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+
+            <!--            <div class="layui-form-item layui-form-pane">-->
+
+            <!--                <div class="layui-inline" style="margin-top:10px;">-->
+            <!--                    &lt;!&ndash;                <div class="layui-btn " data-type="reload"><i class="layui-icon"></i>查询</div>&ndash;&gt;-->
+            <!--                    <div id="reloadtable" class="layui-btn layui-bg-cyan"><i class="layui-icon"></i>刷新数据</div>-->
+            <!--                </div>-->
+            <!--            </div>-->
+
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-form-item" style="margin-left: -45px">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">用户名:</label>
+                        <div class="layui-input-inline">
+                            <input name="merchant"  id="merchant" class="layui-input" placeholder="请输入用户名"/>
+                        </div>
+                    </div>
+                    <!--                    <div class="layui-inline">-->
+                    <!--                        <label class="layui-form-label">手机号:</label>-->
+                    <!--                        <div class="layui-input-inline">-->
+                    <!--                            <input name="phone" id="phone" class="layui-input" placeholder="请输入手机号"/>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+
+                    <!--                    <div class="layui-inline">-->
+                    <!--                        <label class="layui-form-label">备注:</label>-->
+                    <!--                        <div class="layui-input-inline">-->
+                    <!--                            <input name="definition" id="definition" class="layui-input" placeholder="请输入备注"/>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+
+                    <!--                    <div class="layui-inline">-->
+                    <!--                        <label class="layui-form-label">QQ:</label>-->
+                    <!--                        <div class="layui-input-inline">-->
+                    <!--                            <input name="qq_nums" id="qq_nums" class="layui-input" placeholder="请输入QQ"/>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+
+                    <!--                    <div class="layui-inline">-->
+                    <!--                        <label class="layui-form-label">昵称:</label>-->
+                    <!--                        <div class="layui-input-inline">-->
+                    <!--                            <input name="nickname" id="nickname" class="layui-input" placeholder="请输入昵称"/>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+
+                    <!--                    <div class="layui-inline">-->
+                    <!--                        <label class="layui-form-label">状态:</label>-->
+                    <!--                        <div class="layui-input-inline">-->
+                    <!--                            <select name="status" id="level">-->
+                    <!--                                <option value="1">请选择用户状态</option>-->
+                    <!--                                <option value="1">活跃</option>-->
+                    <!--                                <option value="2">封禁</option>-->
+                    <!--                            </select>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                    <div class="layui-inline">&emsp;
+                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit >
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <button class="layui-btn icon-btn currReloadBtn" lay-filter="reloadData" lay-submit style="background-color: #926dde;border-color: #926dde;">
+                            <i class="layui-icon layui-icon-refresh"></i>刷新数据
+                        </button>
+                        <button class="layui-btn icon-btn currReloadBtn" lay-filter="addAdmin" lay-submit style="background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);">
+                            <i class="layui-icon layui-icon-add-1"></i>添加
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <!-- 数据表格 -->
+            <table id="userTable" lay-filter="userTable" style="margin-top:10px"></table>
+        </div>
+    </div>
+</div>
+
+
+<!-- js部分 -->
+<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../../assets/js/common.js?v=318"></script>
+
+<script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="../../assets/js/config.url.js"></script>
+
+<!--数据表格操作工具栏-->
+<script type="text/html" id="orderListBar">
+    <!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="check" style="background-color: #fb7299;color: #ffffff;"><i class="layui-icon layui-icon-form"></i>查看</a>-->
+
+<!--    <a class="layui-btn layui-btn-sm " style="background: #ffba00" data-dropdown="#userTbDrop{{d.LAY_INDEX}}"-->
+<!--       no-shade="true">-->
+<!--        操作<i class="layui-icon layui-icon-drop" style="font-size: 12px;margin-right: 0;"></i></a>-->
+
+    <a class="layui-btn layui-btn-sm layui-border-red" lay-event="CashPledge_edit" ><i class="layui-icon layui-icon-edit"></i>押金修改</a>
+<!--    <a class="layui-btn layui-btn-sm layui-border-red" lay-event="account_change" ><i class="layui-icon layui-icon-table"></i>账变</a>-->
+
+    <!-- 下拉菜单 -->
+<!--    <ul class="dropdown-menu-nav dropdown-bottom-center layui-hide  " id="userTbDrop{{d.LAY_INDEX}}">-->
+<!--        <div class="dropdown-anchor"></div>-->
+<!--        <li><a lay-event="editbtn">修改</a></li>-->
+<!--        <li><a lay-event="CashPledge_edit">修改押金金额</a></li>-->
+<!--        <li><a lay-event="CollectionLimit_edit">修改代收额度</a></li>-->
+<!--        <li><a lay-event="resetGoogle">重置google</a></li>-->
+<!--    </ul>-->
+
+
+    <!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="editbtn" ><i class="layui-icon layui-icon-edit"></i>修改</a>-->
+    <!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="CashPledge_edit" style="background-color: #1e9fff;color: #fff;border: 1px solid #1e9fff;">修改押金金额</a>-->
+    <!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="CollectionLimit_edit" style="background-color: #926dde;color: #fff;border: 1px solid #926dde;">修改代收额度</a>-->
+    <!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="resetGoogle" style="background-color: #ffba00;color: #fff;border: 1px solid #ffba00;">重置google</a>-->
+    <!--    -->
+    <!--        <a class="layui-btn layui-btn-sm  " lay-event="changebtn" style="background-color: #009688"><i class="layui-icon layui-icon-edit"></i>权限设置</a>-->
+    <!--            <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="tixianbtn" style="background-color: #fbc472"><i class="layui-icon layui-icon-down"></i>提现下分</a>-->
+
+</script>
+
+<script>
+
+    var mybck= $.cookie('tokenMyb_acting');
+    //alert(document.cookie);
+    // console.log("mybck",mybck)
+    if(mybck == "" || mybck == null){
+
+        window.top.location.href="../../login.html";
+
+    }else{
+
+        var jsondata ;
+        var agent_information
+        var local_storage_key = 'admin_Member_operation_t_list';//修改中间名称
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','treeTable','dropdown'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var util = layui.util;
+            var admin = layui.admin;
+            var xmSelect = layui.xmSelect;
+            var notice = layui.notice;
+            var treeTable = layui.treeTable
+            var dropdown = layui.dropdown;
+
+            var log_login_request_param = {};
+            // log_login_request_param['token']= $.cookie('tokenMyb');
+
+            /* 渲染表格 */
+            var tableCols = tableSetCol(getTableCols(), local_storage_key);
+            var insTb = table.render({
+                elem: '#userTable',
+                url: global_requestAddress+global_requestAddress_js_runnerOperation+"?action=check",
+                method: 'POST',
+                headers:{
+                    "token": mybck,
+                },
+                response:{
+                    statusCode: 200,
+                    dataName: 'result',
+                },
+                toolbar: true,
+                defaultToolbar: ['filter'],
+                where:log_login_request_param,
+                // toolbar: ['<p>',
+                //     '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+                //     '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                //     '</p>'].join(''),
+                cellMinWidth: 100,
+                page :  { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                    //,curr: 5 //设定初始在第 5 页
+                    ,groups: 10 //只显示 1 个连续页码
+                    ,first: "首页" //不显示首页
+                    ,last: "尾页"//不显示尾页
+                },
+                height : "full-100",
+                limit : 15,
+                limits : [15,30,50,100],
+                // id : "systemLog",
+                cols: tableCols,
+
+                done: function (res, curr, count) {
+                    $('tr').css({'background-color': '#fff', 'color': '#191a1c'});
+                    tableDone(this.elem, insTb.config.cols[0], local_storage_key)
+                    // all_withdrawal
+                }
+            });
+            //layui表格渲染后，事件需要重新绑定，并记录下筛选信息于localStorage
+            function tableDone(elem, col, key) {
+                elem.next().find('[lay-event="LAYTABLE_COLS"]').click(function (e) {
+                    setTimeout(function () {
+                        layui.$(e.currentTarget).find('.layui-form-checkbox').click(function () {
+                            var local_config = {};
+                            for (var i = 0; i <= col.length - 1; i++) {
+                                if (typeof col[i].field !== 'undefined') {
+                                    local_config[col[i].field] = col[i].hide;
+                                }
+                            }
+                            var saveColsConfig = {
+                                key: 'local_config',
+                                value: local_config
+                            };
+                            // console.log("saveColsConfig",saveColsConfig)
+                            layui.data(key, saveColsConfig);
+                        })
+                    }, 50);
+                })
+            }
+
+
+            //表格 头部数据函数封装
+            function getTableCols() {
+                var col = [[
+                    // {type: 'checkbox'},
+                    {field: 'ID',title:'ID',sort: true,align:"center",width:70,fixed: 'left'},
+                    {field: 'Username', title: '用户名 ',  sort: true,align:"center",width: 150},
+                    {field: 'Password', title: '密码 ',  sort: true,align:"center",width: 150},
+                    {field: 'PayPassword', title: '支付密码 ',  sort: true,align:"center",width: 150},
+                    {field: 'AgencyRunnerId', title: '代理id ',  sort: true,align:"center",width: 150},
+                    {field: 'Status', title: '状态', sort: true,align:"center",templet:function(d){
+                            var state = "";
+                            if(d.Status == "1"){//正常,checked 打开
+                                state = "<input type='checkbox' value='" + d.Status + "' id='table_status' lay-filter='table_status'  name='table_status'  lay-skin='switch' lay-text='正常|禁用' checked>";
+                                return state;
+                            }else if(d.Status == "2"){//禁用
+                                state = "<input type='checkbox' value='" + d.Status + "' id='table_status' lay-filter='table_status'  name='table_status'  lay-skin='switch' lay-text='正常|禁用'>";
+                                return state;
+                            }else{
+                                return ''
+                            }
+
+                        }},
+                    {field: 'PaySwitch', title: '代付开关',  sort: true,align:"center",width: 150,
+                        // templet:function (d) {
+                        //     var state = "";
+                        //     if(d.PaySwitch == "1"){//正常,checked 打开
+                        //         state = "<input type='checkbox' value='" + d.PaySwitch + "' id='PaySwitch' lay-filter='PaySwitch'  name='PaySwitch'  lay-skin='switch' lay-text='开|关' checked>";
+                        //         return state;
+                        //     }else if(d.PaySwitch == "2"){//禁用
+                        //         state = "<input type='checkbox' value='" + d.PaySwitch + "' id='PaySwitch' lay-filter='PaySwitch'  name='PaySwitch'  lay-skin='switch' lay-text='开|关'>";
+                        //         return state;
+                        //     }else{
+                        //         return ''
+                        //     }
+                        // }
+                        },
+                    // {field: 'GoogleSwitch', title: '谷歌状态', sort: true,align:"center",width: 150,templet:function (d) {
+                    //         var state="";
+                    //         if (d.GoogleSwitch=="1"){
+                    //             state="<input type='checkbox' value='"+d.GoogleSwitch+"'id='Google_status' lay-filter='Google_status' name='Google_status' lay-skin='switch' lay-text='开|关' checked>"
+                    //             return state;
+                    //         }else if (d.GoogleSwitch=="2"){
+                    //             state="<input type='checkbox' value='"+d.GoogleSwitch+"'id='Google_status' lay-filter='Google_status' name='Google_status' lay-skin='switch' lay-text='开|关'>"
+                    //             return state;
+                    //         }else{
+                    //             return ''
+                    //         }
+                    //     }},
+                    {field: 'InvitationCode', title: '邀请码',  sort: true,align:"center",width: 150},
+                    {field: 'RegisterTime', title: '注册时间',  sort: true,align:"center",width: 150,templet:function (d) {
+                            return util.toDateString(d.RegisterTime * 1000);
+                        }},
+                    {field: 'Superior', title: '上级玩家',  sort: true,align:"center",width: 150},
+                    {field: 'LeverTree', title: 'LeverTree',  sort: true,align:"center",width: 150},
+                    // {field: 'PayChannel', title: '代付通道',  sort: true,align:"center",width: 150},
+                    // {field: 'CollectionChannel', title: '代收通道',  sort: true,align:"center",width: 150},
+                    {field: 'CashPledge', title: '押金金额',  sort: true,align:"center",width: 150},
+                    {field: 'CollectionPoint', title: '代收盈利点',  sort: true,align:"center",width: 150,templet:function (d) {
+                            if (d.CollectionPoint !=0){
+                                var number=d.CollectionPoint*100+"%"
+                                return number
+                            }
+                            return 0
+                        }},
+                    {field: 'CollectionLimit', title: '代收额度',  sort: true,align:"center",width: 150},
+                    {field: 'PayPoint', title: '代付盈利点',  sort: true,align:"center",width: 150,templet:function (d) {
+
+                            if ((d.PayPoint*1) <=0){
+                                return 0
+                            }
+
+                            var number=d.PayPoint*100+"%"
+                            return number
+                        }},
+                    {field: 'PayLimit', title: '代付额度',  sort: true,align:"center",width: 150},
+                    {field: 'Commission', title: '佣金',  sort: true,align:"center",width: 150},
+                    {field: 'FreezeMoney', title: '提现冻结金额',  sort: true,align:"center",width: 150},
+                    {field: 'JuniorPoint', title: '下级税点',  sort: true,align:"center",width: 150,templet:function (d) {
+                            if ((d.JuniorPoint*1) >0){
+                                var number=d.JuniorPoint*100+"%"
+                                return number
+                            }
+                            return 0
+                        }},
+                    // {field: 'FreezeMonet', title: '提现冻结金额',  sort: true,align:"center",width: 150},
+                    {field: 'WithdrawCommission', title: '提现手续费',  sort: true,align:"center",width: 150},
+                    // {field: 'FreezeCashPledge', title: '冻结的额度',  sort: true,align:"center",width: 150},
+                    // {field: 'accumulative_collection_limit', title: '累计已用代收额度',  sort: true,align:"center",width: 150},
+                    {field: 'Token', title: 'token',  sort: true,align:"center",width: 150},
+                    // {field: 'Created', title: '创建时间',width:170, sort: true,align:"center",templet: function(d){
+                    //         return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
+                    //         // return util.toDateString(d.Created * 1000);
+                    //     }},
+                    {field: 'LastLoginTime', title: '最后一次登录时间',width:170, sort: true,align:"center",templet: function(d){
+                            // return moment(d.LastLoginRegion * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
+                            return util.toDateString(d.LastLoginTime * 1000);
+                        }},
+                    {field: 'LastLoginIp', title: '最后登录ip',  sort: true,align:"center",width: 150},
+                    {field: 'LastLoginRegion', title: '最后一次登录地区',  sort: true,align:"center",width: 150},
+
+                    {field: 'ActiveGrade', title: '活跃分数',  sort: true,align:"center",width: 150},
+                    {field: 'CreditScore', title: '信用分',  sort: true,align:"center",width: 150},
+                    // {field: 'Updated', title: '更新时间',width:170, sort: true,align:"center",templet: function(d){
+                    //         return moment(d.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
+                    //         // return util.toDateString(d.Updated * 1000);
+                    //     }},
+                    // {field: 'WhiteIps', title: '白名单', edit:true, sort: true,align:"center"},
+                    {title: '操作', templet:'#orderListBar',fixed:"right",align:"center",width: 200}
+                ]]
+                return col;
+            }
+
+            //layuitable reload或第一次加载的时候，根据存储的local_config 确定哪些列是否选中
+            function tableSetCol(col, key) {
+                let colArr = col[0]
+                var config_custom = layui.data(key);
+                var local_config = config_custom['local_config'] || {};
+                if (JSON.stringify(local_config) != '{}') {
+                    for (var i = 0; i <= colArr.length - 1; i++) {
+                        if (typeof colArr[i].field !== "undefined") {
+                            colArr[i].hide = local_config[colArr[i].field];
+                        }
+                    }
+                }
+                return [colArr];
+            }
+
+
+
+
+            /* 表格搜索 */
+            var currTempObj;
+            var bet_tb_this;
+            form.on('submit(userTbSearch)', function (data) {
+
+                // console.log("currTempObj",data.field.username)
+                // insTb.reload({where: data.field, page: {curr: 1}});
+                currTempObj = {}
+                // currTempObj.token = $.cookie('tokenMyb');
+                // currTempObj.status = 1;
+
+                if(data.field.merchant === ""){
+
+                }else{
+                    currTempObj.merchant = data.field.merchant
+                }
+
+
+                // if(data.field.phone === ""){
+                //
+                //
+                // }else{
+                //     currTempObj.phone = data.field.phone
+                // }
+                //
+                //
+                // if(data.field.qq_nums === ""){
+                //
+                //
+                // }else{
+                //     currTempObj.qq_nums = data.field.qq_nums
+                // }
+                //
+                //
+                // if(data.field.definition === ""){
+                //
+                //
+                // }else{
+                //     currTempObj.definition = data.field.definition
+                // }
+                //
+                // if(data.field.nickname === ""){
+                //
+                //
+                // }else{
+                //     currTempObj.nickname = data.field.nickname
+                // }
+
+
+
+                //2.6.0之前清除保留之前的数据的最有用的方式
+                if (bet_tb_this != null) {
+                    // console.log("book_tb_this--不为null",bet_tb_this)
+                    bet_tb_this.where = {};  //置空where
+                }
+                insTb.reload({
+                    where: currTempObj,
+                    // headers:{
+                    //   token:mybck,
+                    // },
+                    page: {curr: 1},
+                    done:function(){
+                        bet_tb_this = this;
+                        // console.log("book_tb_this----重载后的值",bet_tb_this)
+                    }
+                },false);
+
+
+                return false;
+            });
+            //监听状态开关按钮操作
+            form.on('switch(table_status)', function(obj){
+
+                // console.log("obj",obj)
+
+                // 获取当前控件
+                var selectIfKey=obj.othis;
+                // 获取当前所在行
+                var parentTr = selectIfKey.parents("tr");
+                // 获取当前所在行的索引
+                // var parentTrIndex = parentTr.attr("data-index");
+
+                //通过相对位置找对应行数据
+                // 获取当前行第一和三列的值
+                var currentwx_id = parentTr.find(('td:eq(0)')).text().trim();
+                // console.log("currentwx_id",currentwx_id)
+
+
+                var currStatusBool = obj.elem.checked;
+                // console.log("currStatusBool",currStatusBool)
+                var messageTitle = '';
+                var currStatusNum = 0;
+                if(currStatusBool){  //currStatusBool true
+                    messageTitle = '系统将对该商户号进行解禁操作,确定对当前商户号进行解禁操作吗?'
+                }else{ //false
+
+                    messageTitle = '系统将对该商户号进行禁用操作,确定对当前商户号进行禁用操作吗?'
+
+                }
+
+                //弹窗组件
+                layer.open({
+                    // type: 2,
+                    area: ['450px', '195px'],
+                    fix: false,
+                    //不固定
+                    maxmin: true,
+                    shade: 0.3,
+                    skin: 'layui-layer-rim',//加上边框
+                    title: "温馨提示",
+                    content:messageTitle,
+                    // content: `<div>`+messageTitle+`</div>`,
+                    btn: ['确定','取消'],
+                    // // 弹层外区域关闭
+                    shadeClose: true,
+                    btn1: function(index, layero) {//确定事件
+                        //点击第一个按钮处理逻辑
+                        // layer.msg("1");
+                        if(currStatusBool){
+                            currStatusNum = 1
+                        }else{
+                            currStatusNum = 2
+                        }
+
+                        //进行ajax请求
+                        var param={};
+                        param.status = currStatusNum
+                        //这个就是当前那条数据的ID
+                        param.id = currentwx_id
+
+                        $.ajax({
+                            url:global_requestAddress+global_requestAddress_js_runnerOperation+"?action=update",
+                            method:'POST',
+                            data:param,
+                            dataType:"json",
+                            headers:{
+                                token:mybck,
+                            },
+                            success:function (res) {
+                                if(res.code === 200){  //
+                                    notice.msg(res.msg, {icon: 1});
+                                    //列表的刷新
+                                    insTb.reload();
+                                    //关闭第一个弹窗的组件ID
+                                    layer.close(index);
+                                }else{
+                                    notice.msg(res.msg, {icon: 2});
+                                    insTb.reload();
+                                    layer.close(index);
+                                }
+                            }
+                        })
+
+
+
+
+                    },
+                    btn2: function(index, layero){//取消事件
+                        //点击第二个按钮处理逻辑
+                        // layer.msg("2");
+
+                        notice.msg("取消操作", {icon: 5});
+                        // $.message({
+                        //     message: "取消操作",
+                        //     type: 'info',
+                        //     showClose: true
+                        // });
+
+                        var x = obj.elem.checked;
+
+                        obj.elem.checked = !x;
+                        form.render();
+                        layer.close(index);
+                    },
+                    cancel: function(index, layero){//取消事件
+                        //点击第二个按钮处理逻辑
+                        // layer.msg("2");
+                        notice.msg("取消操作", {icon: 5});
+                        var x = obj.elem.checked;
+                        obj.elem.checked = !x;
+                        form.render();
+                        layer.close(index);
+                    }
+                })
+
+            });
+            //监听代付开关按钮操作
+            form.on('switch(PaySwitch)', function(obj){
+
+                // console.log("obj",obj)
+
+                // 获取当前控件
+                var selectIfKey=obj.othis;
+                // 获取当前所在行
+                var parentTr = selectIfKey.parents("tr");
+                // 获取当前所在行的索引
+                // var parentTrIndex = parentTr.attr("data-index");
+
+                //通过相对位置找对应行数据
+                // 获取当前行第一和三列的值
+                var currentwx_id = parentTr.find(('td:eq(0)')).text().trim();
+                // console.log("currentwx_id",currentwx_id)
+
+
+                var currStatusBool = obj.elem.checked;
+                // console.log("currStatusBool",currStatusBool)
+                var messageTitle = '';
+                var currStatusNum = 0;
+                if(currStatusBool){  //currStatusBool true
+                    messageTitle = '系统将对该用户的代付开关进行开启操作,确定对当前用户的代付开关进行开启操作吗?'
+                }else{ //false
+
+                    messageTitle = '系统将对该用户的代付开关行关闭操作,确定对当前用户的代付开关进行关闭操作吗?'
+
+                }
+
+                //弹窗组件
+                layer.open({
+                    // type: 2,
+                    area: ['450px', '195px'],
+                    fix: false,
+                    //不固定
+                    maxmin: true,
+                    shade: 0.3,
+                    skin: 'layui-layer-rim',//加上边框
+                    title: "温馨提示",
+                    content:messageTitle,
+                    // content: `<div>`+messageTitle+`</div>`,
+                    btn: ['确定','取消'],
+                    // // 弹层外区域关闭
+                    shadeClose: true,
+                    btn1: function(index, layero) {//确定事件
+                        //点击第一个按钮处理逻辑
+                        // layer.msg("1");
+                        if(currStatusBool){
+                            currStatusNum = 1
+                        }else{
+                            currStatusNum = 2
+                        }
+
+                        //进行ajax请求
+                        var param={};
+                        param.PaySwitch = currStatusNum
+                        //这个就是当前那条数据的ID
+                        param.id = currentwx_id
+
+                        $.ajax({
+                            url:global_requestAddress+global_requestAddress_js_runnerOperation+"?action=update",
+                            method:'POST',
+                            data:param,
+                            dataType:"json",
+                            headers:{
+                                token:mybck,
+                            },
+                            success:function (res) {
+                                if(res.code === 200){  //
+                                    notice.msg(res.msg, {icon: 1});
+                                    //列表的刷新
+                                    insTb.reload();
+                                    //关闭第一个弹窗的组件ID
+                                    layer.close(index);
+                                }else{
+                                    notice.msg(res.msg, {icon: 2});
+                                    insTb.reload();
+                                    layer.close(index);
+                                }
+                            }
+                        })
+
+
+
+
+                    },
+                    btn2: function(index, layero){//取消事件
+                        //点击第二个按钮处理逻辑
+                        // layer.msg("2");
+
+                        notice.msg("取消操作", {icon: 5});
+                        // $.message({
+                        //     message: "取消操作",
+                        //     type: 'info',
+                        //     showClose: true
+                        // });
+
+                        var x = obj.elem.checked;
+
+                        obj.elem.checked = !x;
+                        form.render();
+                        layer.close(index);
+                    },
+                    cancel: function(index, layero){//取消事件
+                        //点击第二个按钮处理逻辑
+                        // layer.msg("2");
+                        notice.msg("取消操作", {icon: 5});
+                        var x = obj.elem.checked;
+                        obj.elem.checked = !x;
+                        form.render();
+                        layer.close(index);
+                    }
+                })
+            });
+            //监听单元格编辑
+            table.on('edit(userTable)', function(obj){
+
+                var value = obj.value //得到修改后的值
+                    ,data = obj.data //得到所在行所有键值
+                    ,field = obj.field; //得到字段
+
+                // layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改值为：'+ util.escape(value));
+
+                // console.log("field",field)
+
+                var param = {};
+                if(field === "WhiteIps"){
+                    param['ips'] = util.escape(value);
+                }else if(field === "MinMoney"){
+                    param['min_money'] = util.escape(value);
+                }else if(field === "MaxMoney"){
+
+                    param['max_money'] = util.escape(value);
+                }
+                param['id'] = data.ID;
+
+                $.ajax({
+                    url: global_requestAddress+global_requestAddress_js_merchant+"?action=update",
+                    headers:{
+                        token:mybck,
+                    },
+                    data: param,
+                    type: "POST",
+                    dataType: "json",
+                    success: function (addResult) {
+                        if (addResult.code === 200) {
+                            notice.msg(addResult.msg, {icon: 1});
+                        } else {
+                            // layer.msg(addResult.msg);
+                            notice.msg(addResult.msg, {icon: 2});
+                        }
+
+                    },
+
+                });
+
+            });
+            /* 表格工具条点击事件 */
+            table.on('tool(userTable)', function (obj) {
+                var currDatas  = obj.data;
+                if (obj.event === 'resetGoogle') { // 重置谷歌
+                    //弹窗组件
+                    layer.open({
+                        // type: 2,
+                        area: ['450px', '200'],
+                        fix: false,
+                        //不固定
+                        maxmin: true,
+                        shade: 0.3,
+                        skin: 'layui-layer-rim',//加上边框
+                        title: "重置提醒",
+                        content:"你确定要重置google验证码吗？",
+                        // content: `<div>`+messageTitle+`</div>`,
+                        btn: ['确定','取消'],
+                        // // 弹层外区域关闭
+                        shadeClose: true,
+                        btn1: function(index, layero) {//确定事件
+                            //点击第一个按钮处理逻辑
+                            // layer.msg("1");
+
+                            //进行ajax请求
+                            var param={};
+                            param.id = currDatas.ID
+                            param.reset="reset"
+
+                            $.ajax({
+                                url:global_requestAddress+global_requestAddress_js_agencyOperation+"?action=update",
+                                method:'POST',
+                                data:param,
+                                dataType:"json",
+                                headers:{
+                                    token:mybck,
+                                },
+                                success:function (res) {
+                                    if(res.code === 200){  //
+                                        notice.msg(res.msg, {icon: 1});
+                                        //列表的刷新
+                                        insTb.reload();
+                                        //关闭第一个弹窗的组件ID
+                                        layer.close(index);
+                                    }else{
+                                        notice.msg(res.msg, {icon: 2});
+                                        insTb.reload();
+                                        layer.close(index);
+                                    }
+                                }
+                            })
+
+
+
+
+                        },
+                        btn2: function(index, layero){//取消事件
+                            //点击第二个按钮处理逻辑
+                            // layer.msg("2");
+                            notice.msg("取消操作", {icon: 5});
+                            form.render();
+                            layer.close(index);
+                        },
+                        cancel: function(index, layero){//取消事件
+                            //点击第二个按钮处理逻辑
+                            // layer.msg("2");
+                            notice.msg("取消操作", {icon: 5});
+                            form.render();
+                            layer.close(index);
+                        }
+                    })
+                    // layer.open({
+                    //     type: 1,
+                    //     content: '传入任意的文本或html' //这里content是一个普通的String
+                    // });
+                }
+                //代理编辑
+                else if (obj.event === 'editbtn') {
+                    jsondata = JSON.stringify(currDatas)
+                    var index = layer.open({
+                        area: ['1200px', '700px'],
+                        fixed: false, //不固定
+                        maxmin: false,
+                        title : "代理编辑",
+                        skin: 'layui-layer-rim',//加上边框
+                        type : 2,
+                        content : "agent_edit.html",
+                        success : function(layero, index){
+
+                            var body = layui.layer.getChildFrame('body', index);
+                        },
+                        end : function() {//弹窗关闭后的回调函数
+                            //利用laypage实现局部刷新,以下两种方式都可以
+                            // $(".layui-laypage-btn").click()
+                            //直接刷新当前修改的行
+                            $(".layui-laypage-btn")[0].click()
+                            // 关闭时候的回调
+                            // insTb.reload();
+                        }
+                    })
+
+                    // window.sessionStorage.setItem("index",index);
+                    // //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
+                    // $(window).on("resize",function(){
+                    //     layui.layer.full(window.sessionStorage.getItem("index"));
+                    // })
+
+                }
+                //修改代理押金
+                else if (obj.event === 'CashPledge_edit'){
+
+                    jsondata = JSON.stringify(currDatas)
+                    var index = layui.layer.open({
+                        area: ['500px', '300px'],
+                        fixed: false, //不固定
+                        maxmin: false,
+                        title : "押金修改",
+                        skin: 'layui-layer-rim',//加上边框
+                        type : 2,
+                        content : "Member_plus_deposit.html",
+                        success : function(layero, index){
+                            var body = layui.layer.getChildFrame('body', index);
+                            if(currDatas) {
+
+                            }
+                        },
+                        end : function() {//弹窗关闭后的回调函数
+                            //利用laypage实现局部刷新,以下两种方式都可以
+                            // $(".layui-laypage-btn").click()
+                            //直接刷新当前修改的行
+                            $(".layui-laypage-btn")[0].click()
+
+                        }
+                    })
+                    // window.sessionStorage.setItem("index",index);
+                    // //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
+                    // $(window).on("resize",function(){
+                    //     layui.layer.full(window.sessionStorage.getItem("index"));
+                    // })
+
+                }
+                //修改代收金额
+                else if (obj.event === 'CollectionLimit_edit'){
+                    jsondata = JSON.stringify(currDatas)
+
+
+                    var index = layui.layer.open({
+                        area: ['500px', '500px'],
+                        fixed: false, //不固定
+                        maxmin: false,
+                        title : "修改代收额度",
+                        skin: 'layui-layer-rim',//加上边框
+                        type : 2,
+                        content : "CollectionLimit.html",
+                        success : function(layero, index){
+                            var body = layui.layer.getChildFrame('body', index);
+                            if(currDatas) {
+
+                            }
+                        },
+                        end : function() {//弹窗关闭后的回调函数
+                            //利用laypage实现局部刷新,以下两种方式都可以
+                            // $(".layui-laypage-btn").click()
+                            //直接刷新当前修改的行
+                            $(".layui-laypage-btn")[0].click()
+
+                        }
+                    })
+
+
+                }
+                //账变
+                else if (obj.event === 'account_change'){
+                    jsondata = JSON.stringify(currDatas)
+
+                    var index = layui.layer.open({
+                        area: ['1200px', '800px'],
+                        fixed: false, //不固定
+                        maxmin: false,
+                        title : "账变信息",
+                        skin: 'layui-layer-rim',//加上边框
+                        type : 2,
+                        content : "account_change.html",
+                        success : function(layero, index){
+                            var body = layui.layer.getChildFrame('body', index);
+                            if(currDatas) {
+                            }
+                        },
+                        end : function() {//弹窗关闭后的回调函数
+                            //利用laypage实现局部刷新,以下两种方式都可以
+                            // $(".layui-laypage-btn").click()
+                            //直接刷新当前修改的行
+                            $(".layui-laypage-btn")[0].click()
+
+                        }
+                    })
+                }
+
+
+
+            });
+
+
+            // 添加
+            form.on('submit(addAdmin)', function (data) {
+                var index = layui.layer.open({
+                    // area: ['600px', '500px'],
+                    area: ['1000px', '500px'],
+                    fixed: false, //不固定
+                    maxmin: false,
+                    title : "会员添加",
+                    skin: 'layui-layer-rim',//加上边框
+                    type : 2,
+                    content : "member_add.html",
+                    success : function(layero, index){
+                        var body = layui.layer.getChildFrame('body', index);
+
+                    },
+                    end : function() {//弹窗关闭后的回调函数
+                        //利用laypage实现局部刷新,以下两种方式都可以
+                        // $(".layui-laypage-btn").click()
+                        //直接刷新当前修改的行
+                        $(".layui-laypage-btn")[0].click()
+                    }
+                })
+                // window.sessionStorage.setItem("index",index);
+                // //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
+                // $(window).on("resize",function(){
+                //     layui.layer.full(window.sessionStorage.getItem("index"));
+                // })
+                return false;
+            });
+        });
+    }
+</script>
+</body>
+</html>

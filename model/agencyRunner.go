@@ -45,7 +45,7 @@ type AgencyRunner struct {
 	PayChannelArray             []modelPay.Channel `gorm:"-"`
 	RunnerId                    int                `gorm:"-"` //奔跑者id
 	MinWithdraw                 float64            `gorm:"type:decimal(10,2);default:1000"`
-	ExchangeRate                float64            `gorm:"type:decimal(10,2);default:0"` //U汇率
+	//ExchangeRate                float64            `gorm:"type:decimal(10,2);default:0"` //U汇率
 }
 
 func CheckIsExistModelAgencyRunner(db *gorm.DB) {

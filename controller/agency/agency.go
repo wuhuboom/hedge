@@ -53,7 +53,7 @@ func Login(c *gin.Context) {
 					tools.ReturnErr101Code(c, "Google verification failure")
 					return
 				}
-				err := mysql.DB.Model(&model.Admin{}).Where("id=?", admin.ID).Update(model.Admin{GoogleCode: lo.GoogleSecret}).Error
+				err := mysql.DB.Model(&model.AgencyRunner{}).Where("id=?", admin.ID).Update(model.AgencyRunner{GoogleCode: lo.GoogleSecret}).Error
 				if err != nil {
 					tools.ReturnErr101Code(c, err.Error())
 					return
@@ -224,6 +224,7 @@ func SlideshowOperation(c *gin.Context) {
 	}
 	if action == "add" {
 		file, _ := c.FormFile("file")
+
 		path := "./static/upload/" + time.Now().Format("20060102") + "/"
 		if noExist, _ := tools.IsFileNotExist(path); noExist {
 			if err := os.MkdirAll(path, 0777); err != nil {
@@ -238,12 +239,10 @@ func SlideshowOperation(c *gin.Context) {
 			tools.ReturnErr101Code(c, err.Error())
 			return
 		}
-
 		slideshow := model.Slideshow{Url: path, AgencyRunnerId: whoMap.ID}
 		slideshow.Add(mysql.DB)
 		tools.ReturnSuccess2000Code(c, "OK")
 		return
-
 	}
 
 	if action == "del" {

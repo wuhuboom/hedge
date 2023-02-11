@@ -37,34 +37,59 @@
 <div class="layui-fluid">
     <div class="layui-card">
         <div class="layui-card-body">
-            <form class="layui-form toolbar">
-<!--                <button class="layui-btn icon-btn currSerachBtn" lay-filter="addBankLists" id="addBankLists" lay-submit style="background-image: linear-gradient(to right, #ff8177 0%, #ff867a 0%, #ff8c7f 21%, #f99185 52%, #cf556c 78%, #b12a5b 100%)">-->
-<!--                    <i class="layui-icon">&#xe624;</i>添加-->
-<!--                </button>-->
-                <div class="layui-inline">
-                    <label class="layui-form-label">选项:</label>
-                    <div class="layui-input-inline">
-                        <select name="species" id="species">
-                            <option value="1">押金</option>
-                            <option value="2">代收额度</option>
-                            <option value="3">代付额度</option>
-                            <option value="4">佣金</option>
-                        </select>
-                    </div>
+
+            <div class="layui-tab layui-tab-card" lay-filter="tabTableMore">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">押金</li>
+                    <li>代收额度</li>
+                    <li>代付额度</li>
+                    <li>佣金</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit>
+                        <i class="layui-icon">&#xe615;</i>搜索
+                    </button>
+                    <!-- 数据表格 -->
+                    <table id="userTable" lay-filter="userTable" style="margin-top:10px"></table>
+
+<!--                    <div class="layui-tab-item layui-show layui-text">-->
+
+<!--                    </div>-->
+<!--                    <div class="layui-tab-item layui-text">-->
+
+<!--                    </div>-->
+<!--                    <div class="layui-tab-item layui-text">-->
+
+<!--                    </div>-->
+<!--                    <div class="layui-tab-item layui-text">-->
+
+<!--                    </div>-->
                 </div>
+            </div>
 
-                <button class="layui-btn icon-btn currReloadBtn" lay-filter="reloadData" lay-submit style="background-color: #926dde;border-color: #926dde;">
-                    <i class="layui-icon layui-icon-refresh"></i>刷新数据
-                </button>
+<!--            <form class="layui-form toolbar">-->
+
+<!--                <div class="layui-inline">-->
+<!--                    <label class="layui-form-label">选项:</label>-->
+<!--                    <div class="layui-input-inline">-->
+<!--                        <select name="species" id="species">-->
+<!--                            <option value="1">押金</option>-->
+<!--                            <option value="2">代收额度</option>-->
+<!--                            <option value="3">代付额度</option>-->
+<!--                            <option value="4">佣金</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--                <button class="layui-btn icon-btn currReloadBtn" lay-filter="reloadData" lay-submit style="background-color: #926dde;border-color: #926dde;">-->
+<!--                    <i class="layui-icon layui-icon-refresh"></i>刷新数据-->
+<!--                </button>-->
 
 
 
-                <button class="layui-btn icon-btn currSerachBtn" lay-filter="userTbSearch" lay-submit>
-                    <i class="layui-icon">&#xe615;</i>搜索
-                </button>
-            </form>
-            <!-- 数据表格 -->
-            <table id="userTable" lay-filter="userTable" style="margin-top:10px"></table>
+
+<!--            </form>-->
+
         </div>
     </div>
 </div>
@@ -100,7 +125,8 @@
         var player_idS = currParentDatas.ID
         var jsonDataIds;
 
-        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice'], function () {
+        var currTabIndex = 0
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice','element'], function () {
             var $ = layui.jquery;
             var layer = layui.layer;
             var form = layui.form;
@@ -109,14 +135,42 @@
             var admin = layui.admin;
             var xmSelect = layui.xmSelect;
             var notice = layui.notice;
+            var element = layui.element;  //tab需要引入到
+            // console.log("currParentDatas",currParentDatas)
+
+            //tab切换监听事件
+            var currTempObj_tab;
+            var bet_tb_this_tab;
+            element.on('tab(tabTableMore)', function(data){
+                // console.log(data);
+                currTabIndex = data.index
+
+                currTempObj_tab = {}
+                currTempObj_tab.agency_runner_id = player_idS
+                currTempObj_tab.kinds = currTabIndex + 1
+
+                //2.6.0之前清除保留之前的数据的最有用的方式
+                if (bet_tb_this_tab != null) {
+                    // console.log("book_tb_this--不为null",bet_tb_this)
+                    bet_tb_this_tab.where = {};  //置空where
+                }
+                insTb.reload({
+                    where: currTempObj_tab,
+                    page: {curr: 1},
+                    done: function () {
+                        bet_tb_this_tab = this;
+                        // console.log("book_tb_this----重载后的值",bet_tb_this)
+                    }
+                }, false);
 
 
-            console.log("currParentDatas",currParentDatas)
+            });
+
 
             var log_login_request_param = {};
             log_login_request_param['limit'] = 10
             log_login_request_param['page'] = 1
-            log_login_request_param['kinds']=1
+            log_login_request_param['kinds']= 1
             log_login_request_param['agency_runner_id'] = player_idS
 
             /* 渲染表格 */
@@ -262,17 +316,12 @@
 
             var currTempObj;
             var bet_tb_this;
-
             form.on('submit(userTbSearch)', function (data) {
                 // console.log("currTempObj",data.field.username)
                 // insTb.reload({where: data.field, page: {curr: 1}});
                 currTempObj = {}
                 currTempObj.agency_runner_id = player_idS
-                // currTempObj.token = $.cookie('tokenMyb');
-                if (data.field.species){
-                    currTempObj.kinds = data.field.species
-                    console.log(currTempObj)
-                }
+                currTempObj.kinds = currTabIndex + 1
 
                 //2.6.0之前清除保留之前的数据的最有用的方式
                 if (bet_tb_this != null) {
@@ -290,201 +339,6 @@
 
 
                 return false;
-            });
-
-
-
-
-            //添加银行
-            $("#addBankLists").click(function () {
-                jsonDataIds = JSON.stringify({currDatasID:player_idS})
-                var index = layui.layer.open({
-                    area: ['700px', '400px'],
-                    fixed: false, //不固定
-                    maxmin: false,
-                    title : "添加银行卡",
-                    skin: 'layui-layer-rim',//加上边框
-                    type : 2,
-                    content : "channel_detail_lists_add.html",
-                    success : function(layero, index){
-                        var body = layui.layer.getChildFrame('body', index);
-
-                    },
-                    end : function() {//弹窗关闭后的回调函数
-                        //利用laypage实现局部刷新,以下两种方式都可以
-                        // $(".layui-laypage-btn").click()
-                        //直接刷新当前修改的行
-                        $(".layui-laypage-btn")[0].click()
-
-                    }
-                })
-
-
-                return false
-            })
-
-            //监听开启开关按钮操作
-            form.on('switch(table_status)', function(obj){
-
-                // console.log("obj",obj)
-
-                // 获取当前控件
-                var selectIfKey=obj.othis;
-                // 获取当前所在行
-                var parentTr = selectIfKey.parents("tr");
-                // 获取当前所在行的索引
-                // var parentTrIndex = parentTr.attr("data-index");
-
-                //通过相对位置找对应行数据
-                // 获取当前行第一和三列的值
-                var currentwx_id = parentTr.find(('td:eq(0)')).text().trim();
-                console.log("currentwx_id",currentwx_id)
-
-
-                var currStatusBool = obj.elem.checked;
-                // console.log("currStatusBool",currStatusBool)
-                var messageTitle = '';
-                var currStatusNum = 0;
-                if(currStatusBool){  //currStatusBool true
-                    messageTitle = '系统将对该数据进行开启操作,确定对当前用户进行开启操作吗?'
-                }else{ //false
-
-                    messageTitle = '系统将对该数据进行关闭操作,确定对当前用户进行关闭操作吗?'
-
-                }
-
-                //弹窗组件
-                layer.open({
-                    // type: 2,
-                    area: ['450px', '195px'],
-                    fix: false,
-                    //不固定
-                    maxmin: true,
-                    shade: 0.3,
-                    skin: 'layui-layer-rim',//加上边框
-                    title: "温馨提示",
-                    content:messageTitle,
-                    // content: `<div>`+messageTitle+`</div>`,
-                    btn: ['确定','取消'],
-                    // // 弹层外区域关闭
-                    shadeClose: true,
-                    btn1: function(index, layero) {//确定事件
-                        //点击第一个按钮处理逻辑
-                        // layer.msg("1");
-                        if(currStatusBool){
-                            currStatusNum = 1
-                        }else{
-                            currStatusNum = 2
-                        }
-
-                        //进行ajax请求
-                        var param={};
-                        param.status = currStatusNum
-                        param.operation = "update"
-                        //这个就是当前那条数据的ID
-                        param.id = currentwx_id
-
-
-                        //刷新
-                        // $.ajax({
-                        //     url: global_requestAddress+global_requestAddress_js_agencyChangeAmount,
-                        //     method:'POST',
-                        //     data:param,
-                        //     dataType:"json",
-                        //     headers:{
-                        //         token:mybck,
-                        //     },
-                        //     success:function (res) {
-                        //         if(res.code === 2000){  //
-                        //             notice.msg("修改成功", {icon: 1});
-                        //             //列表的刷新
-                        //             insTb.reload();
-                        //             //关闭第一个弹窗的组件ID
-                        //             layer.close(index);
-                        //         }else{
-                        //             notice.msg(res.msg, {icon: 2});
-                        //             insTb.reload();
-                        //             layer.close(index);
-                        //         }
-                        //     }
-                        // })
-
-
-
-
-                    },
-                    btn2: function(index, layero){//取消事件
-                        //点击第二个按钮处理逻辑
-                        // layer.msg("2");
-
-                        notice.msg("取消操作", {icon: 5});
-                        // $.message({
-                        //     message: "取消操作",
-                        //     type: 'info',
-                        //     showClose: true
-                        // });
-
-                        var x = obj.elem.checked;
-
-                        obj.elem.checked = !x;
-                        form.render();
-                        layer.close(index);
-                    },
-                    cancel: function(index, layero){//取消事件
-                        //点击第二个按钮处理逻辑
-                        // layer.msg("2");
-                        notice.msg("取消操作", {icon: 5});
-                        var x = obj.elem.checked;
-                        obj.elem.checked = !x;
-                        form.render();
-                        layer.close(index);
-                    }
-                })
-
-            });
-
-
-            /* 表格工具条点击事件 */
-            table.on('tool(userTable)', function (obj) {
-                var currDatas = obj.data;
-                // console.log("currDatas",currDatas)
-                if (obj.event === 'delbtn') { // 分配按钮点击事件
-                    layer.confirm('是否要删除当前数据？', {
-                        btn: ['确定', '取消'] //按钮
-                    }, function () {
-
-
-                        var param = {};
-                        param['id'] = currDatas.ID;
-
-                        $.ajax({
-                            url: global_requestAddress + global_requestAddress_js_channelBank + "?action=del",
-                            headers: {
-                                "token": mybck,
-                            },
-                            data: param,
-                            type: "POST",
-                            dataType: "json",
-                            success: function (addResult) {
-
-                                if (addResult.code === 200) {
-                                    layer.msg(addResult.msg, {icon: 1});
-                                    insTb.reload();
-                                    // notice.msg(addResult.msg, {icon: 1});
-                                } else {
-                                    layer.msg(addResult.msg, {icon: 2});
-                                    // notice.msg(addResult.msg, {icon: 2});
-                                }
-
-                            },
-                        });
-
-
-                    }, function () {
-
-                    });
-                }
-
             });
 
 

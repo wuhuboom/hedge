@@ -192,7 +192,7 @@ func ChangeTrcAddress(c *gin.Context) {
 		tools.ReturnErr101Code(c, "Google verification failure")
 		return
 	}
-	merchant := model.Merchant{TrcAddress: TrcAddress}
+	merchant := model.Merchant{TrcAddress: TrcAddress, ID: whoMap.ID}
 	err := merchant.ChangeTrcAddress(mysql.DB)
 	if err != nil {
 		tools.ReturnErr101Code(c, err)

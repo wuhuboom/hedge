@@ -40,11 +40,13 @@ func CheckIsExistModelStatistics(db *gorm.DB) {
 
 var StatisticsLock sync.RWMutex
 
-// Add kind=1  代收 (成功)   kind2 代付(成功)     3代收(总)   4代付(总)
+// Add kind=1  代收 (成功)   kind2 代付(成功)     3代收(总)   4代付(总)    5代收冲正
 func (sta *Statistics) Add(db *gorm.DB, kind int) error {
 	StatisticsLock.Lock()
 	defer StatisticsLock.Unlock()
-	sta.Date = time.Now().Format("2006-01-02")
+
+	up := make(map[string]interface{})
+	up["Date"] = time.Now().Format("2006-01-02")
 	//判断今天今天数据是否存在
 	sta2 := Statistics{}
 	err := db.Where("date=? and merchant_num   =? ", sta.Date, sta.MerchantNum).First(&sta2).Error
@@ -55,22 +57,29 @@ func (sta *Statistics) Add(db *gorm.DB, kind int) error {
 		return db.Save(sta).Error
 	} else {
 		//存在
-		sta.Updated = time.Now().Unix()
+		up["Updated"] = time.Now().Unix()
 		if kind == 1 {
-			sta.TodayCollection = sta2.TodayCollection + 1
-			sta.TodayCollectionCommission = sta2.TodayCollectionCommission + sta.TodayCollectionCommission
-			sta.TodayCollectionAmount = sta2.TodayCollectionAmount + sta.TodayCollectionAmount
+			up["TodayCollection"] = sta2.TodayCollection + sta.TodayCollection
+			up["TodayCollectionCommission"] = sta2.TodayCollectionCommission + sta.TodayCollectionCommission
+			up["TodayCollectionAmount"] = sta2.TodayCollectionAmount + sta.TodayCollectionAmount
+			db = db.Where("today_collection=? and  today_collection_commission =? and  today_collection_amount=?", sta2.TodayCollection, sta2.TodayCollectionCommission, sta2.TodayCollectionAmount)
 		} else if kind == 3 {
-			sta.TodayAllCollection = sta2.TodayAllCollection + 1
-			sta.TodayAllAmount = sta2.TodayAllAmount + sta.TodayAllAmount
+			up["TodayAllCollection"] = sta2.TodayAllCollection + 1
+			up["TodayAllAmount"] = sta2.TodayAllAmount + sta.TodayAllAmount
+			db = db.Where("today_all_collection=? and  today_all_amount =?", sta2.TodayAllCollection, sta2.TodayAllAmount)
+
 		} else if kind == 2 {
-			sta.TodayPay = sta2.TodayPay + 1
-			sta.TodayPayCommission = sta2.TodayPayCommission + sta.TodayPayCommission
-			sta.TodayPayAmount = sta2.TodayPayAmount + sta.TodayPayAmount
+			up["TodayPay"] = sta2.TodayPay + 1
+			up["TodayPayCommission"] = sta2.TodayPayCommission + sta.TodayPayCommission
+			up["TodayPayAmount"] = sta2.TodayPayAmount + sta.TodayPayAmount
+			db = db.Where("today_pay=? and  today_pay_commission =? and today_pay_amount=? ", sta2.TodayPay, sta2.TodayPayCommission, sta2.TodayPayAmount)
+
 		} else if kind == 4 {
-			sta.TodayPayAllAmount = sta2.TodayPayAllAmount + sta.TodayPayAllAmount
-			sta.TodayAllPay = sta2.TodayAllPay + 1
+			up["TodayPayAllAmount"] = sta2.TodayPayAllAmount + sta.TodayPayAllAmount
+			up["TodayAllPay"] = sta2.TodayAllPay + 1
+			db = db.Where("today_pay_all_amount=? and  today_all_pay =?  ", sta2.TodayPayAllAmount, sta2.TodayAllPay)
+
 		}
-		return db.Model(&Statistics{}).Where("id=?", sta2.ID).Update(sta).Error
+		return db.Model(&Statistics{}).Where("id=?", sta2.ID).Update(up).Error
 	}
 }

@@ -67,15 +67,19 @@ func PayAmount(c *gin.Context) {
 	//订单是否重复提交
 	collection := modelPay.Collection{MerchantOrderNum: cpd.MerchantOrderNum, MerChantNum: cpd.MerChantNum}
 	if err := collection.MerchantOrderNumIsExist(mysql.DB); err == nil {
-		tools.ReturnErr101Code(c, "Order already exists")
-		return
+		//tools.ReturnErr101Code(c, "Order already exists")
+		//return
 	}
 	//判断账户余额是否足够
 	if mer.AvailableAmount < amountFlot+amountFlot*ch.Rate {
 		tools.ReturnErr101Code(c, "Insufficient merchant balance")
 		return
 	}
-
+	config := model.Config{}
+	err := mysql.DB.Where("id=?", 1).First(&config).Error
+	if err != nil {
+		config.ExpireTime = 60 * 60
+	}
 	//添加数据
 	collection.Amount = amountFlot
 	collection.NoticeUrl = cpd.NoticeUrl
@@ -87,10 +91,18 @@ func PayAmount(c *gin.Context) {
 	collection.IFSC = cpd.IFSC
 	collection.Name = cpd.Name
 	collection.Kinds = 2
+	collection.Date = time.Now().Format("2006-01-02")
+	collection.ActualAmount = amountFlot
+	collection.Commission = amountFlot * ch.Rate
+	collection.ReleaseTime = time.Now().Unix() + config.ReleaseTime*60
+	i := time.Now().Unix() + config.ExpireTime*60
+	collection.ExpireTime = i
+	//	is := strconv.FormatInt(i, 10)
+
 	collection.OwnOrder = "Mer" + time.Now().Format("20060102150405") + strconv.Itoa(rand.Intn(1000))
 	////创建订单
 	merchant := model.Merchant{MerchantNum: cpd.MerChantNum}
-	err, _ := merchant.AmountChange(mysql.DB, amountFlot, ch.ID, collection.ID, collection.OwnOrder, 1, collection)
+	err, _ = merchant.AmountChange(mysql.DB, amountFlot, ch.ID, collection.ID, collection.OwnOrder, 1, collection)
 	if err != nil {
 		tools.ReturnErr101Code(c, err.Error())
 		return

@@ -34,6 +34,8 @@ global_requestAddress_js_getStatistics="/admin/v1/getStatistics";
 //账变
 global_requestAddress_js_agencyChangeAmount="/admin/v1/agencyChangeAmount";
 
+// 获取提现列表
+global_requestAddress_js_getRecord="/admin/v1/getRecord";
 
 const timeArr = [{
 	name:'Asia/Shanghai',

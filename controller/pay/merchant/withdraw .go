@@ -38,6 +38,7 @@ func Withdraw(c *gin.Context) {
 		//提现金额
 		amount, _ := strconv.ParseFloat(c.PostForm("amount"), 64)
 		//判断余额
+
 		if whoMap.AvailableAmount < amount+amount*whoMap.WithdrawCommission || amount <= 0 {
 			tools.ReturnErr101Code(c, "Insufficient account balance")
 			return

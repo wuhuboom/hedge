@@ -1,0 +1,575 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>用户列表</title>
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+    <script src="../../assets/js/moment.js"></script>
+
+    <style>
+
+        .currSerachBtn{
+            box-shadow: 0 15px 18px -6px rgb(45 140 240 / 65%) !important;
+        }
+
+        .currReloadBtn{
+            box-shadow: 0 15px 18px -6px rgb(146 109 222 / 65%) !important;
+        }
+
+        .layui-table-cell{
+            height:46px;
+            line-height: 46px;
+
+            /*height: auto ;*/
+            /*white-space: normal;*/
+            /*word-wrap:break-word;*/
+        }
+
+    </style>
+
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-col-md12 layui-col-sm6">
+        <div class="layui-card">
+            <div class="layui-card-header" style="font-weight: bold">基本信息</div>
+            <div class="layui-card-body">
+                <table class="layui-table layui-text">
+                    <colgroup>
+                        <col width="180">
+                        <col width="400">
+                        <col width="180">
+                        <col>
+                    </colgroup>
+                    <tbody>
+
+                    <tr>
+                        <td>用户名</td>
+                        <td id="username"></td>
+                        <td>登录密码</td>
+                        <td id="password"></td>
+                    </tr>
+
+                    <tr>
+                        <td>支付密码</td>
+                        <td id="PayPassword"></td>
+                        <td>状态</td>
+                        <td id="Status"></td>
+                    </tr>
+
+                    <tr>
+                        <td>邀请码</td>
+                        <td id="InvitationCode"></td>
+                        <td>押金</td>
+                        <td id="CashPledge"></td>
+                    </tr>
+
+                    <tr>
+                        <td>代付通道</td>
+                        <td id="PaymentChannel"></td>
+                        <td>代收通道</td>
+                        <td id="ProofOfPayment"></td>
+                    </tr>
+
+                    <tr>
+                        <td>代收盈利点</td>
+                        <td id="CollectionPoint"></td>
+                        <td>代收额度</td>
+                        <td id="CollectionLimit"></td>
+                    </tr>
+
+                    <tr>
+                        <td>已经下放的代收额度</td>
+                        <td id="UseCollectionLimit"></td>
+                        <td>代付盈利点</td>
+                        <td id="PayPoint"></td>
+                    </tr>
+
+                    <tr>
+                        <td>代付的额度</td>
+                        <td id="PayLimit"></td>
+                        <td>创建时间</td>
+                        <td id="Created"></td>
+                    </tr>
+
+                    <tr>
+                        <td>最后登陆时间</td>
+                        <td id="LastLoginTime"></td>
+                        <td>最后登录地址</td>
+                        <td id="LastLoginIp"></td>
+                    </tr>
+
+                    <tr>
+                        <td>最后登录地区</td>
+                        <td id="LastLoginRegion"></td>
+                        <td>佣金</td>
+                        <td id="Commission"></td>
+                    </tr>
+
+                    <tr>
+                        <td>下级盈利点</td>
+                        <td id="JuniorPoint"></td>
+                        <td>token</td>
+                        <td id="Token"></td>
+                    </tr>
+
+                    <tr>
+                        <td>提现冻结金额</td>
+                        <td id="FreezeMoney"></td>
+                        <td>提现费率</td>
+                        <td id="WithdrawCommission"></td>
+                    </tr>
+
+                    <tr>
+                        <td>冻结的\押金</td>
+                        <td id="FreezeCashPledge"></td>
+                        <td>谷歌</td>
+                        <td id="GoogleCode"></td>
+                    </tr>
+
+                    <tr>
+                        <td>累计已用代收额度</td>
+                        <td id="AccumulativeCollectionLimit"></td>
+                        <td>谷歌开关</td>
+                        <td id="GoogleSwitch"></td>
+                    </tr>
+
+                    <tr>
+                        <td>下级提现手续费</td>
+                        <td id="JuniorWithdrawCommission"></td>
+                        <td>客服地址</td>
+                        <td id="CustomerServiceAddress"></td>
+                    </tr>
+
+                    <tr>
+                        <td>NumberOfBindBack</td>
+                        <td id="NumberOfBindBack"></td>
+                        <td>奔跑者</td>
+                        <td id="RunnerId"></td>
+                    </tr>
+
+                    <tr>
+                        <td>最小提现金额</td>
+                        <td id="MinWithdraw"></td>
+                        <td>汇率</td>
+                        <td id="ExchangeRate"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!--  <div class="layui-col-md12 layui-col-sm6">-->
+    <!--    <div class="layui-card">-->
+    <!--      <div class="layui-card-header" style="font-weight: bold">支付</div>-->
+    <!--      <div class="layui-card-body">-->
+    <!--        <table class="layui-table layui-text">-->
+    <!--          <colgroup>-->
+    <!--            <col width="180">-->
+    <!--            <col width="400">-->
+    <!--            <col width="180">-->
+    <!--            <col>-->
+    <!--          </colgroup>-->
+    <!--          <tbody>-->
+    <!--          <tr>-->
+    <!--            <td>手续费</td>-->
+    <!--            <td id="Commission"></td>-->
+    <!--            <td>金额</td>-->
+    <!--            <td id="Amount"></td>-->
+    <!--          </tr>-->
+    <!--          <tr>-->
+    <!--            <td>实际支付金额</td>-->
+    <!--            <td id="ActualAmount"> </td>-->
+    <!--            <td>时间</td>-->
+    <!--            <td id="Time"> </td>-->
+    <!--          </tr>-->
+    <!--          <tr>-->
+    <!--            <td>类型</td>-->
+    <!--            <td id="Kinds"></td>-->
+    <!--            <td>支付凭证</td>-->
+    <!--            <td id="ProofOfPayment"></td>-->
+    <!--          </tr>-->
+    <!--          </tbody>-->
+    <!--        </table>-->
+    <!--      </div>-->
+    <!--    </div>-->
+    <!--  </div>-->
+    <!--  <div class="layui-col-md12 layui-col-sm6">-->
+    <!--    <div class="layui-card">-->
+    <!--      <div class="layui-card-header" style="font-weight: bold">回调</div>-->
+    <!--      <div class="layui-card-body">-->
+    <!--        <table class="layui-table layui-text">-->
+    <!--          <colgroup>-->
+    <!--            <col width="180">-->
+    <!--            <col>-->
+    <!--          </colgroup>-->
+    <!--          <tbody>-->
+    <!--          <tr>-->
+    <!--            <td>地址</td>-->
+    <!--            <td id="NoticeUrl"></td>-->
+    <!--          </tr>-->
+    <!--          <tr>-->
+    <!--            <td>通知</td>-->
+    <!--            <td id="CallbackContent" style="word-break: break-word"> </td>-->
+    <!--          </tr>-->
+    <!--          <tr>-->
+    <!--            <td>返回</td>-->
+    <!--            <td id="CallbackReturn"></td>-->
+    <!--          </tr>-->
+    <!--          <tr>-->
+    <!--            <td>状态</td>-->
+    <!--            <td id="Callback"></td>-->
+    <!--          </tr>-->
+    <!--          &lt;!&ndash;                    <tr>&ndash;&gt;-->
+    <!--          &lt;!&ndash;                        <td>次数</td>&ndash;&gt;-->
+    <!--          &lt;!&ndash;                        <td id="Status_callback"></td>&ndash;&gt;-->
+    <!--          &lt;!&ndash;                    </tr>&ndash;&gt;-->
+    <!--          &lt;!&ndash;                    <tr>&ndash;&gt;-->
+    <!--          &lt;!&ndash;                        <td>时间</td>&ndash;&gt;-->
+    <!--          &lt;!&ndash;                        <td id="Status_callback"></td>&ndash;&gt;-->
+    <!--          &lt;!&ndash;                    </tr>&ndash;&gt;-->
+    <!--          </tbody>-->
+    <!--        </table>-->
+    <!--      </div>-->
+    <!--    </div>-->
+    <!--  </div>-->
+    <!--  <div class="layui-col-md12 layui-col-sm6" style="margin-bottom: 10px">-->
+    <!--    <div class="layui-card">-->
+    <!--      <div class="layui-card-header" style="font-weight: bold">记录</div>-->
+    <!--      <div class="layui-card-body">-->
+    <!--        <table class="layui-table layui-text">-->
+    <!--          <colgroup>-->
+    <!--            <col width="180">-->
+    <!--            <col>-->
+    <!--          </colgroup>-->
+    <!--          <tbody>-->
+    <!--          <tr>-->
+    <!--            <td>创建时间</td>-->
+    <!--            <td id="Created"></td>-->
+    <!--          </tr>-->
+    <!--          <tr>-->
+    <!--            <td>更新时间</td>-->
+    <!--            <td id="Updated"> </td>-->
+    <!--          </tr>-->
+
+    <!--          </tbody>-->
+    <!--        </table>-->
+    <!--      </div>-->
+    <!--    </div>-->
+    <!--  </div>-->
+
+</div>
+
+
+<!-- js部分 -->
+<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../../assets/js/common.js?v=318"></script>
+
+<script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="../../assets/js/config.url.js"></script>
+
+
+<!--数据表格操作工具栏-->
+<script type="text/html" id="orderListBar">
+    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="callbacksuccess" style="background-color: #ffba00"><i class="layui-icon layui-icon-ok"></i>回调成功</a>
+    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="deleteBtn" style="background-color: #f96868 "><i class="layui-icon layui-icon-delete"></i>详情</a>
+</script>
+
+<script>
+
+    var mybck= $.cookie('tokenMyb_acting');
+    //alert(document.cookie);
+    // console.log(mybck)
+    if(mybck == "" || mybck == null){
+
+        window.top.location.href="../../login.html";
+
+    }else{
+
+
+        var channel
+        var channel_name
+        var currParentDatas
+        var param = {};
+        param.page = 1
+        param.limit = 3000
+        //获取通道
+        // $.ajax({
+        //     url: global_requestAddress + global_requestAddress_js_channel + "?action=check",
+        //     headers: {
+        //         "token": mybck
+        //     },
+        //     dataType: 'json',
+        //     type: 'post',
+        //     data: param,
+        //     success:function (res) {
+        //         channel=res
+        //         console.log("channel1",channel)
+        //     }
+        // })
+
+        //获取个人数据
+        $.ajax({
+            url: global_requestAddress + global_requestAddress_js_getMe,
+            headers: {
+                "token": mybck
+            },
+            dataType: 'json',
+            type: 'post',
+            data: param,
+            success:function (res) {
+                currParentDatas=res.result
+            }
+        })
+
+
+
+
+
+        var bankListArr = []
+
+        var currDateVal
+        var currDateVal_end
+        var local_storage_key = 'pay_get_yourself_t_list';
+
+
+        var payChannelArrS = []
+        var payingChannelArrS = []
+
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','treeTable','laydate'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var util = layui.util;
+            var admin = layui.admin;
+            var xmSelect = layui.xmSelect;
+            var notice = layui.notice;
+            var treeTable = layui.treeTable
+            var laydate = layui.laydate;
+
+            //获取数据添加到下拉框中
+            // var param = {};
+            // param.id = currParentDatas.ID
+
+
+
+
+
+
+
+
+            // console.log("currParentDatas",currParentDatas)
+            // param.limit = 3000
+
+            $("#username").text(currParentDatas.Username)
+            $("#password").text(currParentDatas.Password)
+            $("#PayPassword").text(currParentDatas.PayPassword)
+            $("#InvitationCode").text(currParentDatas.InvitationCode)
+            $("#CashPledge").text(currParentDatas.CashPledge)
+            $("#CollectionPoint").text(currParentDatas.CollectionPoint)
+            $("#CollectionLimit").text(currParentDatas.CollectionLimit)
+            $("#UseCollectionLimit").text(currParentDatas.UseCollectionLimit)
+            $("#PayPoint").text(currParentDatas.PayPoint)
+            $("#PayLimit").text(currParentDatas.PayLimit)
+            $("#LastLoginIp").text(currParentDatas.LastLoginIp)
+            $("#LastLoginRegion").text(currParentDatas.LastLoginRegion)
+            $("#Commission").text(currParentDatas.Commission)
+            $("#JuniorPoint").text(currParentDatas.JuniorPoint)
+            $("#Token").text(currParentDatas.Token)
+            $("#FreezeMoney").text(currParentDatas.FreezeMoney)
+            $("#WithdrawCommission").text(currParentDatas.WithdrawCommission)
+            $("#FreezeCashPledge").text(currParentDatas.FreezeCashPledge)
+            $("#GoogleCode").text(currParentDatas.GoogleCode)
+            $("#GoogleCode").text(currParentDatas.GoogleCode)
+            $("#AccumulativeCollectionLimit").text(currParentDatas.AccumulativeCollectionLimit)
+            // $("#GoogleSwitch").text(currParentDatas.GoogleSwitch)
+            $("#JuniorWithdrawCommission").text(currParentDatas.JuniorWithdrawCommission)
+            $("#CustomerServiceAddress").text(currParentDatas.CustomerServiceAddress)
+            $("#NumberOfBindBack").text(currParentDatas.NumberOfBindBack)
+            $("#RunnerId").text(currParentDatas.RunnerId)
+            $("#MinWithdraw").text(currParentDatas.MinWithdraw)
+            $("#ExchangeRate").text(currParentDatas.ExchangeRate)
+
+
+
+            var GoogleSwitch = ''
+            if(currParentDatas.GoogleSwitch === 1){
+                GoogleSwitch ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #e37272;border-color: #e37272;">开</button>'
+            }else if(currParentDatas.GoogleSwitch === 2){
+                GoogleSwitch ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #a99ee3;border-color: #f3ba44;">关</button>'
+            }
+            $("#GoogleSwitch").append(GoogleSwitch)
+
+
+
+
+
+            var statusHtml = ''
+            if(currParentDatas.Status === 1){
+                statusHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #337ab7;border-color: #337ab7;">正常</button>'
+            }else if(currParentDatas.Status === 2){
+                statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #f3ba44;border-color: #f3ba44;">禁用</button>'
+            }
+            // else if(returnDataArray.Status === 3){
+            //   statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #993055;border-color: #993055;">失败</button>'
+            // }else if(returnDataArray.Status === 4){
+            //   statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #465161;border-color: #465161;">已过期</button>'
+            // }
+            $("#Status").append(statusHtml)
+            //
+            // var callbackHtml = ''
+            // if(returnDataArray.Callback === 1){
+            //   callbackHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #faa64b;border-color: #faa64b;">没有回调</button>'
+            // }else if(returnDataArray.Callback === 2){
+            //   callbackHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #33cabb;border-color: #33cabb;">回调成功</button>'
+            // }else if(returnDataArray.Callback === 3){
+            //   callbackHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #465161;border-color: #465161;">回调失败</button>'
+            // }
+            // $("#Callback").append(callbackHtml)
+            //
+            $("#Amount").text(currParentDatas.AvailableAmount)
+            $("#ActualAmount").text(currParentDatas.FreezeAmount)
+            $("#Commission").text(currParentDatas.CollectionCommission)
+            // $("#CallbackReturn").text(returnDataArray.CallbackReturn)
+            // $("#CallbackContent").text(returnDataArray.CallbackContent)
+            // $("#NoticeUrl").text(returnDataArray.NoticeUrl)
+            //
+            $("#Currency").text(currParentDatas.AllAmount)
+            $("#OwnOrder").text(currParentDatas.MinPay)
+            $("#Minimum_recharge").text(currParentDatas.MinMoney)
+            $("#gateway_address").text(currParentDatas.GatewayId) //网关地址
+            $("#Google_verification_code").text(currParentDatas.GoogleCode)//谷歌验证码
+            $("#login_password").text(currParentDatas.Password)//登录密码
+            $("#payment_password").text(currParentDatas.PayPassword)//支付密码
+            $("#Token").text(currParentDatas.Token)//Token
+            $("#payment_key").text(currParentDatas.ApiKey)//支付秘钥
+            $("#whitelist").text(currParentDatas.WhiteIps)//白名单
+            //
+
+
+            //代收通道
+            for (var b=0;b<currParentDatas.CollectionChannelArray.length;b++){
+                payingChannelArrS.push(currParentDatas.CollectionChannelArray[b]. ChannelName)
+            }
+
+            //代付通道
+            for (var i=0;i<currParentDatas.PayChannelArray.length;i++){
+                payChannelArrS.push(currParentDatas.PayChannelArray[i]. ChannelName)
+            }
+
+            //代付通道
+            let Name1 = payChannelArrS
+            let ipsHtml1 = ""
+            Name1.forEach((item,index)=>{
+                if(index == 0){
+                    ipsHtml1 = ipsHtml1 +'<span class="layui-badge" > ' + item + '</span>'
+                }else{
+                    ipsHtml1 = ipsHtml1 + '<span class="layui-badge" style=\'margin-left: 10px\'> ' + item + '</span>'
+                }
+            })
+            $("#PaymentChannel").append(ipsHtml1)
+
+            //代收渠道
+            // let Name = payingChannelArrS
+            let Name = payingChannelArrS
+            let ipsHtml = ""
+            Name.forEach((item,index)=>{
+                if(index == 0){
+                    ipsHtml = ipsHtml +'<span class="layui-badge" > ' + item + '</span>'
+                }else{
+                    ipsHtml = ipsHtml + '<span class="layui-badge" style=\'margin-left: 10px\'> ' + item + '</span>'
+                }
+            })
+            $("#ProofOfPayment").append(ipsHtml)
+            $("#Created").text(moment(currParentDatas.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
+            $("#LastLoginTime").text(moment(currParentDatas.LastLoginTime * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
+            // $("#Updated").text(moment(returnDataArray.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
+            // $.ajax({
+            //   url: global_requestAddress + global_requestAddress_js_collectionOperation +"?action=one" ,
+            //   headers: {
+            //     "token": mybck
+            //   },
+            //   dataType: 'json',
+            //   type: 'post',
+            //   data: param,
+            //   success: function (res) {
+            //
+            //     console.log("res",res)
+            //
+            //     if (res.code === 200) {
+            //       var returnDataArray = res.result
+            //
+            //       $("#MerChantNum").text(currParentDatas.MerchantNum)
+            //       $("#MerchantOrderNum").text(returnDataArray.MerchantOrderNum)
+            //       $("#ChannelId").text(returnDataArray.ChannelId)
+            //       var statusHtml = ''
+            //       if(returnDataArray.Status === 1){
+            //         statusHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #337ab7;border-color: #337ab7;">等待支付</button>'
+            //       }else if(returnDataArray.Status === 2){
+            //         statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #28a745;border-color: #28a745;">支付成功</button>'
+            //       }else if(returnDataArray.Status === 3){
+            //         statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #993055;border-color: #993055;">失败</button>'
+            //       }else if(returnDataArray.Status === 4){
+            //         statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #465161;border-color: #465161;">已过期</button>'
+            //       }
+            //       $("#Status").append(statusHtml)
+            //
+            //       var callbackHtml = ''
+            //       if(returnDataArray.Callback === 1){
+            //         callbackHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #faa64b;border-color: #faa64b;">没有回调</button>'
+            //       }else if(returnDataArray.Callback === 2){
+            //         callbackHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #33cabb;border-color: #33cabb;">回调成功</button>'
+            //       }else if(returnDataArray.Callback === 3){
+            //         callbackHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #465161;border-color: #465161;">回调失败</button>'
+            //       }
+            //       $("#Callback").append(callbackHtml)
+            //
+            //       $("#Amount").text(returnDataArray.Amount)
+            //       $("#ActualAmount").text(returnDataArray.ActualAmount)
+            //       $("#Commission").text(returnDataArray.Commission)
+            //       $("#CallbackReturn").text(returnDataArray.CallbackReturn)
+            //       $("#CallbackContent").text(returnDataArray.CallbackContent)
+            //       $("#NoticeUrl").text(returnDataArray.NoticeUrl)
+            //
+            //       $("#Currency").text(returnDataArray.Currency)
+            //       $("#OwnOrder").text(returnDataArray.OwnOrder)
+            //
+            //       var kindsHtml = ''
+            //       if(returnDataArray.Kinds === 1){
+            //         kindsHtml ='<span class="layui-badge layui-bg-orange">代收</span>'
+            //       }else if(returnDataArray.Kinds === 2){
+            //         kindsHtml ='<span class="layui-badge layui-bg-blue">代付</span>'
+            //       }
+            //       $("#Kinds").append(kindsHtml)
+            //
+            //
+            //       $("#ProofOfPayment").text(returnDataArray.ProofOfPayment)
+            //       $("#Created").text(moment(returnDataArray.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
+            //       $("#Updated").text(moment(returnDataArray.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
+            //
+            //
+            //     }
+            //   }
+            // })
+        });
+
+    }
+
+
+
+</script>
+</body>
+</html>

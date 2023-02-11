@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>账单</title>
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+
+    <style>
+        .currSerachBtn{
+            box-shadow: 0 15px 18px -6px rgb(45 140 240 / 65%) !important;
+        }
+        .currReloadBtn{
+            box-shadow: 0 15px 18px -6px rgb(146 109 222 / 65%) !important;
+        }
+        .layui-table-cell{
+            height:46px;
+            line-height: 46px;
+        }
+    </style>
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-tab layui-tab-brief" lay-filter="tabConfig">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">基本设置</li>
+                    <!--                    <li>财务设置</li>-->
+<!--                    <li>安全设置</li>-->
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show layui-text">
+                        <!-- 表格工具栏 -->
+                        <form class="layui-form toolbar">
+
+                            <!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
+                            <!--                                <label class="layui-form-label" style="width: 120px">用户请求频率</label>-->
+                            <!--                                <div class="layui-input-inline">-->
+                            <!--                                    <input type="text" id="RequestLimit" class="layui-input " placeholder="请在此输入用户请求频率-->
+                            <!--" />-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+                            <!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
+                            <!--                                <label class="layui-form-label" style="width: 120px">时区</label>-->
+                            <!--                                <div class="layui-input-inline">-->
+                            <!--                                    <select name="timezone_filter" id="timezone_filter" lay-filter="timezone_filter">-->
+                            <!--                                        <option value="Asia/Shanghai">中国</option>-->
+                            <!--                                        <option value="Asia/Kolkata">印度</option>-->
+                            <!--                                        <option value="America/Mexico_City">墨西哥</option>-->
+                            <!--                                        <option value="America/Bogota">哥伦比亚</option>-->
+                            <!--                                    </select>-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+
+                            <div class="layui-form-item" style="margin-top: 10px;">
+                                <label class="layui-form-label" style="width: 150px">客服地址</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="customer_service_address" class="layui-input " placeholder="请在此输入客服地址" />
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item" style="margin-top: 10px;">
+                                <label class="layui-form-label" style="width: 150px">下级提现手续费</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="junior_withdraw_commission" class="layui-input " placeholder="请在此输入下级提现手续费" />
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item" style="margin-top: 10px;">
+                                <label class="layui-form-label" style="width: 150px">下级盈利点</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="junior_point" class="layui-input " placeholder="请在此输入下级盈利点" />
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item" style="margin-top: 10px;">
+                                <label class="layui-form-label" style="width: 150px">下级代理最小提现金额</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="min_withdraw" class="layui-input" placeholder="下级代理最小提现金额" />
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item" style="margin-top: 10px;">
+                                <label class="layui-form-label" style="width: 150px">U汇率</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="exchange_rate" class="layui-input " placeholder="请在此输入U汇率" />
+                                </div>
+                            </div>
+
+<!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
+<!--                                <label class="layui-form-label" style="width: 120px">过期时间(Min)</label>-->
+<!--                                <div class="layui-input-inline">-->
+<!--                                    <input type="text" id="ExpireTime" class="layui-input " placeholder="请在此输入过期时间" />-->
+<!--                                </div>-->
+<!--                            </div>-->
+                            <!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
+                            <!--                                <label class="layui-form-label" style="width: 120px">任务超时时间(S)</label>-->
+                            <!--                                <div class="layui-input-inline">-->
+                            <!--                                    <input type="text" id="TaskTimeout" class="layui-input " placeholder="请在此输入任务超时时间-->
+                            <!--" />-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+                            <!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
+                            <!--                                <label class="layui-form-label" style="width: 120px">前端H5</label>-->
+                            <!--                                <div class="layui-input-inline">-->
+                            <!--                                    <input type="text" id="WebsiteH5" class="layui-input " placeholder="请在此输入前端H5-->
+                            <!--" />-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+                            <!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
+                            <!--                                <label class="layui-form-label" style="width: 120px">系统货币符号</label>-->
+                            <!--                                <div class="layui-input-inline">-->
+                            <!--                                    <input type="text" id="SystemCurrency" class="layui-input " placeholder="请在此输入系统货币符号-->
+                            <!--" />-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+                            <!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
+                            <!--                                <label class="layui-form-label" style="width: 120px">PHP地址</label>-->
+                            <!--                                <div class="layui-input-inline">-->
+                            <!--                                    <input type="text" id="PhpUrl" class="layui-input " placeholder="请在此输入PHP地址-->
+                            <!--" />-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+                        </form>
+
+                    </div>
+                    <!--                    -->
+                    <!--                    <div class="layui-tab-item layui-text">-->
+                    <!--                        &lt;!&ndash; 表格工具栏 &ndash;&gt;-->
+                    <!--                        <form class="layui-form toolbar">-->
+
+                    <!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
+                    <!--                                <label class="layui-form-label" style="width: 100px">用户初始余额</label>-->
+                    <!--                                <div class="layui-input-inline">-->
+                    <!--                                    <input type="text" id="initialize_balance" class="layui-input " placeholder="请在此输入用户初始余额-->
+                    <!--" />-->
+                    <!--                                </div>-->
+                    <!--                            </div>-->
+
+                    <!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
+                    <!--                                <label class="layui-form-label" style="width: 100px">提现手续费(%)</label>-->
+                    <!--                                <div class="layui-input-inline">-->
+                    <!--                                    <input type="text" id="withdrawal_hand" class="layui-input " placeholder="请在此输入提现手续费-->
+                    <!--" />-->
+                    <!--                                </div>-->
+                    <!--                            </div>-->
+
+                    <!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
+                    <!--                                <label class="layui-form-label" style="width: 100px">最低提现金额</label>-->
+                    <!--                                <div class="layui-input-inline">-->
+                    <!--                                    <input type="text" id="System_min_withdrawal" class="layui-input " placeholder="请在此输入最低提现金额-->
+                    <!--" />-->
+                    <!--                                </div>-->
+                    <!--                            </div>-->
+
+                    <!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
+                    <!--                                <label class="layui-form-label" style="width: 100px">自动上分</label>-->
+                    <!--                                <div class="layui-input-block">-->
+                    <!--                                    <input type="checkbox"  name="automatic_points_switch" lay-skin="switch"lay-filter="automatic_points_switch" id="automatic_points_switch" lay-text="自动|手动" >-->
+                    <!--                                </div>-->
+                    <!--                            </div>-->
+                    <!--                        </form>-->
+                    <!--                    </div>-->
+                    <!--                   -->
+
+<!--                    <div class="layui-tab-item layui-text">-->
+<!--                        &lt;!&ndash; 表格工具栏 &ndash;&gt;-->
+<!--                        <form class="layui-form toolbar">-->
+
+<!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
+<!--                                <label class="layui-form-label" style="width: 150px">管理员谷歌验证-->
+<!--                                </label>-->
+<!--                                <div class="layui-input-block">-->
+<!--                                    <input type="checkbox"  name="IfUseGoogleCode_switch" lay-skin="switch"lay-filter="IfUseGoogleCode_switch" id="IfUseGoogleCode_switch" lay-text="需要|不需要" >-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+<!--                            &lt;!&ndash;                            <div class="layui-form-item" style="margin-top: 10px;">&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                <label class="layui-form-label" style="width: 150px"> IP白名单(每行1个IP)&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                </label>&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                <div class="layui-input-inline">&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                    <textarea placeholder="请输入IP" class="layui-textarea" id="WhiteIpsStr" rows="15"></textarea>&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                </div>&ndash;&gt;-->
+<!--                            &lt;!&ndash;                            </div>&ndash;&gt;-->
+
+<!--                            &lt;!&ndash;                            <div class="layui-form-item" style="margin-top: 10px;">&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                <label class="layui-form-label" style="width: 150px">白名单开关&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                </label>&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                <div class="layui-input-block">&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                    <input type="checkbox"  name="WhiteIpsSwitch_switch" lay-skin="switch"lay-filter="WhiteIpsSwitch_switch" id="WhiteIpsSwitch_switch" lay-text="开启|关闭" >&ndash;&gt;-->
+<!--                            &lt;!&ndash;                                </div>&ndash;&gt;-->
+<!--                            &lt;!&ndash;                            </div>&ndash;&gt;-->
+
+<!--                        </form>-->
+<!--                    </div>-->
+                </div>
+            </div>
+
+
+            <div class="layui-form-item" style="margin-top: 10px;">
+                <div class="layui-input-block">
+                    <button class="layui-btn"  lay-submit="" lay-filter="confirmBtn" id="confirmBtn" >修改</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- js部分 -->
+<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../../assets/js/common.js?v=318"></script>
+
+<script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="../../assets/js/config.url.js"></script>
+
+<!--数据表格操作工具栏-->
+<script type="text/html" id="orderListBar">
+    <!--    <a class="layui-btn layui-btn-xs " lay-event="rechargebtn"><i class="layui-icon">&#xe605;</i>充值</a>-->
+    <!--    <a class="layui-btn layui-btn-xs " lay-event="changebtn"><i class="layui-icon">&#xe605;</i>修改</a>-->
+    <a class="layui-btn layui-btn-danger layui-btn-normal layui-btn-radius" lay-event="delbtn"><i class="layui-icon">&#x1006;</i>删除</a>
+</script>
+<script>
+
+    var mybck= $.cookie('tokenMyb_acting');
+    //alert(document.cookie);
+    //console.log(mybck)
+    if(mybck == "" || mybck == null){
+
+        window.top.location.href="../../login.html";
+
+    }else{
+
+        var currStatusBoolVal = 0
+
+        var currConfigID = 0
+        var currTabIndex = 0
+
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','element'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var util = layui.util;
+            var admin = layui.admin;
+            var xmSelect = layui.xmSelect;
+            var notice = layui.notice;
+            var element = layui.element;  //tab需要引入到
+
+
+            //tab切换监听事件
+            element.on('tab(tabConfig)', function(data){
+                // console.log(data);
+                currTabIndex = data.index
+                // if(data.index === 0){ //邀请链接内容
+                //     copyContent = $("#inviteLink").val()
+                // }else if(data.index === 1){ //邀请码内容
+                //     copyContent = $("#inviteCode").val()
+                // }
+            });
+
+            var param={};
+            //获取配置数据
+            // $.ajax({
+            //     // url: global_requestAddress + global_requestAddress_js_configOperation+"?action=check",
+            //     headers:{
+            //         token:mybck
+            //     },
+            //     dataType: 'json',
+            //     type: 'post',
+            //     data: param,
+            //     success: function (dataArray) {
+            //
+            //         if (dataArray.code != 200) {
+            //
+            //
+            //             return false;
+            //         }
+            //
+            //
+            //         var returnDataArray = dataArray.result
+            //         currConfigID = returnDataArray.ID
+            //
+            //         //----基础配置
+            //
+            //         // $("#exchange_rate").val(returnDataArray.ReleaseTime);
+            //         // $("#ExpireTime").val(returnDataArray.ExpireTime);
+            //
+            //         // $('#timezone_filter').val(returnDataArray.TimeZone)
+            //         // $("#RequestLimit").val(returnDataArray.RequestLimit);
+            //         // $("#TaskTimeout").val(returnDataArray.TaskTimeout);
+            //         // $("#WebsiteH5").val(returnDataArray.WebsiteH5);
+            //         // $("#SystemCurrency").val(returnDataArray.SystemCurrency);
+            //         // $("#PhpUrl").val(returnDataArray.PhpUrl);
+            //         //重新渲染 固定写法
+            //         // form.render("select");
+            //
+            //
+            //         // //----财务配置
+            //         // $("#initialize_balance").val(returnDataArray.InitializeBalance);
+            //         // $("#withdrawal_hand").val(returnDataArray.WithdrawalHand)
+            //         // $("#System_min_withdrawal").val(returnDataArray.SystemMinWithdrawal)
+            //         // if(returnDataArray.AutomaticPoints == 2){ //2是关
+            //         //
+            //         //     $("#automatic_points_switch").attr("value", '2');
+            //         //     $("#automatic_points_switch").removeAttr('checked')
+            //         //
+            //         // }else {
+            //         //
+            //         //     $("#automatic_points_switch").attr("value", '1');
+            //         //     $('#automatic_points_switch').attr('checked', 'checked'); //改变开关为 开
+            //         // }
+            //
+            //
+            //
+            //         //----安全配置
+            //         // let WhiteIpsStr = returnDataArray.WhiteIps.replaceAll('@','\n')
+            //         // $("#WhiteIpsStr").val(WhiteIpsStr)
+            //
+            //
+            //         // if(returnDataArray.IfUseGoogleCode === 2){
+            //         //
+            //         //     $("#IfUseGoogleCode_switch").attr("value", '2');
+            //         //     $("#IfUseGoogleCode_switch").removeAttr('checked')
+            //         //
+            //         // }else {
+            //         //
+            //         //     $("#IfUseGoogleCode_switch").attr("value", '1');
+            //         //     $('#IfUseGoogleCode_switch').attr('checked', 'checked'); //改变开关为 开
+            //         // }
+            //
+            //         // if(returnDataArray.WhiteIpsSwitch == 2){
+            //         //
+            //         //     $("#WhiteIpsSwitch_switch").attr("value", '2');
+            //         //     $("#WhiteIpsSwitch_switch").removeAttr('checked')
+            //         //
+            //         // }else {
+            //         //
+            //         //     $("#WhiteIpsSwitch_switch").attr("value", '1');
+            //         //     $('#WhiteIpsSwitch_switch').attr('checked', 'checked'); //改变开关为 开
+            //         // }
+            //
+            //
+            //         //重要,switch attr 之后需要重新渲染checkbox，否则没有效果
+            //         // form.render('checkbox');
+            //
+            //
+            //     }
+            // })
+
+
+
+            //总配置提交按钮
+            $("#confirmBtn").click(function(){
+                var param={};
+                param.id = currConfigID
+                param.kinds = currTabIndex + 1
+                if(currTabIndex === 0){ //基本配置
+                    param['customer_service_address'] = $("#customer_service_address").val();
+                    param['exchange_rate'] = $("#exchange_rate").val();
+                    param['junior_withdraw_commission']= $("#junior_withdraw_commission").val();
+                    param['junior_point'] = $("#junior_point").val();
+                    param['min_withdraw']= $("#min_withdraw").val();
+                    // param['system_currency'] = $("#SystemCurrency").val();
+                    // param['php_url'] = $("#PhpUrl").val();
+                    // param['time_zone'] = $('#timezone_filter').val();
+                }
+                    // else if(currTabIndex === 1){//财务配置
+                    //     // param['initialize_balance']= $("#initialize_balance").val();
+                    //     // param['withdrawal_hand'] = $("#withdrawal_hand").val();
+                    //     // param['System_min_withdrawal'] = $("#System_min_withdrawal").val();
+                    //     // // param['automatic_points'] = $("#automatic_points_switch").val();
+                    //
+                // }
+                // else if(currTabIndex === 1){//安全配置
+                //     // if($("#WhiteIpsStr").val() == ""){
+                //     //     notice.msg("IP白名单不能为空", {icon: 2});
+                //     //     return false;
+                //     // }
+                //     // param['IfUseGoogleCode'] = $("#IfUseGoogleCode_switch").val();
+                //     // param['white_ips_switch'] = $("#WhiteIpsSwitch").val();
+                //     // param['white_ips']= $("#WhiteIpsStr").val().replaceAll('\n','@');
+                //
+                // }
+
+                $.ajax({
+                    url: global_requestAddress+global_requestAddress_js_setMyselfConfig,
+                    dataType: 'json',
+                    headers: {
+                        token:mybck
+                    },
+                    type: 'post',
+                    data: param,
+                    success: function (resultData) {
+
+                        if(resultData.code === 200){
+
+                            notice.msg(resultData.msg, {icon: 1});
+                            // window.location.reload();
+
+                        }else{
+
+                            notice.msg(resultData.msg, {icon: 2});
+
+                        }
+
+
+
+
+
+                    }
+                })
+
+
+
+
+                return false;
+
+            });
+
+
+            //监听自动上分开关
+            form.on('switch(automatic_points_switch)', function(data){
+
+
+                if(data.elem.checked){
+                    $("#automatic_points_switch").attr("value", '1');
+                    // console.log(data.value);
+                }else{
+                    $("#automatic_points_switch").attr("value", '2');
+                }
+
+
+                var param={};
+                param.id = currConfigID
+                param.kinds = 2
+                param['automatic_points'] = $("#automatic_points_switch").val();
+
+                //获取期数添加到下拉框中
+                $.ajax({
+                    url: global_requestAddress+global_requestAddress_js_systemParameter+"?action=update",
+                    dataType: 'json',
+                    headers:{
+                        token:mybck
+                    },
+                    type: 'post',
+                    data: param,
+                    success: function (resultData) {
+
+                        if(resultData.code == 2000){
+                            notice.msg(resultData.msg, {icon: 1});
+                            // window.location.reload();
+                        }else{
+                            notice.msg(resultData.msg, {icon: 2});
+                        }
+                    }
+                })
+
+            })
+
+            //监听谷歌验证开关
+            form.on('switch(IfUseGoogleCode_switch)', function(data){
+
+
+                if(data.elem.checked){
+                    $("#IfUseGoogleCode_switch").attr("value", '1');
+                    // console.log(data.value);
+                }else{
+                    $("#IfUseGoogleCode_switch").attr("value", '2');
+                }
+
+
+                var param={};
+                param.id = currConfigID
+                param.kinds = 3
+                param['admin_google_status'] = $("#IfUseGoogleCode_switch").val();
+
+                //获取期数添加到下拉框中
+                $.ajax({
+                    url: global_requestAddress+global_requestAddress_js_systemParameter+"?action=update",
+                    dataType: 'json',
+                    headers:{
+                        token:mybck
+                    },
+                    type: 'post',
+                    data: param,
+                    success: function (resultData) {
+
+                        if(resultData.code == 2000){
+                            notice.msg(resultData.msg, {icon: 1});
+                            // window.location.reload();
+                        }else{
+                            notice.msg(resultData.msg, {icon: 2});
+                        }
+                    }
+                })
+
+            })
+
+            //监听白名单开关
+            form.on('switch(WhiteIpsSwitch_switch)', function(data){
+
+
+                if(data.elem.checked){
+                    $("#WhiteIpsSwitch_switch").attr("value", '1');
+                    // console.log(data.value);
+                }else{
+                    $("#WhiteIpsSwitch_switch").attr("value", '2');
+                }
+
+
+                var param={};
+                param.id = currConfigID
+                param.kinds = 3
+                param['white_ips_switch'] = $("#WhiteIpsSwitch_switch").val();
+
+                //获取期数添加到下拉框中
+                $.ajax({
+                    url: global_requestAddress+global_requestAddress_js_systemParameter+"?action=update",
+                    dataType: 'json',
+                    headers:{
+                        token:mybck
+                    },
+                    type: 'post',
+                    data: param,
+                    success: function (resultData) {
+
+                        if(resultData.code == 2000){
+                            notice.msg(resultData.msg, {icon: 1});
+                            // window.location.reload();
+                        }else{
+                            notice.msg(resultData.msg, {icon: 2});
+                        }
+                    }
+                })
+
+            })
+
+
+
+        });
+
+    }
+
+
+
+</script>
+</body>
+</html>

@@ -140,7 +140,30 @@
         window.top.location.href="../../login.html";
     }else{
         var jsondata ;
+        var jsonPayPaidData;
         var gatewaydata = [];
+
+        var channelData
+
+        var param = {};
+        param.page = 1
+        param.limit = 3000
+        //获取通道
+        $.ajax({
+            url: global_requestAddress + global_requestAddress_js_channel + "?action=check",
+            headers: {
+                "token": mybck
+            },
+            dataType: 'json',
+            type: 'post',
+            data: param,
+            success:function (res) {
+                channelData = res.result
+                // console.log("channel1",channel)
+            }
+        })
+
+
         var local_storage_key = 'admin_merchant_t_list';
         layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','treeTable'], function () {
             var $ = layui.jquery;
@@ -883,6 +906,9 @@
                 // 查看
                 else if (obj.event === 'check') {
                     jsondata = JSON.stringify(currDatas)
+                    jsonPayPaidData = JSON.stringify({
+                        channelData
+                    })
                     var index = layui.layer.open({
                         area: ['1200px', '95%'],
                         fixed: false, //不固定
@@ -893,6 +919,7 @@
                         content : "view_information.html",
                         success : function(layero, index){
                             var body = layui.layer.getChildFrame('body', index);
+
                         },
                         end : function() {//弹窗关闭后的回调函数
                             //利用laypage实现局部刷新,以下两种方式都可以

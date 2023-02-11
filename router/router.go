@@ -178,6 +178,7 @@ func Setup() *gin.Engine {
 		ay.POST("/slideshowOperation", agency.SlideshowOperation)
 		//CollectionOperation
 		ay.POST("/collectionOperation", agency.CollectionOperation)
+		ay.POST("/getU", agency.GetU)
 
 	}
 

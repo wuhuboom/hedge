@@ -222,7 +222,7 @@
                         })
                         $("#WhiteIps").append(ipsHtml)
 
-                        let apikeyhtml = returnDataArray.ApiKey
+                        let apikeyhtml =  '<span id="copystr"> ' + returnDataArray.ApiKey + '</span>'
                         apikeyhtml += '<button type="button" class="layui-btn layui-btn-sm layui-btn-radius" id="copyBtn" style="margin-left: 10px">复制</button>'
 
                         $("#ApiKey").append(apikeyhtml)
@@ -271,7 +271,7 @@
             //复制内容监听函数
             var clipboard2 = new ClipboardJS('#copyBtn', {
                 text: function () {
-                    return $("#ApiKey").text();
+                    return $("#copystr").text();
                 }
             });
             clipboard2.on('success', function (e) {

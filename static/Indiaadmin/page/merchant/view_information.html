@@ -29,6 +29,15 @@
       /*word-wrap:break-word;*/
     }
 
+    .paidcolor{
+      /*color: #fa709a;*/
+      background: #fa709a;
+    }
+
+    .paycolor{
+      background: #6739b6;
+    }
+
   </style>
 
 
@@ -46,8 +55,8 @@
       <div class="layui-card-body">
         <table class="layui-table layui-text">
           <colgroup>
-            <col width="180">
-            <col width="400">
+            <col width="145">
+            <col width="440">
             <col width="180">
             <col>
           </colgroup>
@@ -55,24 +64,37 @@
           <tr>
             <td>商户号</td>
             <td id="MerChantNum"></td>
+            <td>登录密码</td>
+            <td id="login_password"></td>
+          </tr>
+          <tr>
+            <td>Token</td>
+            <td id="Token"></td>
+            <td>谷歌验证码</td>
+            <td id="Google_verification_code"></td>
+          </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="layui-col-md12 layui-col-sm6">
+    <div class="layui-card">
+      <div class="layui-card-header" style="font-weight: bold">金额信息</div>
+      <div class="layui-card-body">
+        <table class="layui-table layui-text">
+          <colgroup>
+            <col width="180">
+            <col width="400">
+            <col width="180">
+            <col>
+          </colgroup>
+          <tbody>
+          <tr>
             <td>账户余额</td>
             <td id="Currency"></td>
-          </tr>
-          <tr>
-            <td>最大代付金额</td>
-            <td id="ChannelId"></td>
-            <td>最大充值金额</td>
-            <td id="MerchantOrderNum"></td>
-          </tr>
-          <tr>
-            <td>最小代付金额</td>
-            <td id="OwnOrder"> </td>
-            <td>最小充值金额</td>
-            <td id="Minimum_recharge"> </td>
-          </tr>
-          <tr>
-            <td>代收手续费</td>
-            <td id="Commission"></td>
             <td>账户可用余额</td>
             <td id="Amount"></td>
           </tr>
@@ -84,8 +106,44 @@
           </tr>
 
           <tr>
+            <td>提现手续费</td>
+            <td id="Withdrawal_fee"></td>
+            <td>代收手续费</td>
+            <td id="Commission"></td>
+          </tr>
+
+          <tr>
+            <td>最小充值金额</td>
+            <td id="Minimum_recharge"> </td>
+            <td>最大充值金额</td>
+            <td id="MerchantOrderNum"></td>
+          </tr>
+          <tr>
+            <td>最小代付金额</td>
+            <td id="OwnOrder"> </td>
+            <td>最大代付金额</td>
+            <td id="ChannelId"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="layui-col-md12 layui-col-sm6">
+    <div class="layui-card">
+      <div class="layui-card-header" style="font-weight: bold">通道</div>
+      <div class="layui-card-body">
+        <table class="layui-table layui-text">
+          <colgroup>
+            <col width="180">
+            <col>
+          </colgroup>
+          <tbody>
+          <tr>
             <td>代付渠道</td>
             <td id="PaymentChannel"></td>
+          </tr>
+          <tr>
             <td>代收渠道</td>
             <td id="ProofOfPayment"></td>
           </tr>
@@ -93,27 +151,37 @@
           <tr>
             <td>网关地址</td>
             <td id="gateway_address"></td>
-            <td>谷歌验证码</td>
-            <td id="Google_verification_code"></td>
           </tr>
-
           <tr>
-            <td>登录密码</td>
-            <td id="login_password"></td>
-            <td>提现手续费</td>
-            <td id="Withdrawal_fee"></td>
-          </tr>
-
-          <tr>
-            <td>Token</td>
-            <td id="Token"></td>
             <td>支付秘钥</td>
             <td id="payment_key"></td>
           </tr>
-
           <tr>
             <td>白名单</td>
             <td id="whitelist"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="layui-col-md12 layui-col-sm6" style="margin-bottom: 10px">
+    <div class="layui-card">
+      <div class="layui-card-header" style="font-weight: bold">记录</div>
+      <div class="layui-card-body">
+        <table class="layui-table layui-text">
+          <colgroup>
+            <col width="180">
+            <col>
+          </colgroup>
+          <tbody>
+          <tr>
+            <td>创建时间</td>
+            <td id="Created"></td>
+          </tr>
+          <tr>
+            <td>更新时间</td>
+            <td id="Updated"> </td>
           </tr>
 
           </tbody>
@@ -121,105 +189,6 @@
       </div>
     </div>
   </div>
-
-<!--  <div class="layui-col-md12 layui-col-sm6">-->
-<!--    <div class="layui-card">-->
-<!--      <div class="layui-card-header" style="font-weight: bold">支付</div>-->
-<!--      <div class="layui-card-body">-->
-<!--        <table class="layui-table layui-text">-->
-<!--          <colgroup>-->
-<!--            <col width="180">-->
-<!--            <col width="400">-->
-<!--            <col width="180">-->
-<!--            <col>-->
-<!--          </colgroup>-->
-<!--          <tbody>-->
-<!--          <tr>-->
-<!--            <td>手续费</td>-->
-<!--            <td id="Commission"></td>-->
-<!--            <td>金额</td>-->
-<!--            <td id="Amount"></td>-->
-<!--          </tr>-->
-<!--          <tr>-->
-<!--            <td>实际支付金额</td>-->
-<!--            <td id="ActualAmount"> </td>-->
-<!--            <td>时间</td>-->
-<!--            <td id="Time"> </td>-->
-<!--          </tr>-->
-<!--          <tr>-->
-<!--            <td>类型</td>-->
-<!--            <td id="Kinds"></td>-->
-<!--            <td>支付凭证</td>-->
-<!--            <td id="ProofOfPayment"></td>-->
-<!--          </tr>-->
-<!--          </tbody>-->
-<!--        </table>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--  <div class="layui-col-md12 layui-col-sm6">-->
-<!--    <div class="layui-card">-->
-<!--      <div class="layui-card-header" style="font-weight: bold">回调</div>-->
-<!--      <div class="layui-card-body">-->
-<!--        <table class="layui-table layui-text">-->
-<!--          <colgroup>-->
-<!--            <col width="180">-->
-<!--            <col>-->
-<!--          </colgroup>-->
-<!--          <tbody>-->
-<!--          <tr>-->
-<!--            <td>地址</td>-->
-<!--            <td id="NoticeUrl"></td>-->
-<!--          </tr>-->
-<!--          <tr>-->
-<!--            <td>通知</td>-->
-<!--            <td id="CallbackContent" style="word-break: break-word"> </td>-->
-<!--          </tr>-->
-<!--          <tr>-->
-<!--            <td>返回</td>-->
-<!--            <td id="CallbackReturn"></td>-->
-<!--          </tr>-->
-<!--          <tr>-->
-<!--            <td>状态</td>-->
-<!--            <td id="Callback"></td>-->
-<!--          </tr>-->
-<!--          &lt;!&ndash;                    <tr>&ndash;&gt;-->
-<!--          &lt;!&ndash;                        <td>次数</td>&ndash;&gt;-->
-<!--          &lt;!&ndash;                        <td id="Status_callback"></td>&ndash;&gt;-->
-<!--          &lt;!&ndash;                    </tr>&ndash;&gt;-->
-<!--          &lt;!&ndash;                    <tr>&ndash;&gt;-->
-<!--          &lt;!&ndash;                        <td>时间</td>&ndash;&gt;-->
-<!--          &lt;!&ndash;                        <td id="Status_callback"></td>&ndash;&gt;-->
-<!--          &lt;!&ndash;                    </tr>&ndash;&gt;-->
-<!--          </tbody>-->
-<!--        </table>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--  <div class="layui-col-md12 layui-col-sm6" style="margin-bottom: 10px">-->
-<!--    <div class="layui-card">-->
-<!--      <div class="layui-card-header" style="font-weight: bold">记录</div>-->
-<!--      <div class="layui-card-body">-->
-<!--        <table class="layui-table layui-text">-->
-<!--          <colgroup>-->
-<!--            <col width="180">-->
-<!--            <col>-->
-<!--          </colgroup>-->
-<!--          <tbody>-->
-<!--          <tr>-->
-<!--            <td>创建时间</td>-->
-<!--            <td id="Created"></td>-->
-<!--          </tr>-->
-<!--          <tr>-->
-<!--            <td>更新时间</td>-->
-<!--            <td id="Updated"> </td>-->
-<!--          </tr>-->
-
-<!--          </tbody>-->
-<!--        </table>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
 
 </div>
 
@@ -252,30 +221,32 @@
 
 
     var channel
-    var channel_name
-
-    var param = {};
-    param.page = 1
-    param.limit = 3000
-    //获取通道
-    $.ajax({
-      url: global_requestAddress + global_requestAddress_js_channel + "?action=check",
-      headers: {
-        "token": mybck
-      },
-      dataType: 'json',
-      type: 'post',
-      data: param,
-      success:function (res) {
-        channel=res
-        console.log("channel1",channel)
-      }
-    })
+    // var channel_name
+    //
+    // var param = {};
+    // param.page = 1
+    // param.limit = 3000
+    // //获取通道
+    // $.ajax({
+    //   url: global_requestAddress + global_requestAddress_js_channel + "?action=check",
+    //   headers: {
+    //     "token": mybck
+    //   },
+    //   dataType: 'json',
+    //   type: 'post',
+    //   data: param,
+    //   success:function (res) {
+    //     channel = res.result
+    //     // console.log("channel1",channel)
+    //   }
+    // })
 
 
 
 
     var currParentDatas = eval('(' + parent.jsondata + ')')
+    var currChannelData = eval('(' + parent.jsonPayPaidData + ')')
+    channel = currChannelData.channelData
     var bankListArr = []
 
     var currDateVal
@@ -298,19 +269,6 @@
       var treeTable = layui.treeTable
       var laydate = layui.laydate;
 
-      //获取数据添加到下拉框中
-      // var param = {};
-      // param.id = currParentDatas.ID
-
-
-
-
-
-
-
-
-      // console.log("currParentDatas",currParentDatas)
-      // param.limit = 3000
 
       $("#MerChantNum").text(currParentDatas.MerchantNum)
       $("#MerchantOrderNum").text(currParentDatas.MaxMoney)
@@ -318,33 +276,17 @@
 
       var statusHtml = ''
       if(currParentDatas.Kinds === 1){
-        statusHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #337ab7;border-color: #337ab7;">对冲账号</button>'
+        statusHtml ='<span class="layui-badge " style="background-color: #337ab7;border-color: #337ab7;">对冲账号</span>'
       }else if(currParentDatas.Kinds === 2){
-        statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #f3ba44;border-color: #f3ba44;">印度支付</button>'
+        statusHtml ='<span class="layui-badge " style="background-color: #f3ba44;border-color: #f3ba44;">印度支付</span>'
       }
-      // else if(returnDataArray.Status === 3){
-      //   statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #993055;border-color: #993055;">失败</button>'
-      // }else if(returnDataArray.Status === 4){
-      //   statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #465161;border-color: #465161;">已过期</button>'
-      // }
       $("#Status").append(statusHtml)
-      //
-      // var callbackHtml = ''
-      // if(returnDataArray.Callback === 1){
-      //   callbackHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #faa64b;border-color: #faa64b;">没有回调</button>'
-      // }else if(returnDataArray.Callback === 2){
-      //   callbackHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #33cabb;border-color: #33cabb;">回调成功</button>'
-      // }else if(returnDataArray.Callback === 3){
-      //   callbackHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #465161;border-color: #465161;">回调失败</button>'
-      // }
-      // $("#Callback").append(callbackHtml)
-      //
+
+
       $("#Amount").text(currParentDatas.AvailableAmount)
       $("#ActualAmount").text(currParentDatas.FreezeAmount)
       $("#Commission").text(currParentDatas.CollectionCommission)
-      // $("#CallbackReturn").text(returnDataArray.CallbackReturn)
-      // $("#CallbackContent").text(returnDataArray.CallbackContent)
-      // $("#NoticeUrl").text(returnDataArray.NoticeUrl)
+
       //
       $("#Currency").text(currParentDatas.AllAmount)
       $("#OwnOrder").text(currParentDatas.MinPay)
@@ -356,9 +298,17 @@
       $("#Token").text(currParentDatas.Token)//Token
       $("#payment_key").text(currParentDatas.ApiKey)//支付秘钥
       $("#whitelist").text(currParentDatas.WhiteIps)//白名单
+
+      $("#Created").text(moment(currParentDatas.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
+      $("#Updated").text(moment(currParentDatas.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
+
+
+
+
+
       //
 
-      console.log("currParentDatas",currParentDatas)
+      // console.log("currParentDatas",currParentDatas)
 
       //代收
       let ipsArr = currParentDatas.PayChannel.split('@')
@@ -366,22 +316,22 @@
       //代付
       let ipsArr1 =currParentDatas.PaidChannel.split('@')
 
-
       //代付通道
-      for (var i=0;i<channel.result.length;i++){
+      for (var i=0;i<channel.length;i++){
 
-        if (channel.result[i].Kinds == "2"){
+        if (channel[i].Kinds == "2"){
           for (var a=0;a<ipsArr1.length;a++){
-            if (channel.result[i].ID == ipsArr1[a]){
-              payChannelArrS.push(channel.result[i].ChannelName)
+            if (channel[i].ID == ipsArr1[a]){
+              payChannelArrS.push(channel[i].ChannelName)
             }
           }
         }
+
         //代收通道
-        else if (channel.result[i].Kinds == "1"){
+        else if (channel[i].Kinds == "1"){
           for (var b=0;b<ipsArr.length;b++){
-            if (channel.result[i].ID == ipsArr[b]){
-              payingChannelArrS.push(channel.result[i].ChannelName)
+            if (channel[i].ID == ipsArr[b]){
+              payingChannelArrS.push(channel[i].ChannelName)
             }
           }
 
@@ -411,9 +361,9 @@
       let ipsHtml1 = ""
       Name1.forEach((item,index)=>{
         if(index == 0){
-          ipsHtml1 = ipsHtml1 +'<span class="layui-badge" > ' + item + '</span>'
+          ipsHtml1 = ipsHtml1 +'<span class="layui-badge paycolor" > ' + item + '</span>'
         }else{
-          ipsHtml1 = ipsHtml1 + '<span class="layui-badge" style=\'margin-left: 10px\'> ' + item + '</span>'
+          ipsHtml1 = ipsHtml1 + '<span class="layui-badge paycolor" style=\'margin-left: 10px\'> ' + item + '</span>'
         }
       })
       $("#PaymentChannel").append(ipsHtml1)
@@ -423,81 +373,14 @@
       let ipsHtml = ""
       Name.forEach((item,index)=>{
         if(index == 0){
-          ipsHtml = ipsHtml +'<span class="layui-badge" > ' + item + '</span>'
+          ipsHtml = ipsHtml +'<span class="layui-badge paidcolor" > ' + item + '</span>'
         }else{
-          ipsHtml = ipsHtml + '<span class="layui-badge" style=\'margin-left: 10px\'> ' + item + '</span>'
+          ipsHtml = ipsHtml + '<span class="layui-badge paidcolor" style=\'margin-left: 10px\'> ' + item + '</span>'
         }
       })
       $("#ProofOfPayment").append(ipsHtml)
-      // $("#Created").text(moment(returnDataArray.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
-      // $("#Updated").text(moment(returnDataArray.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
-      // $.ajax({
-      //   url: global_requestAddress + global_requestAddress_js_collectionOperation +"?action=one" ,
-      //   headers: {
-      //     "token": mybck
-      //   },
-      //   dataType: 'json',
-      //   type: 'post',
-      //   data: param,
-      //   success: function (res) {
-      //
-      //     console.log("res",res)
-      //
-      //     if (res.code === 200) {
-      //       var returnDataArray = res.result
-      //
-      //       $("#MerChantNum").text(currParentDatas.MerchantNum)
-      //       $("#MerchantOrderNum").text(returnDataArray.MerchantOrderNum)
-      //       $("#ChannelId").text(returnDataArray.ChannelId)
-      //       var statusHtml = ''
-      //       if(returnDataArray.Status === 1){
-      //         statusHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #337ab7;border-color: #337ab7;">等待支付</button>'
-      //       }else if(returnDataArray.Status === 2){
-      //         statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #28a745;border-color: #28a745;">支付成功</button>'
-      //       }else if(returnDataArray.Status === 3){
-      //         statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #993055;border-color: #993055;">失败</button>'
-      //       }else if(returnDataArray.Status === 4){
-      //         statusHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #465161;border-color: #465161;">已过期</button>'
-      //       }
-      //       $("#Status").append(statusHtml)
-      //
-      //       var callbackHtml = ''
-      //       if(returnDataArray.Callback === 1){
-      //         callbackHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #faa64b;border-color: #faa64b;">没有回调</button>'
-      //       }else if(returnDataArray.Callback === 2){
-      //         callbackHtml ='<button type="button" class="layui-btn layui-btn-sm" style="background-color: #33cabb;border-color: #33cabb;">回调成功</button>'
-      //       }else if(returnDataArray.Callback === 3){
-      //         callbackHtml ='<button type="button" class="layui-btn layui-btn-sm " style="background-color: #465161;border-color: #465161;">回调失败</button>'
-      //       }
-      //       $("#Callback").append(callbackHtml)
-      //
-      //       $("#Amount").text(returnDataArray.Amount)
-      //       $("#ActualAmount").text(returnDataArray.ActualAmount)
-      //       $("#Commission").text(returnDataArray.Commission)
-      //       $("#CallbackReturn").text(returnDataArray.CallbackReturn)
-      //       $("#CallbackContent").text(returnDataArray.CallbackContent)
-      //       $("#NoticeUrl").text(returnDataArray.NoticeUrl)
-      //
-      //       $("#Currency").text(returnDataArray.Currency)
-      //       $("#OwnOrder").text(returnDataArray.OwnOrder)
-      //
-      //       var kindsHtml = ''
-      //       if(returnDataArray.Kinds === 1){
-      //         kindsHtml ='<span class="layui-badge layui-bg-orange">代收</span>'
-      //       }else if(returnDataArray.Kinds === 2){
-      //         kindsHtml ='<span class="layui-badge layui-bg-blue">代付</span>'
-      //       }
-      //       $("#Kinds").append(kindsHtml)
-      //
-      //
-      //       $("#ProofOfPayment").text(returnDataArray.ProofOfPayment)
-      //       $("#Created").text(moment(returnDataArray.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
-      //       $("#Updated").text(moment(returnDataArray.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
-      //
-      //
-      //     }
-      //   }
-      // })
+
+
     });
 
   }
