@@ -43,11 +43,11 @@ func GetStatistics(c *gin.Context) {
 			Withdraw            float64 `json:"withdraw"`
 		}
 		var data Data
-		mysql.DB.Raw("SELECT sum(actual_amount) as collection_all_amount  FROM  collections WHERE status  =2 AND  kinds=1").Scan(&data)
-		mysql.DB.Raw("SELECT sum(actual_amount) as pay_all_amount  FROM  collections WHERE status  =2 AND  kinds=2").Scan(&data)
+		mysql.DB.Raw("SELECT sum(actual_amount) as collection_all_amount  FROM  collections WHERE (collections.status=2 or collections.status=8  ) AND  kinds=1").Scan(&data)
+		mysql.DB.Raw("SELECT sum(actual_amount) as pay_all_amount  FROM  collections WHERE (collections.status=2 or collections.status=8  ) AND  kinds=2").Scan(&data)
 		mysql.DB.Raw("SELECT SUM(change_amount) as  withdraw FROM  admin_account_changes   WHERE  kinds=1 and  record_id!=0").Scan(&data)
-		mysql.DB.Raw("SELECT  SUM(admin_account_changes.change_amount) as  profit_for_mer FROM  admin_account_changes  LEFT JOIN  collections  ON  collections.id=admin_account_changes.collection_id  WHERE  collections.status=2 AND species =1 ").Scan(&data)
-		mysql.DB.Raw("SELECT  SUM(admin_account_changes.change_amount) as  profit_for_run FROM  admin_account_changes  LEFT JOIN  collections  ON  collections.id=admin_account_changes.collection_id  WHERE  collections.status=2 AND species =3 ").Scan(&data)
+		mysql.DB.Raw("SELECT  SUM(admin_account_changes.change_amount) as  profit_for_mer FROM  admin_account_changes  LEFT JOIN  collections  ON  collections.id=admin_account_changes.collection_id  WHERE  (collections.status=2 or collections.status=8  ) AND species =1 ").Scan(&data)
+		mysql.DB.Raw("SELECT  SUM(admin_account_changes.change_amount) as  profit_for_run FROM  admin_account_changes  LEFT JOIN  collections  ON  collections.id=admin_account_changes.collection_id  WHERE  (collections.status=2 or collections.status=8  ) AND species =3 ").Scan(&data)
 		data.ProfitForMer = data.ProfitForMer + data.Withdraw
 		tools.ReturnSuccess2000DataCode(c, data, "OK")
 		return

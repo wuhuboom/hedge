@@ -44,7 +44,7 @@ var StatisticsLock sync.RWMutex
 func (sta *Statistics) Add(db *gorm.DB, kind int) error {
 	StatisticsLock.Lock()
 	defer StatisticsLock.Unlock()
-
+	sta.Date = time.Now().Format("2006-01-02")
 	up := make(map[string]interface{})
 	up["Date"] = time.Now().Format("2006-01-02")
 	//判断今天今天数据是否存在
@@ -64,19 +64,19 @@ func (sta *Statistics) Add(db *gorm.DB, kind int) error {
 			up["TodayCollectionAmount"] = sta2.TodayCollectionAmount + sta.TodayCollectionAmount
 			db = db.Where("today_collection=? and  today_collection_commission =? and  today_collection_amount=?", sta2.TodayCollection, sta2.TodayCollectionCommission, sta2.TodayCollectionAmount)
 		} else if kind == 3 {
-			up["TodayAllCollection"] = sta2.TodayAllCollection + 1
+			up["TodayAllCollection"] = sta2.TodayAllCollection + sta.TodayAllCollection
 			up["TodayAllAmount"] = sta2.TodayAllAmount + sta.TodayAllAmount
 			db = db.Where("today_all_collection=? and  today_all_amount =?", sta2.TodayAllCollection, sta2.TodayAllAmount)
 
 		} else if kind == 2 {
-			up["TodayPay"] = sta2.TodayPay + 1
+			up["TodayPay"] = sta2.TodayPay + sta.TodayPay
 			up["TodayPayCommission"] = sta2.TodayPayCommission + sta.TodayPayCommission
 			up["TodayPayAmount"] = sta2.TodayPayAmount + sta.TodayPayAmount
 			db = db.Where("today_pay=? and  today_pay_commission =? and today_pay_amount=? ", sta2.TodayPay, sta2.TodayPayCommission, sta2.TodayPayAmount)
 
 		} else if kind == 4 {
 			up["TodayPayAllAmount"] = sta2.TodayPayAllAmount + sta.TodayPayAllAmount
-			up["TodayAllPay"] = sta2.TodayAllPay + 1
+			up["TodayAllPay"] = sta2.TodayAllPay + sta.TodayAllPay
 			db = db.Where("today_pay_all_amount=? and  today_all_pay =?  ", sta2.TodayPayAllAmount, sta2.TodayAllPay)
 
 		}

@@ -2,12 +2,25 @@ package tools
 
 import (
 	"fmt"
-	"strings"
 	"testing"
 )
 
-func FuzzName(f *testing.F) {
+func For5ToFunc(a func() string) {
+	for i := 0; i < 6; i++ {
+		fmt.Println(a())
+	}
+}
 
-	fmt.Println(strings.Replace("https://inpayapi.gvfootball.com", "api", "", 1))
+func A() string {
+	return "------"
+}
 
+func B(a int, b ...int) {
+	fmt.Println(a, b)
+}
+
+func TestName(t *testing.T) {
+	//For5ToFunc(A)
+
+	B(1, 10)
 }

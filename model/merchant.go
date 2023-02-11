@@ -12,36 +12,39 @@ import (
 
 // Merchant 商户号
 type Merchant struct {
-	ID                   int     `gorm:"primaryKey"`
-	MerchantNum          string  `gorm:"unique_index"`       //商户号
-	MinMoney             float64 `gorm:"type:decimal(10,2)"` //最小的充值金额
-	MaxMoney             float64 `gorm:"type:decimal(10,2)"` //最大的充值金额
-	WhiteIps             string  //ip白名单
-	Status               int     //状态 1正常  2禁用
-	ApiKey               string  // 加密key
-	Kinds                int     `gorm:"default:1"` // 类型 1 对冲账号  2印度支付
-	PayChannel           string  // 代收渠道
-	PaidChannel          string  //代付渠道
-	LoginPassword        string  //登录密码
-	GoogleCode           string  //谷歌 code
-	GoogleSwitch         int     `gorm:"default:2"` //谷歌开关  //1开  2关
-	Token                string  //登录
-	GatewayId            int     // 网关id
-	Gateway              string  //网关
-	AllAmount            float64 `gorm:"type:decimal(10,2)"` //总金额
-	AvailableAmount      float64 `gorm:"type:decimal(10,2)"` //可以用的金额
-	FreezeAmount         float64 `gorm:"type:decimal(10,2)"` //冻结的金额
-	CollectionCommission float64 `gorm:"type:decimal(10,2)"` //代收手续费
-	PayCommission        float64 `gorm:"type:decimal(10,2)"` //代付手续费
-	MinPay               float64 `gorm:"type:decimal(10,2)"` //最小代付
-	MaxPay               float64 `gorm:"type:decimal(10,2)"` //最大代付
-	HedgeSwitch          int     `gorm:"default:2"`          //对冲开关1开 2关
-	RunSwitch            int     `gorm:"default:2"`          //跑分开关1开 2关
-	Created              int64
-	Updated              int64
-	TrcAddress           string             //trc 回U的地址
-	WithdrawCommission   float64            `gorm:"type:decimal(10,2);default:0.06"` //提现手续费
-	PayC                 []modelPay.Channel `gorm:"-"`
+	ID                    int     `gorm:"primaryKey"`
+	MerchantNum           string  `gorm:"unique_index"`       //商户号
+	MinMoney              float64 `gorm:"type:decimal(10,2)"` //最小的充值金额
+	MaxMoney              float64 `gorm:"type:decimal(10,2)"` //最大的充值金额
+	WhiteIps              string  //ip白名单
+	Status                int     //状态 1正常  2禁用
+	ApiKey                string  // 加密key
+	Kinds                 int     `gorm:"default:1"` // 类型 1 对冲账号  2印度支付
+	PayChannel            string  // 代收渠道
+	PaidChannel           string  //代付渠道
+	LoginPassword         string  //登录密码
+	GoogleCode            string  //谷歌 code
+	GoogleSwitch          int     `gorm:"default:2"` //谷歌开关  //1开  2关
+	Token                 string  //登录
+	GatewayId             int     // 网关id
+	Gateway               string  //网关
+	AllAmount             float64 `gorm:"type:decimal(10,2)"` //总金额
+	AvailableAmount       float64 `gorm:"type:decimal(10,2)"` //可以用的金额
+	FreezeAmount          float64 `gorm:"type:decimal(10,2)"` //冻结的金额
+	CollectionCommission  float64 `gorm:"type:decimal(10,2)"` //代收手续费
+	PayCommission         float64 `gorm:"type:decimal(10,2)"` //代付手续费
+	MinPay                float64 `gorm:"type:decimal(10,2)"` //最小代付
+	MaxPay                float64 `gorm:"type:decimal(10,2)"` //最大代付
+	HedgeSwitch           int     `gorm:"default:2"`          //对冲开关1开 2关
+	RunSwitch             int     `gorm:"default:2"`          //跑分开关1开 2关
+	Created               int64
+	Updated               int64
+	TrcAddress            string              //trc 回U的地址
+	WithdrawCommission    float64             `gorm:"type:decimal(10,2);default:0.06"` //提现手续费
+	PayC                  []modelPay.Channel  `gorm:"-"`
+	ChangeAvailableAmount float64             `gorm:"-"`
+	ChangeFreezeAmount    float64             `gorm:"-"`
+	Col                   modelPay.Collection `gorm:"-"`
 }
 
 func CheckIsExistModelMerchant(db *gorm.DB) {
@@ -113,12 +116,14 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 		db = db.Begin()
 	}
 	update := make(map[string]interface{})
-	if ch.Kinds == 1 { //代收
+	update["Updated"] = time.Now().Unix()
+	if ch.Kinds == 1 { //代收成功的订单(管理员审核)
 		update["AllAmount"] = mer.AllAmount + amount
 		update["CollectionCommission"] = mer.CollectionCommission + amount*ch.Rate
 		update["AvailableAmount"] = mer.AvailableAmount + amount*(1-ch.Rate)
 		//更新代收订单
-		if err := db.Model(&modelPay.Collection{}).Where("id=?", collectionId).Update(map[string]interface{}{"ActualAmount": amount, "Commission": amount * ch.Rate, "Updated": time.Now().Unix(), "Status": 2}).Error; err != nil {
+		if err := db.Model(&modelPay.Collection{}).
+			Where("id=?  and  status=? and  updated =? and  commission=?", collectionId, col.Status, col.Updated, col.Commission).Update(map[string]interface{}{"ActualAmount": amount, "Commission": amount * ch.Rate, "Updated": time.Now().Unix(), "Status": 2}).Error; err != nil {
 			return err, mer
 		}
 		//更新账变(总余额)
@@ -170,6 +175,14 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 			}
 			return err, mer
 		}
+		//创建代付订单
+		err = col.Add(db)
+		if err != nil {
+			if species != 3 {
+				db.Rollback()
+			}
+			return err, Merchant{}
+		}
 		//形成账变
 		amountC := modelPay.AmountChange{
 			MerchantNum:  m.MerchantNum,
@@ -185,16 +198,8 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 			}
 			return err, mer
 		}
-		//创建代付订单
-		err = col.Add(db)
-		if err != nil {
-			if species != 3 {
-				db.Rollback()
-			}
-			return err, Merchant{}
-		}
-	}
 
+	}
 	err = db.Model(&Merchant{}).Where("id=? and available_amount =? and freeze_amount =?", mer.ID, mer.AvailableAmount, mer.FreezeAmount).Update(update).Error
 	if err != nil {
 		if species != 3 {
@@ -202,9 +207,33 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 		}
 		return err, mer
 	}
-
 	if species != 3 {
 		db.Commit()
 	}
 	return nil, mer
+}
+
+// AvailableAmountChangeAndFreezeAmount 商户 可用金额变化
+func (m *Merchant) AvailableAmountChangeAndFreezeAmount(db *gorm.DB) error {
+	ups := make(map[string]interface{})
+
+	ups["AvailableAmount"] = m.AvailableAmount + m.ChangeAvailableAmount
+	ups["FreezeAmount"] = m.FreezeAmount + m.ChangeFreezeAmount
+	ups["Updated"] = time.Now().Unix()
+	//更新商户号
+	err := db.Model(&Merchant{}).Where("id=? and available_amount =?  and  freeze_amount=?", m.ID, m.AvailableAmount, m.FreezeAmount).Update(ups).Error
+	if err != nil {
+		return eeor.OtherError("mer update is fail  :" + err.Error())
+	}
+	//产生账变
+	change := modelPay.AmountChange{
+		MerchantNum: m.MerchantNum,
+		Amount:      m.ChangeAvailableAmount,
+		After:       m.AvailableAmount + m.ChangeAvailableAmount,
+		Before:      m.AvailableAmount, CollectionId: m.Col.ID, Remark: m.Col.Remark}
+	err = change.Add(db)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -39,7 +39,8 @@ func (ad *Admin) ChangeProfit(db *gorm.DB) error {
 	//账变
 	change := AdminAccountChange{NowAmount: aa.Profit + ad.Profit,
 		FontAmount:   aa.Profit,
-		ChangeAmount: ad.Profit, Kinds: 1, CollectionId: ad.CollectionId}
+		ChangeAmount: ad.Profit, Kinds: 1,
+		CollectionId: ad.CollectionId}
 	err := change.Add(db)
 	if err != nil {
 		return err

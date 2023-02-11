@@ -32,7 +32,7 @@ import (
 
 func Setup() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
-	r := gin.Default()
+	r := gin.New()
 	r.Use(Cors())
 	r.Use(eeor.ErrHandler())
 	r.NoMethod(eeor.HandleNotFound)
