@@ -24,7 +24,7 @@ type Merchant struct {
 	PaidChannel           string  //代付渠道
 	LoginPassword         string  //登录密码
 	GoogleCode            string  //谷歌 code
-	GoogleSwitch          int     `gorm:"default:2"` //谷歌开关  //1开  2关
+	GoogleSwitch          int     `gorm:"default:1"` //谷歌开关  //1开  2关
 	Token                 string  //登录
 	GatewayId             int     // 网关id
 	Gateway               string  //网关
@@ -123,8 +123,8 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 		update["AvailableAmount"] = mer.AvailableAmount + amount*(1-ch.Rate)
 		//更新代收订单
 		if err := db.Model(&modelPay.Collection{}).
-			Where("id=?  and  status=? and  updated =? and  commission=?", collectionId, col.Status, col.Updated, col.Commission).Update(map[string]interface{}{"ActualAmount": amount, "Commission": amount * ch.Rate, "Updated": time.Now().Unix(), "Status": 2}).Error; err != nil {
-			return err, mer
+			Where("id=?  and  status=? and  updated =? and  commission=?", collectionId, col.Status, col.Updated, col.Commission).Update(map[string]interface{}{"ActualAmount": amount, "Commission": amount * ch.Rate, "Updated": time.Now().Unix(), "Status": 2}).RowsAffected; err == 0 {
+			return eeor.OtherError("u is fail"), mer
 		}
 		//更新账变(总余额)
 		amountC := modelPay.AmountChange{MerchantNum: m.MerchantNum, Amount: amount * (1 - ch.Rate), Before: mer.AvailableAmount,
@@ -200,12 +200,12 @@ func (m *Merchant) AmountChange(db *gorm.DB, amount float64, channelId int, coll
 		}
 
 	}
-	err = db.Model(&Merchant{}).Where("id=? and available_amount =? and freeze_amount =?", mer.ID, mer.AvailableAmount, mer.FreezeAmount).Update(update).Error
-	if err != nil {
+	Affected := db.Model(&Merchant{}).Where("id=? and available_amount =? and freeze_amount =?", mer.ID, mer.AvailableAmount, mer.FreezeAmount).Update(update).RowsAffected
+	if Affected == 0 {
 		if species != 3 {
 			db.Rollback()
 		}
-		return err, mer
+		return eeor.OtherError("u is fail"), mer
 	}
 	if species != 3 {
 		db.Commit()
@@ -221,9 +221,9 @@ func (m *Merchant) AvailableAmountChangeAndFreezeAmount(db *gorm.DB) error {
 	ups["FreezeAmount"] = m.FreezeAmount + m.ChangeFreezeAmount
 	ups["Updated"] = time.Now().Unix()
 	//更新商户号
-	err := db.Model(&Merchant{}).Where("id=? and available_amount =?  and  freeze_amount=?", m.ID, m.AvailableAmount, m.FreezeAmount).Update(ups).Error
-	if err != nil {
-		return eeor.OtherError("mer update is fail  :" + err.Error())
+	affected := db.Model(&Merchant{}).Where("id=? and available_amount =?  and  freeze_amount=?", m.ID, m.AvailableAmount, m.FreezeAmount).Update(ups).RowsAffected
+	if affected == 0 {
+		return eeor.OtherError("mer update is fail  ")
 	}
 	//产生账变
 	change := modelPay.AmountChange{
@@ -231,7 +231,7 @@ func (m *Merchant) AvailableAmountChangeAndFreezeAmount(db *gorm.DB) error {
 		Amount:      m.ChangeAvailableAmount,
 		After:       m.AvailableAmount + m.ChangeAvailableAmount,
 		Before:      m.AvailableAmount, CollectionId: m.Col.ID, Remark: m.Col.Remark}
-	err = change.Add(db)
+	err := change.Add(db)
 	if err != nil {
 		return err
 	}

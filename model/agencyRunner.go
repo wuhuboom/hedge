@@ -29,7 +29,8 @@ type AgencyRunner struct {
 	LastLoginTime               int64              //最后一次登录时间
 	LastLoginIp                 string             //最后一次登录的ip
 	LastLoginRegion             string             //最后一次登录日期
-	Commission                  float64            `gorm:"type:decimal(10,2);default:0"` //佣金
+	Commission                  float64            `gorm:"type:decimal(10,2);default:0"` //累计佣金
+	Balance                     float64            `gorm:"type:decimal(10,2);default:0"` //可以用余额
 	JuniorPoint                 float64            `gorm:"type:decimal(10,2);default:2"` //下级税点
 	Token                       string             `gorm:"unique_index"`                 //token
 	FreezeMoney                 float64            `gorm:"type:decimal(10,2);default:0"` //提现冻结金额
@@ -89,16 +90,17 @@ func (ar *AgencyRunner) ChangeCashPledge(db *gorm.DB, changeMoney float64, remar
 	ups["CashPledge"] = ar.CashPledge + changeMoney
 	db = db.Begin()
 	//修改押金
-	err := db.Model(&AgencyRunner{}).Where("id=?", ar.ID).Update(ups).Error
-	if err != nil {
-		return err
+	affected := db.Model(&AgencyRunner{}).Where("id=? and  cash_pledge=?", ar.ID, ar.CashPledge).Update(ups).RowsAffected
+	if affected == 0 {
+		return eeor.OtherError("u is fail")
 	}
+
 	//生成账变记录
 	change := AgencyAccountChange{
 		ChangeAmount: changeMoney,
 		NowAmount:    ar.CashPledge + changeMoney,
 		FontAmount:   ar.CashPledge, Kinds: 1, AgencyRunnerId: ar.ID, Remark: remark}
-	err = change.Add(db)
+	err := change.Add(db)
 	if err != nil {
 		db.Rollback()
 		return err
@@ -113,16 +115,16 @@ func (ar *AgencyRunner) ChangeCollectionLimit(db *gorm.DB, changeMoney float64, 
 	ups["CollectionLimit"] = ar.CollectionLimit + changeMoney
 	db = db.Begin()
 	//修改押金
-	err := db.Model(&AgencyRunner{}).Where("id=?", ar.ID).Update(ups).Error
-	if err != nil {
-		return err
+	affected := db.Model(&AgencyRunner{}).Where("id=? and collection_limit ", ar.ID, ar.CollectionLimit).Update(ups).RowsAffected
+	if affected == 0 {
+		return eeor.OtherError("u is fail")
 	}
 	//生成账变记录
 	change := AgencyAccountChange{
 		ChangeAmount: changeMoney,
 		NowAmount:    ar.CollectionLimit + changeMoney,
 		FontAmount:   ar.CollectionLimit, Kinds: 2, AgencyRunnerId: ar.ID, Remark: remark}
-	err = change.Add(db)
+	err := change.Add(db)
 	if err != nil {
 		db.Rollback()
 		return err
@@ -131,29 +133,53 @@ func (ar *AgencyRunner) ChangeCollectionLimit(db *gorm.DB, changeMoney float64, 
 	return nil
 }
 
-// ChangeCommission 修改佣金和余额
-func (ar *AgencyRunner) ChangeCommission(db *gorm.DB) error {
+// ChangeCommissionAndBalance ChangeCommission 修改佣金余额
+func (ar *AgencyRunner) ChangeCommissionAndBalance(db *gorm.DB) error {
 	ag := AgencyRunner{}
 	err := db.Where("id=?", ar.ID).First(&ag).Error
 	if err != nil {
 		return eeor.OtherError("ChangeCommission:" + err.Error())
 	}
+
 	//修改佣金
-	var ups map[string]interface{}
+	ups := make(map[string]interface{})
+	if ar.Balance == 0 {
+		ar.Balance = ar.Commission
+	}
 	ups["Commission"] = ag.Commission + ar.Commission
-	//生成账变账单
-	change := AgencyAccountChange{
-		AgencyRunnerId: ar.ID,
-		RunnerId:       ar.RunnerId,
-		NowAmount:      ag.Commission + ar.Commission,
-		ChangeAmount:   ar.Commission,
-		FontAmount:     ag.Commission, Kinds: 4}
-	err = change.Add(db)
-	if err != nil {
-		return err
+	ups["Balance"] = ag.Balance + ar.Balance
+	//修改奔跑者 佣金
+	affected := db.Model(&AgencyRunner{}).Where("id=? and  balance =?  and commission=?", ag.ID, ag.Balance, ag.Commission).Update(ups).RowsAffected
+	if affected == 0 {
+		return eeor.OtherError("u is fail")
 	}
 
-	//修改奔跑者 佣金
+	//生成账变账单(佣金账变)
+	if ar.Commission != 0 {
+		change := AgencyAccountChange{
+			AgencyRunnerId: ar.ID,
+			RunnerId:       ar.RunnerId,
+			NowAmount:      ag.Commission + ar.Commission,
+			ChangeAmount:   ar.Commission,
+			FontAmount:     ag.Commission, Kinds: 4}
+		err = change.Add(db)
+		if err != nil {
+			return err
+		}
+	}
+	if ar.Balance != 0 {
+		//余额账变
+		accountChange := AgencyAccountChange{
+			AgencyRunnerId: ar.ID,
+			RunnerId:       ar.RunnerId,
+			NowAmount:      ag.Balance + ar.Balance,
+			ChangeAmount:   ar.Balance,
+			FontAmount:     ar.Balance, Kinds: 6}
+		err = accountChange.Add(db)
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

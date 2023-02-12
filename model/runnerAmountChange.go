@@ -13,7 +13,7 @@ type RunnerAmountChange struct {
 	NowAmount    float64 `gorm:"type:decimal(10,2);default:0"`
 	ChangeAmount float64 `gorm:"type:decimal(10,2);default:0"`
 	FontAmount   float64 `gorm:"type:decimal(10,2);default:0"`
-	Kinds        int     //1押金   2代收额度  3代付额度  4佣金   5提现
+	Kinds        int     //1押金   2代收额度  3代付额度  4佣金   5提现 6余额
 	CollectionId int
 	Remark       string
 	Created      int64

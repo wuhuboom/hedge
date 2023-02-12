@@ -36,9 +36,6 @@ type MerchantLogData struct {
 
 func (al *MerchantLogData) Add(db *gorm.DB) {
 	al.Area, _ = mmdb.GetCountryForIp(al.Ip)
-
-	fmt.Println(mmdb.GetCountryForIp(al.Ip))
-
 	ALog := MerchantLog{}
 	ALog.Kinds = al.Kinds
 	ALog.Created = time.Now().Unix()

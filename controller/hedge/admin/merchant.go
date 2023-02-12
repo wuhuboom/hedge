@@ -156,9 +156,8 @@ func MerchantOperation(c *gin.Context) {
 		}
 		//谷歌code
 		if status, isExist := c.GetPostForm("google_code"); isExist == true {
-			updated["GoogleCode"], _ = strconv.Atoi(status)
+			updated["GoogleCode"] = status
 		}
-
 		mysql.DB.Model(&model.Merchant{}).Where("id=?", id).Update(updated)
 		tools.ReturnSuccess2000Code(c, "ok")
 		return

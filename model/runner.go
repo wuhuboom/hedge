@@ -46,6 +46,7 @@ type Runner struct {
 	Remark                string              `gorm:"-"`
 	LastGetOrderTime      int64               `gorm:"default:0"` //最后一次获取订单的时间  也就是我要关闭  接单的按钮
 	Col                   modelPay.Collection `gorm:"-"`
+	ChangeBalance         float64             `gorm:"-"` //变化的余额
 }
 
 func CheckIsExistModelRunner(db *gorm.DB) {
@@ -155,15 +156,21 @@ func (r *Runner) ChangeCashPledge(db *gorm.DB) error {
 		return eeor.OtherError("Insufficient deposit balance")
 	}
 	ups["CashPledge"] = rTwo.CashPledge + r.CashPledge
-
 	//账变
 	change := RunnerAmountChange{RunnerId: r.ID,
 		NowAmount:    rTwo.CashPledge + r.CashPledge,
 		ChangeAmount: r.CashPledge,
 		FontAmount:   rTwo.CashPledge, Kinds: 1,
 		Remark: r.Remark}
-	change.Add(db)
-	return db.Model(&Runner{}).Where("id=?", r.ID).Update(ups).Error
+	err = change.Add(db)
+	if err != nil {
+		return err
+	}
+	affected := db.Model(&Runner{}).Where("id=? and  cash_pledge=? ", r.ID, rTwo.CashPledge).Update(ups).RowsAffected
+	if affected == 0 {
+		return eeor.OtherError("Failed to update")
+	}
+	return nil
 }
 
 // ChangeCollectionLimit 修改代收的额度     1.管理员操作  2玩家 接单    3订单失效释放订单   4收款少于订单金额    5管理让订单失败(退还玩家额度)
@@ -194,9 +201,9 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 		apps := make(map[string]interface{})
 		apps["CollectionLimit"] = ag.CollectionLimit - r.CollectionLimit
 		apps["UseCollectionLimit"] = ag.UseCollectionLimit + r.CollectionLimit
-		err := db.Model(&AgencyRunner{}).Where("id=? and  collection_limit=?  and  use_collection_limit=?", r.AgencyRunnerId, ag.CollectionLimit, ag.UseCollectionLimit).Update(apps).Error
-		if err != nil {
-			return err
+		affected := db.Model(&AgencyRunner{}).Where("id=? and  collection_limit=?  and  use_collection_limit=?", r.AgencyRunnerId, ag.CollectionLimit, ag.UseCollectionLimit).Update(apps).RowsAffected
+		if affected == 0 {
+			return eeor.OtherError("Failed to update")
 		}
 		//添加账变
 		change := AgencyAccountChange{
@@ -242,31 +249,31 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 		ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
 		r.Remark = "关联订单:" + r.Col.OwnOrder + " 增加,原因订单过期未支付"
 		//修改订单 状态
-		err := db.Model(&modelPay.Collection{}).Where("id=? and commission=?  and  status=1", r.Col.ID, r.Col.Commission).Update(&modelPay.Collection{Status: 4}).Error
-		if err != nil {
+		affected := db.Model(&modelPay.Collection{}).Where("id=? and commission=?  and  status=1", r.Col.ID, r.Col.Commission).Update(&modelPay.Collection{Status: 4}).RowsAffected
+		if affected == 0 {
 			db.Rollback()
-			return err
+			return eeor.OtherError("Failed to update")
 		}
 	}
 	//4收款少于订单金额
 	if kinds == 4 {
 		ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
-		err := db.Model(&modelPay.Collection{}).Where("id=?", r.Col.ID).Update(&modelPay.Collection{Status: 5, ActualAmount: r.Col.ActualAmount, Updated: time.Now().Unix()}).Error
-		if err != nil {
+		affected := db.Model(&modelPay.Collection{}).Where("id=?", r.Col.ID).Update(&modelPay.Collection{Status: 5, ActualAmount: r.Col.ActualAmount, Updated: time.Now().Unix()}).RowsAffected
+		if affected == 0 {
 			db.Rollback()
-			return err
+			return eeor.OtherError("Failed to update")
 		}
 
 	}
 	//5管理让订单失败(退还玩家额度)
 	if kinds == 5 {
 		ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
-		err := db.Model(&modelPay.Collection{}).Where("id=? and  freeze_collection_limit=?  and status=?", r.Col.ID, rr2.FreezeCollectionLimit, r.Col.Status).Update(&modelPay.Collection{
+		affected := db.Model(&modelPay.Collection{}).Where("id=? and  freeze_collection_limit=?  and status=?", r.Col.ID, rr2.FreezeCollectionLimit, r.Col.Status).Update(&modelPay.Collection{
 			Status:  3,
-			Updated: time.Now().Unix(), Remark: r.Remark}).Error
-		if err != nil {
+			Updated: time.Now().Unix(), Remark: r.Remark}).RowsAffected
+		if affected == 0 {
 			db.Rollback()
-			return err
+			return eeor.OtherError("Failed to update")
 		}
 	}
 	// 管理员让订单 支付成功
@@ -280,10 +287,10 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 		}
 	}
 	//更新玩家的额度
-	err = db.Model(&Runner{}).Where("id=? and  collection_limit =? and  status =1 and  freeze_collection_limit=? ", r.ID, rr2.CollectionLimit, rr2.FreezeCollectionLimit).Update(ups).Error
-	if err != nil {
+	affected := db.Model(&Runner{}).Where("id=? and  collection_limit =? and  status =1 and  freeze_collection_limit=? ", r.ID, rr2.CollectionLimit, rr2.FreezeCollectionLimit).Update(ups).RowsAffected
+	if affected == 0 {
 		db.Rollback()
-		return err
+		return eeor.OtherError("Failed to update")
 	}
 	//生成账变
 	change := RunnerAmountChange{RunnerId: r.ID,
@@ -327,3 +334,24 @@ func (r *Runner) SnagTheOrder(db *gorm.DB, coll modelPay.Collection) (string, er
 }
 
 // ChangeCommissionAndBalance 修改佣金和账户余额
+func (r *Runner) ChangeCommissionAndBalance(db *gorm.DB) error {
+	ups := make(map[string]interface{})
+	ups["Balance"] = r.Balance + r.ChangeBalance
+
+	affected := db.Model(Runner{}).Where("id=? and balance=? and commission=?", r.ID, r.Balance, r.Commission).Update(ups).RowsAffected
+	if affected == 0 {
+		return eeor.OtherError("Failed to update")
+
+	}
+	//添加账变
+	change := RunnerAmountChange{RunnerId: r.ID,
+		Remark:       r.Remark,
+		NowAmount:    r.Balance + r.ChangeBalance,
+		ChangeAmount: r.ChangeBalance,
+		FontAmount:   r.Balance, Kinds: 6}
+	err := change.Add(db)
+	if err != nil {
+		return err
+	}
+	return nil
+}

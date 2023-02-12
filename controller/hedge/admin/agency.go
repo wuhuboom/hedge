@@ -130,8 +130,13 @@ func AgencyOperation(c *gin.Context) {
 			return
 		}
 		ups := make(map[string]interface{})
-		ups["Password"] = tools.MD5(c.PostForm("password"))
-		ups["PayPassword"] = tools.MD5(c.PostForm("pay_password"))
+
+		if c.PostForm("password") != "" {
+			ups["Password"] = tools.MD5(c.PostForm("password"))
+		}
+		if c.PostForm("pay_password") != "" {
+			ups["PayPassword"] = tools.MD5(c.PostForm("pay_password"))
+		}
 		ups["CollectionChannel"] = c.PostForm("collection_channel")
 		ups["PayChannel"] = c.PostForm("pay_channel")
 		ups["CollectionPoint"], _ = strconv.ParseFloat(c.PostForm("collection_point"), 64)
@@ -200,7 +205,36 @@ func AgencyOperation(c *gin.Context) {
 			tools.ReturnSuccess2000Code(c, "OK")
 			return
 		}
+		//余额操作
+		if balance, isExist := c.GetPostForm("balance"); isExist == true {
+			cp, _ := strconv.ParseFloat(balance, 64)
+			result, _ := redis.Rdb.Get("balance_" + AgencyRunner.Username).Result()
+			if result != "" {
+				tools.ReturnErr101Code(c, "Don't do the deposit operation at the specified time")
+				return
+			}
+			if AgencyRunner.Balance < math.Abs(cp) && cp < 0 {
+				tools.ReturnErr101Code(c, "Sorry, the deposit is not deductible")
+				return
+			}
 
+			db := mysql.DB.Begin()
+			AgencyRunner.Commission = 0
+			AgencyRunner.Balance = cp
+			err := AgencyRunner.ChangeCommissionAndBalance(mysql.DB)
+			if err != nil {
+				db.Rollback()
+				tools.ReturnErr101Code(c, err.Error())
+				return
+			}
+			db.Commit()
+			redis.Rdb.Set("balance_"+AgencyRunner.Username, cp, 5*time.Second)
+			tools.ReturnSuccess2000Code(c, "OK")
+			return
+		}
+
+		tools.ReturnErr101Code(c, "what do you want to do?")
+		return
 	}
 
 }

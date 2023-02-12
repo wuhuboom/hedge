@@ -3,6 +3,7 @@ package modelPay
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	eeor "github.com/wangyi/GinTemplate/error"
 	"sync"
 	"time"
 )
@@ -80,6 +81,10 @@ func (sta *Statistics) Add(db *gorm.DB, kind int) error {
 			db = db.Where("today_pay_all_amount=? and  today_all_pay =?  ", sta2.TodayPayAllAmount, sta2.TodayAllPay)
 
 		}
-		return db.Model(&Statistics{}).Where("id=?", sta2.ID).Update(up).Error
+		affected := db.Model(&Statistics{}).Where("id=?", sta2.ID).Update(up).RowsAffected
+		if affected == 0 {
+			return eeor.OtherError("Failed to update\n\n")
+		}
+		return nil
 	}
 }

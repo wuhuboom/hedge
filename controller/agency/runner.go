@@ -107,12 +107,15 @@ func RunnerOperation(c *gin.Context) {
 			}
 			m := model.Runner{ID: id, AgencyRunnerId: runner.AgencyRunnerId, Remark: remark}
 			m.CashPledge, _ = strconv.ParseFloat(cashPledge, 64)
+			db := mysql.DB.Begin()
 			err := m.ChangeCashPledge(mysql.DB)
 			if err != nil {
+				db.Rollback()
 				tools.ReturnErr101Code(c, err.Error())
 				return
 			}
 			redis.Rdb.Set("CashPledge_"+runner.Username, "123", 5*time.Second)
+			db.Commit()
 			tools.ReturnSuccess2000Code(c, "OK")
 			return
 		}
@@ -140,8 +143,82 @@ func RunnerOperation(c *gin.Context) {
 			tools.ReturnSuccess2000Code(c, "OK")
 			return
 		}
-		//修改佣金  +  -
+		//修改玩家余额
+		if balance, IsE := c.GetPostForm("balance"); IsE == true {
+			result, _ := redis.Rdb.Get("balance_" + runner.Username).Result()
+			if result != "" {
+				tools.ReturnErr101Code(c, "Don't do the deposit operation at the specified time")
+				return
+			}
+			remark := c.PostForm("remark")
+			if remark == "" {
+				remark = ""
+			}
+			runner.ChangeBalance, _ = strconv.ParseFloat(balance, 64)
+			db := mysql.DB.Begin()
+			err := runner.ChangeCommissionAndBalance(db)
+			if err != nil {
+				db.Rollback()
+				tools.ReturnErr101Code(c, err)
+				return
+			}
+			db.Commit()
+			tools.ReturnSuccess2000Code(c, "OK")
+			redis.Rdb.Set("balance_"+runner.Username, "123", 5*time.Second)
+			return
+		}
+		//单独修改提现金额
+		if withdrawCommission, isE := c.GetPostForm("withdraw_commission"); isE == true {
+			pp, _ := strconv.ParseFloat(withdrawCommission, 64)
+			err := mysql.DB.Model(&model.Runner{}).Where("id=?", runner.ID).Update(map[string]interface{}{"WithdrawCommission": pp}).Error
+			if err != nil {
+				tools.ReturnErr101Code(c, err.Error())
+				return
+			}
+			tools.ReturnSuccess2000Code(c, "OK")
+			return
+		}
 
+		//普通修改
+		rr := model.Runner{}
+		if cashPledge, isE := c.GetPostForm("collection_point"); isE == true {
+			rr.CollectionPoint, _ = strconv.ParseFloat(cashPledge, 64)
+			if rr.CollectionPoint > whoMap.CollectionPoint {
+				tools.ReturnErr101Code(c, "collection_point cant > superior's collection_point")
+				return
+			}
+		}
+		//代付盈利点
+		if cashPledge, isE := c.GetPostForm("pay_point"); isE == true {
+			rr.PayPoint, _ = strconv.ParseFloat(cashPledge, 64)
+			if rr.PayPoint > whoMap.PayPoint {
+				tools.ReturnErr101Code(c, "pay_point cant > superior's pay_point")
+				return
+			}
+		}
+		//下级税点
+		if cashPledge, isE := c.GetPostForm("junior_point"); isE == true {
+			rr.JuniorPoint, _ = strconv.ParseFloat(cashPledge, 64)
+			if rr.JuniorPoint > whoMap.JuniorPoint {
+				tools.ReturnErr101Code(c, "pay_point cant > superior's pay_point")
+				return
+			}
+		}
+		err := mysql.DB.Model(&model.Runner{}).Where("id=?", runner.ID).Update(&rr).Error
+		if err != nil {
+			tools.ReturnErr101Code(c, err.Error())
+			return
+		}
+		tools.ReturnSuccess2000Code(c, "OK")
+		return
+	}
+	//单独查看
+	if action == "one" {
+		id := c.PostForm("id")
+		runner := model.Runner{}
+		mysql.DB.Where("id=? and  agency_runner_id=?", id, whoMap.ID).First(&runner)
+		tools.ReturnSuccess2000DataCode(c, runner, "OK")
+		return
 	}
 
 }

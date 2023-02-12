@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	eeor "github.com/wangyi/GinTemplate/error"
 	"github.com/wangyi/GinTemplate/tools"
 	"time"
 )
@@ -45,7 +46,11 @@ func (ad *Admin) ChangeProfit(db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-	return db.Model(&Admin{}).Where("id=? and profit=?", 1, aa.Profit).Update(ups).Error
+	affected := db.Model(&Admin{}).Where("id=? and profit=?", 1, aa.Profit).Update(ups).RowsAffected
+	if affected == 0 {
+		return eeor.OtherError("Failed to update")
+	}
+	return nil
 }
 
 type Commission struct {
@@ -80,10 +85,11 @@ func (co *Commission) ChangeCommission(db *gorm.DB) error {
 			//更新玩家
 			var rate float64
 			rate = runner.CollectionPoint
-			err = db.Model(&Runner{}).Where("id=? and  commission=?  and  balance=?", runner.ID, runner.Commission, runner.Balance).
-				Update(map[string]interface{}{"Commission": runner.Commission + rate*co.ActualAmount, "Balance": runner.Balance + rate*co.ActualAmount}).Error
-			if err != nil {
-				return err
+			affected := db.Model(&Runner{}).Where("id=? and  commission=?  and  balance=?", runner.ID, runner.Commission, runner.Balance).
+				Update(map[string]interface{}{"Commission": runner.Commission + rate*co.ActualAmount, "Balance": runner.Balance + rate*co.ActualAmount}).RowsAffected
+
+			if affected == 0 {
+				return eeor.OtherError("update is fail")
 			}
 
 			//生成账变(佣金账变)
@@ -117,10 +123,10 @@ func (co *Commission) ChangeCommission(db *gorm.DB) error {
 				if err != nil {
 					return err
 				}
-				err = db.Model(&Runner{}).Where("id=? and  commission=?  and  balance=?", runner2.ID, runner2.Commission, runner2.Balance).
-					Update(map[string]interface{}{"Commission": runner2.Commission + rate*co.ActualAmount, "Balance": runner2.Balance + rate*co.ActualAmount}).Error
-				if err != nil {
-					return err
+				affected = db.Model(&Runner{}).Where("id=? and  commission=?  and  balance=?", runner2.ID, runner2.Commission, runner2.Balance).
+					Update(map[string]interface{}{"Commission": runner2.Commission + rate*co.ActualAmount, "Balance": runner2.Balance + rate*co.ActualAmount}).RowsAffected
+				if affected == 0 {
+					return eeor.OtherError("update is fail")
 				}
 				//生成账变(佣金账变)
 				change := RunnerAmountChange{RunnerId: runner2.ID,
@@ -155,10 +161,10 @@ func (co *Commission) ChangeCommission(db *gorm.DB) error {
 			}
 
 			rate = agencyRunner.CollectionPoint - rate
-			err = db.Model(&AgencyRunner{}).Where("id=? and  commission=?", agencyRunner.ID, agencyRunner.Commission).
-				Update(map[string]interface{}{"Commission": agencyRunner.Commission + rate*co.ActualAmount}).Error
-			if err != nil {
-				return err
+			affected = db.Model(&AgencyRunner{}).Where("id=? and  commission=?", agencyRunner.ID, agencyRunner.Commission).
+				Update(map[string]interface{}{"Commission": agencyRunner.Commission + rate*co.ActualAmount}).RowsAffected
+			if affected == 0 {
+				return eeor.OtherError("update is fail")
 			}
 			//账变
 			accountChange := AgencyAccountChange{

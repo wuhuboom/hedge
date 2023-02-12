@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	eeor "github.com/wangyi/GinTemplate/error"
 	"time"
 )
 
@@ -58,6 +59,11 @@ func (rt *RunnerStatistics) Add(db *gorm.DB) error {
 		ups.PayAmount = tr2.PayAmount + rt.PayAmount
 		ups.PayCount = tr2.PayCount + rt.PayCount
 		ups.PayAllCount = tr2.PayAllCount + rt.PayAllCount
-		return db.Model(&RunnerStatistics{}).Where("id=? and  updated=?", tr2.Id, tr2.Updated).Update(&ups).Error
+
+		affected := db.Model(&RunnerStatistics{}).Where("id=? and  updated=?", tr2.Id, tr2.Updated).Update(&ups).RowsAffected
+		if affected == 0 {
+			return eeor.OtherError("u is fail")
+		}
+		return nil
 	}
 }

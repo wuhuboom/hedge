@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/wangyi/GinTemplate/controller/hedge/admin"
 	"github.com/wangyi/GinTemplate/dao/mysql"
+	eeor "github.com/wangyi/GinTemplate/error"
 	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/tools"
 	"strconv"
@@ -41,17 +42,15 @@ func GetU(c *gin.Context) {
 			return
 		}
 		//更新余额
-
 		db := mysql.DB.Begin()
 		ups := make(map[string]interface{})
 		ups["Commission"] = whoMap.Commission - amount - whoMap.WithdrawCommission*amount
 		ups["FreezeMoney"] = whoMap.FreezeMoney + amount + whoMap.WithdrawCommission*amount
-		err := db.Model(&model.AgencyRunner{}).Where("id=? and commission=?  and freeze_money", whoMap.ID, whoMap.Commission).Update(ups).Error
-		if err != nil {
-			tools.ReturnErr101Code(c, err.Error())
+		affected := db.Model(&model.AgencyRunner{}).Where("id=? and commission=?  and freeze_money", whoMap.ID, whoMap.Commission).Update(ups).RowsAffected
+		if affected == 0 {
+			tools.ReturnErr101Code(c, eeor.OtherError("u is fail"))
 			return
 		}
-
 		//代理佣金账变
 		change := model.AgencyAccountChange{
 			AgencyRunnerId: whoMap.ID,
@@ -59,13 +58,12 @@ func GetU(c *gin.Context) {
 			ChangeAmount:   amount + whoMap.WithdrawCommission*amount,
 			FontAmount:     whoMap.Commission, Kinds: 4}
 
-		err = change.Add(db)
+		err := change.Add(db)
 		if err != nil {
 			db.Rollback()
 			tools.ReturnErr101Code(c, err.Error())
 			return
 		}
-
 		//生成订单
 		record := model.Record{AgencyRunnerId: whoMap.ID, WithdrawalMethod: 3, Kinds: 1, Amount: amount, WithdrawalCommission: whoMap.WithdrawCommission * amount}
 		err = record.Add(db)

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
+	eeor "github.com/wangyi/GinTemplate/error"
 	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/model/modelPay"
 	"github.com/wangyi/GinTemplate/tools"
@@ -143,16 +144,16 @@ func GetRecord(c *gin.Context) {
 			ups := make(map[string]interface{})
 			if status == 2 {
 				//成功   1 修改订单的状态  2扣除商户的冻结金额   3.生成管理的账变  4.管理生成账变
-				err = db.Model(&model.Record{}).Where("id=?", id).Update(&model.Record{
-					Status: 2, Certificate: path, ExchangeRate: exchangeRate, ActualAmount: ActualAmount}).Error
-				if err != nil {
-					tools.ReturnErr101Code(c, err.Error())
+				affected := db.Model(&model.Record{}).Where("id=?", id).Update(&model.Record{
+					Status: 2, Certificate: path, ExchangeRate: exchangeRate, ActualAmount: ActualAmount}).RowsAffected
+				if affected == 0 {
+					tools.ReturnErr101Code(c, eeor.OtherError("u f"))
 					return
 				}
-				err := db.Model(&model.Admin{}).Where("id=? and  profit=?", whoMap.ID, whoMap.Profit).Update(map[string]interface{}{"Profit": whoMap.Profit + re.WithdrawalCommission}).Error
-				if err != nil {
+				affected = db.Model(&model.Admin{}).Where("id=? and  profit=?", whoMap.ID, whoMap.Profit).Update(map[string]interface{}{"Profit": whoMap.Profit + re.WithdrawalCommission}).RowsAffected
+				if affected == 0 {
 					db.Rollback()
-					tools.ReturnErr101Code(c, err.Error())
+					tools.ReturnErr101Code(c, eeor.OtherError("u f"))
 					return
 				}
 
@@ -166,9 +167,9 @@ func GetRecord(c *gin.Context) {
 				}
 			} else {
 				//失败   1 修改订单的状态  2退还商户的额度
-				err := db.Model(&model.Record{}).Where("id=?", id).Update(&model.Record{Status: 3}).Error
-				if err != nil {
-					tools.ReturnErr101Code(c, err.Error())
+				affected := db.Model(&model.Record{}).Where("id=?", id).Update(&model.Record{Status: 3}).RowsAffected
+				if affected == 0 {
+					tools.ReturnErr101Code(c, eeor.OtherError("u f"))
 					return
 				}
 				ups["AvailableAmount"] = mer.AvailableAmount + re.Amount + re.WithdrawalCommission
@@ -183,10 +184,10 @@ func GetRecord(c *gin.Context) {
 			}
 			//计算
 			ups["FreezeAmount"] = mer.FreezeAmount - (re.Amount + re.WithdrawalCommission)
-			err = db.Model(&model.Merchant{}).Where("id=?", mer.ID).Update(ups).Error
-			if err != nil {
+			affected := db.Model(&model.Merchant{}).Where("id=? and  freeze_amount=?", mer.ID, mer.FreezeAmount).Update(ups).RowsAffected
+			if affected == 0 {
 				db.Rollback()
-				tools.ReturnErr101Code(c, err.Error())
+				tools.ReturnErr101Code(c, eeor.OtherError("u f"))
 				return
 			}
 
@@ -260,9 +261,9 @@ func GetRecord(c *gin.Context) {
 			ups["Certificate"] = path
 
 		}
-		err = mysql.DB.Model(&model.Record{}).Where("id=?", id).Update(ups).Error
-		if err != nil {
-			tools.ReturnErr101Code(c, err.Error())
+		affected := mysql.DB.Model(&model.Record{}).Where("id=?", id).Update(ups).RowsAffected
+		if affected == 0 {
+			tools.ReturnErr101Code(c, eeor.OtherError("u f"))
 			return
 		}
 		tools.ReturnSuccess2000Code(c, "OK")

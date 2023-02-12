@@ -6,6 +6,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
+	eeor "github.com/wangyi/GinTemplate/error"
 	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/model/modelPay"
 	"github.com/wangyi/GinTemplate/tools"
@@ -162,18 +163,18 @@ func CollectionOperation(c *gin.Context) {
 					//逻辑处理  1.修改订单状态  2.返回商户的可用额度
 					db := mysql.DB.Begin()
 					if err := db.Model(&modelPay.Collection{}).Where("id=? and status=?", col.ID, col.Status).Update(&modelPay.Collection{
-						Status: 3, Updated: time.Now().Unix()}).Error; err != nil {
-						tools.ReturnErr101Code(c, err.Error())
+						Status: 3, Updated: time.Now().Unix()}).RowsAffected; err == 0 {
+						tools.ReturnErr101Code(c, eeor.OtherError("u is fail"))
 						return
 					}
 					//修改商户
 					ups := make(map[string]interface{})
 					ups["AvailableAmount"] = mer.AvailableAmount + col.Commission + col.Amount
 					ups["FreezeAmount"] = mer.FreezeAmount - (col.Commission + col.Amount)
-					err := db.Model(&model.Merchant{}).Where("id=? and  available_amount  =? and freeze_amount=? ", mer.ID, mer.AvailableAmount, mer.FreezeAmount).Update(ups).Error
-					if err != nil {
+					affected := db.Model(&model.Merchant{}).Where("id=? and  available_amount  =? and freeze_amount=? ", mer.ID, mer.AvailableAmount, mer.FreezeAmount).Update(ups).RowsAffected
+					if affected == 0 {
 						db.Rollback()
-						tools.ReturnErr101Code(c, err.Error())
+						tools.ReturnErr101Code(c, eeor.OtherError("u is fail"))
 						return
 					}
 
@@ -194,10 +195,9 @@ func CollectionOperation(c *gin.Context) {
 					db.Commit()
 				} else {
 					// 正常三方 逻辑
-
 					if err := mysql.DB.Model(&modelPay.Collection{}).Where("id=? and status=?", col.ID, col.Status).Update(&modelPay.Collection{
-						Status: 3, Updated: time.Now().Unix()}).Error; err != nil {
-						tools.ReturnErr101Code(c, err.Error())
+						Status: 3, Updated: time.Now().Unix()}).RowsAffected; err == 0 {
+						tools.ReturnErr101Code(c, eeor.OtherError("u is fail"))
 						return
 					}
 				}
@@ -227,10 +227,10 @@ func CollectionOperation(c *gin.Context) {
 
 				} else { //1.修改订单号成功  2.超管加钱 生成账变    3商户号修改冻结金额
 					db := mysql.DB.Begin()
-					err := db.Model(&modelPay.Collection{}).Where("id=? and status=? and  kinds=2", col.ID, col.Status).Update(&modelPay.Collection{Status: 2, Updated: time.Now().Unix()}).Error
+					affected := db.Model(&modelPay.Collection{}).Where("id=? and status=? and  kinds=2", col.ID, col.Status).Update(&modelPay.Collection{Status: 2, Updated: time.Now().Unix()}).RowsAffected
 
-					if err != nil {
-						tools.ReturnErr101Code(c, err.Error())
+					if affected == 0 {
+						tools.ReturnErr101Code(c, eeor.OtherError("u is fail"))
 						return
 					}
 					admin := model.Admin{ID: whoMap.ID, Profit: col.Commission, CollectionId: col.ID}
@@ -242,12 +242,12 @@ func CollectionOperation(c *gin.Context) {
 						return
 					}
 					ActualAmount = col.Amount
-					err = db.Model(&model.Merchant{}).Where("id=? and  freeze_amount=?", mer.ID, mer.FreezeAmount).
-						Update(map[string]interface{}{"FreezeAmount": mer.FreezeAmount - col.Amount - col.Commission}).Error
+					rowsAffected := db.Model(&model.Merchant{}).Where("id=? and  freeze_amount=?", mer.ID, mer.FreezeAmount).
+						Update(map[string]interface{}{"FreezeAmount": mer.FreezeAmount - col.Amount - col.Commission}).RowsAffected
 
 					//zap.L().Debug(fmt.Sprintf("原始金额:%f,变化后的金额:%f,变化订单:%s", mer.FreezeAmount, mer.FreezeAmount-col.Amount-col.Commission, col.OwnOrder))
-					if err != nil {
-						tools.ReturnErr101Code(c, err.Error())
+					if rowsAffected == 0 {
+						tools.ReturnErr101Code(c, eeor.OtherError("u is fail"))
 						db.Rollback()
 						return
 					}
@@ -428,18 +428,18 @@ func CollectionOperation(c *gin.Context) {
 				}
 				//减少总金额   可用金额  代收成功数量  代收成功金额   超管的盈利增加?
 				db := mysql.DB.Begin()
-				err := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 7, Updated: time.Now().Unix()}).Error
-				if err != nil {
-					tools.ReturnErr101Code(c, err.Error())
+				affected := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 7, Updated: time.Now().Unix()}).RowsAffected
+				if affected == 0 {
+					tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
 					return
 				}
 				ups := make(map[string]interface{})
 				ups["AvailableAmount"] = mer.AvailableAmount - (col.ActualAmount - col.Commission)
 				ups["AllAmount"] = mer.AllAmount - col.ActualAmount
-				err = db.Model(&model.Merchant{}).Where("id=?  and  available_amount=? and  all_amount=? ", mer.ID, mer.AvailableAmount, mer.AllAmount).Update(ups).Error
+				affected = db.Model(&model.Merchant{}).Where("id=?  and  available_amount=? and  all_amount=? ", mer.ID, mer.AvailableAmount, mer.AllAmount).Update(ups).RowsAffected
 				if err != nil {
 					db.Rollback()
-					tools.ReturnErr101Code(c, err.Error())
+					tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
 					return
 				}
 				//新增账变
@@ -486,9 +486,9 @@ func CollectionOperation(c *gin.Context) {
 						return
 					}
 					db := mysql.DB.Begin()
-					err := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 8, Updated: time.Now().Unix()}).Error
-					if err != nil {
-						tools.ReturnErr101Code(c, err.Error())
+					affected := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 8, Updated: time.Now().Unix()}).RowsAffected
+					if affected == 0 {
+						tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
 						return
 					}
 					mer.ChangeAvailableAmount = -(col.Amount + col.Commission)
@@ -526,9 +526,9 @@ func CollectionOperation(c *gin.Context) {
 				} else if col.Status == 2 { //成功的冲正(按道理来说是失败的)
 					// 1.修改商户余额   2.每日数据修改  3.
 					db := mysql.DB.Begin()
-					err := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 7, Updated: time.Now().Unix()}).Error
-					if err != nil {
-						tools.ReturnErr101Code(c, err.Error())
+					affected := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 7, Updated: time.Now().Unix()}).RowsAffected
+					if affected == 0 {
+						tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
 						return
 					}
 

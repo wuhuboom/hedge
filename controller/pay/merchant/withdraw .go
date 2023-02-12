@@ -3,6 +3,7 @@ package merchant
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/wangyi/GinTemplate/dao/mysql"
+	eeor "github.com/wangyi/GinTemplate/error"
 	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/model/modelPay"
 	"github.com/wangyi/GinTemplate/tools"
@@ -58,10 +59,10 @@ func Withdraw(c *gin.Context) {
 		ups["AvailableAmount"] = whoMap.AvailableAmount - amount
 		ups["FreezeAmount"] = whoMap.FreezeAmount + amount
 
-		err := db.Model(&model.Merchant{}).
-			Where("merchant_num=? and  freeze_amount =? and  available_amount=?", whoMap.MerchantNum, whoMap.FreezeAmount, whoMap.AvailableAmount).Update(ups).Error
-		if err != nil {
-			tools.ReturnErr101Code(c, err.Error())
+		affected := db.Model(&model.Merchant{}).
+			Where("merchant_num=? and  freeze_amount =? and  available_amount=?", whoMap.MerchantNum, whoMap.FreezeAmount, whoMap.AvailableAmount).Update(ups).RowsAffected
+		if affected == 0 {
+			tools.ReturnErr101Code(c, eeor.OtherError("u f"))
 			return
 		}
 		//生成record
@@ -71,7 +72,7 @@ func Withdraw(c *gin.Context) {
 			WithdrawalMethod: 3,
 			Amount:           WithdrawAmount, WithdrawalCommission: commission}
 
-		err = record.Add(db)
+		err := record.Add(db)
 		if err != nil {
 			db.Rollback()
 			tools.ReturnErr101Code(c, err.Error())
