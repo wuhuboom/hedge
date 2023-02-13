@@ -16,6 +16,14 @@ func GetAnnouncement(c *gin.Context) {
 	who, _ := c.Get("who")
 	whoMap := who.(model.Runner)
 	ann := make([]model.Announcement, 0)
+	action := c.Query("action")
+	if action == "one" {
+		id, _ := strconv.Atoi(c.PostForm("id"))
+		Announcement := model.Announcement{}
+		mysql.DB.Where("id=?", id).First(&Announcement)
+		tools.ReturnSuccess2000DataCode(c, Announcement, "ok")
+		return
+	}
 	mysql.DB.Where("agency_runner_id=? and status= ?", whoMap.AgencyRunnerId, 1).Find(&ann)
 	tools.ReturnSuccess2000DataCode(c, ann, "OK")
 	return

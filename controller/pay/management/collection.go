@@ -120,10 +120,11 @@ func CollectionOperation(c *gin.Context) {
 
 		//  status  1等待支付  2支付成功  3失败
 		sta, _ := strconv.Atoi(c.PostForm("status"))
-		if sta != 2 && col.Kinds == 1 {
+		if sta != 2 && col.Kinds == 1 && col.Species == 1 {
 			tools.ReturnErr101Code(c, "Illegal request")
 			return
 		}
+
 		if sta == col.Status {
 			tools.ReturnErr101Code(c, "Don't repeat changes")
 			return
@@ -157,8 +158,7 @@ func CollectionOperation(c *gin.Context) {
 					tools.ReturnErr101Code(c, err.Error())
 					return
 				}
-			} else {
-				//代付订单
+			} else { //代付订单
 				if col.Kinds == 2 {
 					//逻辑处理  1.修改订单状态  2.返回商户的可用额度
 					db := mysql.DB.Begin()
@@ -275,6 +275,7 @@ func CollectionOperation(c *gin.Context) {
 						tools.ReturnErr101Code(c, err.Error())
 						return
 					}
+
 				} else { //普通三方逻辑
 					merchant := model.Merchant{MerchantNum: col.MerChantNum}
 					err, _ := merchant.AmountChange(mysql.DB, ActualAmount, col.ChannelId, col.ID, col.OwnOrder, 1, col)
@@ -419,54 +420,163 @@ func CollectionOperation(c *gin.Context) {
 			return
 		}
 		//判断是否是跑分订单
-		if col.Species == 1 {
-			//判断是代付订单 还是代付订单
-			if col.Kinds == 1 {
-				if col.Status != 2 {
-					tools.ReturnErr101Code(c, "the order's status is not  right")
-					return
-				}
-				//减少总金额   可用金额  代收成功数量  代收成功金额   超管的盈利增加?
-				db := mysql.DB.Begin()
-				affected := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 7, Updated: time.Now().Unix()}).RowsAffected
-				if affected == 0 {
-					tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
-					return
-				}
-				ups := make(map[string]interface{})
-				ups["AvailableAmount"] = mer.AvailableAmount - (col.ActualAmount - col.Commission)
-				ups["AllAmount"] = mer.AllAmount - col.ActualAmount
-				affected = db.Model(&model.Merchant{}).Where("id=?  and  available_amount=? and  all_amount=? ", mer.ID, mer.AvailableAmount, mer.AllAmount).Update(ups).RowsAffected
-				if err != nil {
-					db.Rollback()
-					tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
-					return
-				}
-				//新增账变
-				change := modelPay.AmountChange{
-					MerchantNum: mer.MerchantNum,
-					Before:      mer.AvailableAmount,
-					Amount:      -(col.ActualAmount - col.Commission),
-					After:       mer.AvailableAmount - (col.ActualAmount - col.Commission), CollectionId: col.ID, Remark: "冲正:" + col.OwnOrder}
-				err = change.Add(db)
+
+		//判断是代付订单 还是代付订单
+		if col.Kinds == 1 {
+			if col.Status != 2 {
+				tools.ReturnErr101Code(c, "the order's status is not  right")
+				return
+			}
+			//减少总金额   可用金额  代收成功数量  代收成功金额   超管的盈利增加?
+			db := mysql.DB.Begin()
+			affected := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 7, Updated: time.Now().Unix()}).RowsAffected
+			if affected == 0 {
+				tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
+				return
+			}
+			ups := make(map[string]interface{})
+			ups["AvailableAmount"] = mer.AvailableAmount - (col.ActualAmount - col.Commission)
+			ups["AllAmount"] = mer.AllAmount - col.ActualAmount
+			affected = db.Model(&model.Merchant{}).Where("id=?  and  available_amount=? and  all_amount=? ", mer.ID, mer.AvailableAmount, mer.AllAmount).Update(ups).RowsAffected
+			if err != nil {
+				db.Rollback()
+				tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
+				return
+			}
+			//新增账变
+			change := modelPay.AmountChange{
+				MerchantNum: mer.MerchantNum,
+				Before:      mer.AvailableAmount,
+				Amount:      -(col.ActualAmount - col.Commission),
+				After:       mer.AvailableAmount - (col.ActualAmount - col.Commission), CollectionId: col.ID, Remark: "冲正:" + col.OwnOrder}
+			err = change.Add(db)
+			if err != nil {
+				db.Rollback()
+				tools.ReturnErr101Code(c, err.Error())
+				return
+			}
+			// 回退 每日统计
+			statistics := modelPay.Statistics{
+				TodayCollection:           -1,
+				TodayCollectionCommission: -col.Commission,
+				TodayCollectionAmount:     -col.ActualAmount, MerchantNum: mer.MerchantNum}
+			err = statistics.Add(db, 1)
+			if err != nil {
+				db.Rollback()
+				tools.ReturnErr101Code(c, err.Error())
+				return
+			}
+			Profit := -col.Commission
+			if col.Species == 3 {
+				//获取超管的实际盈利汇率
+				arr := model.AgencyRunner{ID: col.AgencyRunnerId}
+				err := arr.GetCollectionPoint(db)
 				if err != nil {
 					db.Rollback()
 					tools.ReturnErr101Code(c, err.Error())
 					return
 				}
-				// 回退 每日统计
-				statistics := modelPay.Statistics{
-					TodayCollection:           -1,
-					TodayCollectionCommission: -col.Commission,
-					TodayCollectionAmount:     -col.ActualAmount, MerchantNum: mer.MerchantNum}
-				err = statistics.Add(db, 1)
+				Profit = -col.ActualAmount * (ch.Rate - arr.CollectionPoint)
+				//代理  下级代理 下下级代理
+				striking := model.Striking{
+					RunnerId: col.RunnerId, AgencyRunnerId: col.AgencyRunnerId, Col: col, Kinds: 1, Symbol: -1}
+				err = striking.Striking(db)
+				if err != nil {
+					db.Rollback()
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+			}
+			//管理员的
+			admin := model.Admin{Profit: Profit, CollectionId: col.ID}
+			err = admin.ChangeProfit(db)
+			if err != nil {
+				db.Rollback()
+				tools.ReturnErr101Code(c, err.Error())
+				return
+			}
+			db.Commit()
+			tools.ReturnSuccess2000Code(c, "OK")
+			return
+		} else { //代付订单冲正
+			if col.Status == 3 {
+				//失败的冲正(实际上是代付成功了)
+				//实际上是代付成功的所以要直接扣除可用余额 1.商户要扣钱,并且生成账变  2.日统计要发现变化  3.超级管理员要账变
+				if mer.AvailableAmount-(col.Amount+col.Commission) < 0 {
+					tools.ReturnErr101Code(c, "The balance of the account is not enough")
+					return
+				}
+				db := mysql.DB.Begin()
+				affected := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 8, Updated: time.Now().Unix()}).RowsAffected
+				if affected == 0 {
+					tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
+					return
+				}
+				mer.ChangeAvailableAmount = -(col.Amount + col.Commission)
+				col.Remark = "冲正:" + col.OwnOrder
+				mer.Col = col
+				err = mer.AvailableAmountChangeAndFreezeAmount(db)
+				if err != nil {
+					db.Rollback()
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+				//统计发现变化?  代付成功要统计上去
+				statistics := modelPay.Statistics{MerchantNum: mer.MerchantNum, TodayPay: 1, TodayPayAmount: col.Amount, TodayPayCommission: col.Commission}
+				err = statistics.Add(db, 2)
 				if err != nil {
 					db.Rollback()
 					tools.ReturnErr101Code(c, err.Error())
 					return
 				}
 
-				//管理员的
+				if col.Species == 3 {
+
+				}
+
+				//管理的账号
+				admin := model.Admin{Profit: col.Commission, CollectionId: col.ID}
+				err = admin.ChangeProfit(db)
+				if err != nil {
+					db.Rollback()
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+				//订单状态修改
+
+				db.Commit()
+				tools.ReturnSuccess2000Code(c, "OK")
+				return
+			} else if col.Status == 2 {
+				//成功的冲正(按道理来说是失败的)
+				// 1.修改商户余额   2.每日数据修改  3.
+				db := mysql.DB.Begin()
+				affected := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 7, Updated: time.Now().Unix()}).RowsAffected
+				if affected == 0 {
+					tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
+					return
+				}
+
+				mer.ChangeAvailableAmount = col.Amount + col.Commission
+				col.Remark = "冲正:" + col.OwnOrder
+				mer.Col = col
+				err = mer.AvailableAmountChangeAndFreezeAmount(db)
+				if err != nil {
+					db.Rollback()
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+				//统计发现变化?  减去代付成功的-
+				statistics := modelPay.Statistics{MerchantNum: mer.MerchantNum,
+					TodayPay: -1, TodayPayAmount: -col.Amount, TodayPayCommission: -col.Commission}
+				err = statistics.Add(db, 2)
+				if err != nil {
+					db.Rollback()
+					tools.ReturnErr101Code(c, err.Error())
+					return
+				}
+
+				//管理的账号
 				admin := model.Admin{Profit: -col.Commission, CollectionId: col.ID}
 				err = admin.ChangeProfit(db)
 				if err != nil {
@@ -477,96 +587,7 @@ func CollectionOperation(c *gin.Context) {
 				db.Commit()
 				tools.ReturnSuccess2000Code(c, "OK")
 				return
-
-			} else { //代付订单冲正
-				if col.Status == 3 { //失败的冲正(实际上是代付成功了)
-					//实际上是代付成功的所以要直接扣除可用余额 1.商户要扣钱,并且生成账变  2.日统计要发现变化  3.超级管理员要账变
-					if mer.AvailableAmount-(col.Amount+col.Commission) < 0 {
-						tools.ReturnErr101Code(c, "The balance of the account is not enough")
-						return
-					}
-					db := mysql.DB.Begin()
-					affected := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 8, Updated: time.Now().Unix()}).RowsAffected
-					if affected == 0 {
-						tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
-						return
-					}
-					mer.ChangeAvailableAmount = -(col.Amount + col.Commission)
-					col.Remark = "冲正:" + col.OwnOrder
-					mer.Col = col
-					err = mer.AvailableAmountChangeAndFreezeAmount(db)
-					if err != nil {
-						db.Rollback()
-						tools.ReturnErr101Code(c, err.Error())
-						return
-					}
-					//统计发现变化?  代付成功要统计上去
-					statistics := modelPay.Statistics{MerchantNum: mer.MerchantNum, TodayPay: 1, TodayPayAmount: col.Amount, TodayPayCommission: col.Commission}
-					err = statistics.Add(db, 2)
-					if err != nil {
-						db.Rollback()
-						tools.ReturnErr101Code(c, err.Error())
-						return
-					}
-
-					//管理的账号
-					admin := model.Admin{Profit: col.Commission, CollectionId: col.ID}
-					err = admin.ChangeProfit(db)
-					if err != nil {
-						db.Rollback()
-						tools.ReturnErr101Code(c, err.Error())
-						return
-					}
-
-					//订单状态修改
-
-					db.Commit()
-					tools.ReturnSuccess2000Code(c, "OK")
-					return
-				} else if col.Status == 2 { //成功的冲正(按道理来说是失败的)
-					// 1.修改商户余额   2.每日数据修改  3.
-					db := mysql.DB.Begin()
-					affected := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 7, Updated: time.Now().Unix()}).RowsAffected
-					if affected == 0 {
-						tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
-						return
-					}
-
-					mer.ChangeAvailableAmount = col.Amount + col.Commission
-					col.Remark = "冲正:" + col.OwnOrder
-					mer.Col = col
-					err = mer.AvailableAmountChangeAndFreezeAmount(db)
-					if err != nil {
-						db.Rollback()
-						tools.ReturnErr101Code(c, err.Error())
-						return
-					}
-					//统计发现变化?  减去代付成功的-
-					statistics := modelPay.Statistics{MerchantNum: mer.MerchantNum,
-						TodayPay: -1, TodayPayAmount: -col.Amount, TodayPayCommission: -col.Commission}
-					err = statistics.Add(db, 2)
-					if err != nil {
-						db.Rollback()
-						tools.ReturnErr101Code(c, err.Error())
-						return
-					}
-
-					//管理的账号
-					admin := model.Admin{Profit: -col.Commission, CollectionId: col.ID}
-					err = admin.ChangeProfit(db)
-					if err != nil {
-						db.Rollback()
-						tools.ReturnErr101Code(c, err.Error())
-						return
-					}
-					db.Commit()
-					tools.ReturnSuccess2000Code(c, "OK")
-					return
-				}
-
 			}
-
-		} else { //跑分订单
 
 		}
 

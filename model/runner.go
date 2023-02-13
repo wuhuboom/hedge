@@ -47,6 +47,7 @@ type Runner struct {
 	LastGetOrderTime      int64               `gorm:"default:0"` //最后一次获取订单的时间  也就是我要关闭  接单的按钮
 	Col                   modelPay.Collection `gorm:"-"`
 	ChangeBalance         float64             `gorm:"-"` //变化的余额
+	ChangeCommission      float64             `gorm:"-"`
 }
 
 func CheckIsExistModelRunner(db *gorm.DB) {
@@ -268,9 +269,10 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 	//5管理让订单失败(退还玩家额度)
 	if kinds == 5 {
 		ups["FreezeCollectionLimit"] = rr2.FreezeCollectionLimit + r.FreezeCollectionLimit
-		affected := db.Model(&modelPay.Collection{}).Where("id=? and  freeze_collection_limit=?  and status=?", r.Col.ID, rr2.FreezeCollectionLimit, r.Col.Status).Update(&modelPay.Collection{
-			Status:  3,
-			Updated: time.Now().Unix(), Remark: r.Remark}).RowsAffected
+		affected := db.Model(&modelPay.Collection{}).Where("id=?   and status=?", r.Col.ID, r.Col.Status).
+			Update(&modelPay.Collection{
+				Status:  3,
+				Updated: time.Now().Unix(), Remark: r.Remark}).RowsAffected
 		if affected == 0 {
 			db.Rollback()
 			return eeor.OtherError("Failed to update")
@@ -333,25 +335,141 @@ func (r *Runner) SnagTheOrder(db *gorm.DB, coll modelPay.Collection) (string, er
 	return upi, nil
 }
 
-// ChangeCommissionAndBalance 修改佣金和账户余额
+// ChangeCommissionAndBalance 修改账户余额
 func (r *Runner) ChangeCommissionAndBalance(db *gorm.DB) error {
 	ups := make(map[string]interface{})
-	ups["Balance"] = r.Balance + r.ChangeBalance
-
-	affected := db.Model(Runner{}).Where("id=? and balance=? and commission=?", r.ID, r.Balance, r.Commission).Update(ups).RowsAffected
+	db1 := db
+	db = db.Model(&Runner{}).Where("id=?", r.ID)
+	if r.Balance != 0 {
+		ups["Balance"] = r.Balance + r.ChangeBalance
+		db = db.Where("balance=?", r.Balance)
+		//添加账变(余额)
+		change := RunnerAmountChange{RunnerId: r.ID,
+			Remark:       r.Remark,
+			NowAmount:    r.Balance + r.ChangeBalance,
+			ChangeAmount: r.ChangeBalance,
+			FontAmount:   r.Balance, Kinds: 6}
+		err := change.Add(db1)
+		if err != nil {
+			return err
+		}
+	}
+	if r.Commission != 0 {
+		ups["Commission"] = r.Commission + r.ChangeCommission
+		db = db.Where("commission=?", r.Commission)
+		//添加账变(佣金)
+		change := RunnerAmountChange{RunnerId: r.ID,
+			Remark:       r.Remark,
+			NowAmount:    r.Balance + r.ChangeBalance,
+			ChangeAmount: r.ChangeBalance,
+			FontAmount:   r.Balance, Kinds: 6}
+		err := change.Add(db1)
+		if err != nil {
+			return err
+		}
+	}
+	affected := db.Update(ups).RowsAffected
 	if affected == 0 {
 		return eeor.OtherError("Failed to update")
-
 	}
-	//添加账变
-	change := RunnerAmountChange{RunnerId: r.ID,
-		Remark:       r.Remark,
-		NowAmount:    r.Balance + r.ChangeBalance,
-		ChangeAmount: r.ChangeBalance,
-		FontAmount:   r.Balance, Kinds: 6}
-	err := change.Add(db)
+	return nil
+}
+
+type Striking struct {
+	RunnerId       int
+	AgencyRunnerId int
+	Col            modelPay.Collection
+	Rate           float64
+	Kinds          int //类型  1代收 2代付
+	Symbol         float64
+}
+
+// Striking 代理冲正处理
+func (sk *Striking) Striking(db *gorm.DB) error {
+	//判断这个代理是否是顶级代理
+	runner := Runner{}
+	err := db.Where("id=?", sk.RunnerId).First(&runner).Error
+	if err != nil {
+		return eeor.OtherError("runnerId  is fail")
+	}
+	if sk.Kinds == 1 {
+		sk.Rate = runner.CollectionPoint
+	} else {
+		sk.Rate = runner.PayPoint
+	}
+	//修改账户余额(本账号)
+	runner.ChangeBalance = sk.Rate * sk.Col.ActualAmount * sk.Symbol
+	runner.ChangeCommission = sk.Rate * sk.Col.ActualAmount * sk.Symbol
+	err = runner.ChangeCommissionAndBalance(db)
 	if err != nil {
 		return err
 	}
+	//奔跑者 统计发生变化
+	statistics := RunnerStatistics{}
+	if sk.Kinds == 1 {
+		statistics.Commission = sk.Rate * sk.Col.ActualAmount * sk.Symbol
+		statistics.CollectionAmount = sk.Rate * sk.Col.ActualAmount * sk.Symbol
+		statistics.CollectionCount = int(sk.Symbol) * 1
+	}
+	if runner.LeverTree != "" { //说明不是顶级代理(要和上级代理进行 费率对比)
+		runner2 := Runner{}
+		err := db.Where("id=?", runner.Superior).First(&runner2).Error
+		if err != nil {
+			return eeor.OtherError("runnerId2  is fail")
+		}
+		if sk.Kinds == 1 {
+			sk.Rate = runner2.CollectionPoint - sk.Rate
+		} else {
+			sk.Rate = runner2.PayPoint - sk.Rate
+		}
+
+		if sk.Rate > 0 {
+			runner2.ChangeBalance = sk.Rate * sk.Col.ActualAmount * sk.Symbol
+			runner2.ChangeCommission = sk.Rate * sk.Col.ActualAmount * sk.Symbol
+			err = runner2.ChangeCommissionAndBalance(db)
+			if err != nil {
+				return err
+			}
+			//日统计成功==>减去
+			statistics := RunnerStatistics{}
+			if sk.Kinds == 1 {
+				statistics.Commission = sk.Rate * sk.Col.ActualAmount * sk.Symbol
+				statistics.CollectionAmount = sk.Rate * sk.Col.ActualAmount * sk.Symbol
+				statistics.CollectionCount = int(sk.Symbol) * 1
+			}
+			err := statistics.Add(db)
+			if err != nil {
+				return err
+			}
+		}
+		if sk.Kinds == 1 {
+			sk.Rate = runner2.CollectionPoint
+		} else {
+			sk.Rate = runner2.PayPoint
+		}
+	}
+	//代操作内容
+	agg := AgencyRunner{}
+	err = db.Where("id=?", sk.AgencyRunnerId).First(&agg).Error
+	if err != nil {
+		return eeor.OtherError("AgencyRunnerId  is fail")
+	}
+	if sk.Kinds == 1 {
+		sk.Rate = agg.CollectionPoint - sk.Rate
+		//更新  每日统计
+	} else {
+		sk.Rate = agg.PayPoint - sk.Rate
+	}
+
+	if sk.Rate > 0 { //处理代理的账变
+		agencyRunner := AgencyRunner{
+			Balance: sk.Symbol * sk.Rate * sk.Col.ActualAmount, Commission: sk.Symbol * sk.Rate * sk.Col.ActualAmount}
+		err := agencyRunner.ChangeCommissionAndBalance(db)
+		if err != nil {
+			return err
+		}
+
+	}
+
 	return nil
 }

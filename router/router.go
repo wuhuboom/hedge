@@ -179,6 +179,7 @@ func Setup() *gin.Engine {
 		//CollectionOperation
 		ay.POST("/collectionOperation", agency.CollectionOperation)
 		ay.POST("/getU", agency.GetU)
+		ay.POST("/homePage", agency.HomePage)
 
 	}
 

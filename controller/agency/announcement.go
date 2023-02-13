@@ -40,7 +40,6 @@ func AnnouncementOperation(c *gin.Context) {
 			tools.ReturnErr101Code(c, err.Error())
 			return
 		}
-
 		//状态单独修改
 		if status, isExist := c.GetPostForm("status"); isExist == true {
 			sta, _ := strconv.Atoi(status)
@@ -82,8 +81,12 @@ func AnnouncementOperation(c *gin.Context) {
 			tools.ReturnErr101Code(c, "content is not null")
 			return
 		}
-
-		announcement := model.Announcement{Content: txt, AgencyRunnerId: whoMap.ID}
+		title := c.PostForm("title")
+		if title == "" {
+			tools.ReturnErr101Code(c, "content is not null")
+			return
+		}
+		announcement := model.Announcement{Content: txt, AgencyRunnerId: whoMap.ID, Title: title}
 		err := announcement.Add(mysql.DB)
 		if err != nil {
 			tools.ReturnErr101Code(c, err.Error())

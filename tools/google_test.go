@@ -5,17 +5,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
-	"math/rand"
 	"reflect"
-	"strconv"
 	"testing"
 )
 
 func TestAsciiKey(t *testing.T) {
 
-	for i := 0; i < 10000; i++ {
-		fmt.Println(strconv.Itoa(rand.Intn(1000)))
-	}
+	var a float64
+
+	a = -1
+
+	var b int
+
+	b = 10
+
+	fmt.Println(int(a) * b)
 
 }
 

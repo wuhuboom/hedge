@@ -49,17 +49,17 @@ func (rt *RunnerStatistics) Add(db *gorm.DB) error {
 	} else {
 		//存在
 		//代收
-		ups := RunnerStatistics{}
-		ups.CollectionAllCount = tr2.CollectionAllCount + rt.CollectionAllCount
-		ups.CollectionAllAmount = tr2.CollectionAllAmount + rt.CollectionAllAmount
-		ups.CollectionCount = tr2.CollectionCount + rt.CollectionCount
-		ups.CollectionAmount = tr2.CollectionAmount + rt.CollectionAmount
-		ups.Commission = tr2.Commission + rt.Commission
-		ups.PayAllAmount = tr2.PayAllAmount + rt.PayAllAmount
-		ups.PayAmount = tr2.PayAmount + rt.PayAmount
-		ups.PayCount = tr2.PayCount + rt.PayCount
-		ups.PayAllCount = tr2.PayAllCount + rt.PayAllCount
-
+		ups := make(map[string]interface{})
+		ups["CollectionAllCount"] = tr2.CollectionAllCount + rt.CollectionAllCount
+		ups["CollectionAllAmount"] = tr2.CollectionAllAmount + rt.CollectionAllAmount
+		ups["CollectionCount"] = tr2.CollectionCount + rt.CollectionCount
+		ups["CollectionAmount"] = tr2.CollectionAmount + rt.CollectionAmount
+		ups["Commission"] = tr2.Commission + rt.Commission
+		ups["PayAllAmount"] = tr2.PayAllAmount + rt.PayAllAmount
+		ups["PayAmount"] = tr2.PayAmount + rt.PayAmount
+		ups["PayCount"] = tr2.PayCount + rt.PayCount
+		ups["PayAllCount"] = tr2.PayAllCount + rt.PayAllCount
+		ups["Updated"] = time.Now().Unix()
 		affected := db.Model(&RunnerStatistics{}).Where("id=? and  updated=?", tr2.Id, tr2.Updated).Update(&ups).RowsAffected
 		if affected == 0 {
 			return eeor.OtherError("u is fail")

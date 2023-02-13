@@ -33,6 +33,7 @@ var (
 	IllegalityCode    = -1001 //非法请求
 	TokenExpire       = -1003 //token  过期
 	IpLimitWaring     = -1004 //ip 限制
+	NoBindingBackCard = -1005
 )
 
 // GetRunPath2 获取程序执行目录

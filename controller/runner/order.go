@@ -47,16 +47,15 @@ func ImWorking(c *gin.Context) {
 	//判断是否  已经 绑定了收款地址
 	err := mysql.DB.Where("runner_id=? and kind=1", whoMap.ID).First(&model.RunnerUpi{}).Error
 	if err != nil {
-		tools.ReturnErr101Code(c, "Bind the working upi first")
+		tools.JsonWrite(c, tools.NoBindingBackCard, nil, "Bind the working upi first")
 		return
 	}
 
 	//判断 是要有资格接单
-	if whoMap.CollectionLimit < 500 {
+	if whoMap.CollectionLimit < 500 && whoMap.Working == 1 {
 		tools.ReturnErr101Code(c, "Your collection balance is not enough,The balance needs to be at least 500")
 		return
 	}
-
 	uup := &model.Runner{Working: work}
 	if work == 2 {
 		uup.LastGetOrderTime = time.Now().Unix() + 300

@@ -140,7 +140,6 @@ func (ar *AgencyRunner) ChangeCommissionAndBalance(db *gorm.DB) error {
 	if err != nil {
 		return eeor.OtherError("ChangeCommission:" + err.Error())
 	}
-
 	//修改佣金
 	ups := make(map[string]interface{})
 	if ar.Balance == 0 {
@@ -182,4 +181,9 @@ func (ar *AgencyRunner) ChangeCommissionAndBalance(db *gorm.DB) error {
 	}
 
 	return nil
+}
+
+// GetCollectionPoint 获取代理的汇率
+func (ar *AgencyRunner) GetCollectionPoint(db *gorm.DB) error {
+	return db.Where("id=?", ar.ID).First(ar).Error
 }

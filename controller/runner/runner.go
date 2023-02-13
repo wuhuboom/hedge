@@ -189,14 +189,19 @@ func GetCollectionRecord(c *gin.Context) {
 	sl := make([]modelPay.Collection, 0)
 	db := mysql.DB.Where("runner_id=?", whoMap.ID)
 	var total int
+
 	//   条件  1押金 2代收额度  --3代付额度  4佣金   5提现  6账户余额
 	if kinds, IsE := c.GetPostForm("kinds"); IsE == true {
 		db = db.Where("kinds=?", kinds)
 	}
-
 	//status
 	if kinds, IsE := c.GetPostForm("status"); IsE == true {
 		db = db.Where("status=?", kinds)
+	}
+
+	//订单号
+	if kinds, IsE := c.GetPostForm("own_order"); IsE == true {
+		db = db.Where("own_order=?", kinds)
 	}
 
 	//时间段搜索
@@ -260,8 +265,8 @@ func Withdraw(c *gin.Context) {
 	db := mysql.DB.Begin()
 	ups["Balance"] = whoMap.Balance - amount
 	ups["FreezeMoney"] = whoMap.FreezeMoney + amount
-	err = db.Model(&model.Runner{}).Where("id=? and  balance=? and freeze_money=?", whoMap.ID, whoMap.Balance, whoMap.FreezeMoney).Update(ups).Error
-	if err != nil {
+	affected := db.Model(&model.Runner{}).Where("id=? and  balance=? and freeze_money=?", whoMap.ID, whoMap.Balance, whoMap.FreezeMoney).Update(ups).RowsAffected
+	if affected == 0 {
 		tools.ReturnErr101Code(c, "Sorry, system error, please withdraw again")
 		return
 	}

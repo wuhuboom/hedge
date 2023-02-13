@@ -8,6 +8,7 @@ import (
 
 type Announcement struct {
 	ID             int    `gorm:"primaryKey"`
+	Title          string //标题
 	Content        string `gorm:"type:text"` //日志内容
 	Status         int    `gorm:"default:1"`
 	AgencyRunnerId int    //代理id

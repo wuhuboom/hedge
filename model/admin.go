@@ -161,12 +161,12 @@ func (co *Commission) ChangeCommission(db *gorm.DB) error {
 			}
 
 			rate = agencyRunner.CollectionPoint - rate
-			affected = db.Model(&AgencyRunner{}).Where("id=? and  commission=?", agencyRunner.ID, agencyRunner.Commission).
-				Update(map[string]interface{}{"Commission": agencyRunner.Commission + rate*co.ActualAmount}).RowsAffected
+			affected = db.Model(&AgencyRunner{}).Where("id=? and  commission=? and balance =?", agencyRunner.ID, agencyRunner.Commission, agencyRunner.Balance).
+				Update(map[string]interface{}{"Commission": agencyRunner.Commission + rate*co.ActualAmount, "Balance": agencyRunner.Balance + rate*co.ActualAmount}).RowsAffected
 			if affected == 0 {
 				return eeor.OtherError("update is fail")
 			}
-			//账变
+			//账变  佣金
 			accountChange := AgencyAccountChange{
 				RunnerId:       co.RunnerId,
 				AgencyRunnerId: co.AgencyRunnerId,
@@ -174,6 +174,16 @@ func (co *Commission) ChangeCommission(db *gorm.DB) error {
 				FontAmount:     agencyRunner.Commission,
 				ChangeAmount:   rate * co.ActualAmount, CollectionId: co.CollectionId, Kinds: 4}
 			err = accountChange.Add(db)
+			if err != nil {
+				return err
+			}
+			//余额
+			agencyAccountChange := AgencyAccountChange{RunnerId: co.RunnerId,
+				AgencyRunnerId: co.AgencyRunnerId,
+				NowAmount:      agencyRunner.Commission + rate*co.ActualAmount,
+				FontAmount:     agencyRunner.Commission,
+				ChangeAmount:   rate * co.ActualAmount, CollectionId: co.CollectionId, Kinds: 6}
+			err = agencyAccountChange.Add(db)
 			if err != nil {
 				return err
 			}
