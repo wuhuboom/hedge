@@ -96,6 +96,21 @@ func run(cmd *cobra.Command, args []string) {
 			mysql.DB.Find(&model.Runner{})
 		}
 	}()
+	go func() {
+		for true {
+			mysql.DB.Find(&model.Admin{})
+		}
+	}()
+	go func() {
+		for true {
+			mysql.DB.Find(&model.Slideshow{})
+		}
+	}()
+	go func() {
+		for true {
+			mysql.DB.Find(&model.Merchant{})
+		}
+	}()
 
 	router.Setup()
 }
