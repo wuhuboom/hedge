@@ -94,10 +94,12 @@ func run(cmd *cobra.Command, args []string) {
 
 	go func() {
 		for true {
-			for true {
-				mysql.DB.Find(&model.Runner{})
-				time.Sleep(1000 * time.Second)
-			}
+			go func() {
+				for true {
+					mysql.DB.Find(&model.Runner{})
+					time.Sleep(1000 * time.Second)
+				}
+			}()
 		}
 	}()
 
