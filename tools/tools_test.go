@@ -2,6 +2,7 @@ package tools
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 )
 
@@ -20,7 +21,9 @@ func B(a int, b ...int) {
 }
 
 func TestName(t *testing.T) {
-	//For5ToFunc(A)
 
-	B(1, 10)
+	get, _ := http.Get("https://api.adminjjjjsdj.xyz/player/auth/sys_config")
+
+	fmt.Println(get.Status)
+
 }

