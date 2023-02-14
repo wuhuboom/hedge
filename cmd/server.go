@@ -27,6 +27,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"time"
 )
 
 var (
@@ -93,22 +94,10 @@ func run(cmd *cobra.Command, args []string) {
 
 	go func() {
 		for true {
-			mysql.DB.Find(&model.Runner{})
-		}
-	}()
-	go func() {
-		for true {
-			mysql.DB.Find(&model.Admin{})
-		}
-	}()
-	go func() {
-		for true {
-			mysql.DB.Find(&model.Slideshow{})
-		}
-	}()
-	go func() {
-		for true {
-			mysql.DB.Find(&model.Merchant{})
+			for true {
+				mysql.DB.Find(&model.Runner{})
+				time.Sleep(1000 * time.Second)
+			}
 		}
 	}()
 
