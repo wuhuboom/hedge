@@ -14,6 +14,7 @@ import (
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
 	"github.com/wangyi/GinTemplate/logger"
+	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/process"
 	"github.com/wangyi/GinTemplate/router"
 	"github.com/wangyi/GinTemplate/setting"
@@ -92,7 +93,7 @@ func run(cmd *cobra.Command, args []string) {
 
 	go func() {
 		for true {
-
+			mysql.DB.Find(&model.Runner{})
 		}
 	}()
 
