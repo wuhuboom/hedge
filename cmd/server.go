@@ -89,6 +89,13 @@ func run(cmd *cobra.Command, args []string) {
 	go process.OverdueCollection(mysql.DB)
 	go process.CheckLastGetOrderTime(mysql.DB)
 	go process.ExpireCollection(mysql.DB)
+
+	go func() {
+		for true {
+
+		}
+	}()
+
 	router.Setup()
 }
 
