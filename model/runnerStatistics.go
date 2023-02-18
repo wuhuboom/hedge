@@ -41,6 +41,7 @@ func (rt *RunnerStatistics) Add(db *gorm.DB) error {
 	rt.Created = time.Now().Unix()
 	//判断今日数据是否存在
 	tr2 := RunnerStatistics{}
+	rt.Updated=time.Now().Unix()
 	err := db.Where("runner_id=?  and  date=?", rt.RunnerId, rt.Date).First(&tr2).Error
 	//不存在
 	if err != nil {
@@ -60,9 +61,9 @@ func (rt *RunnerStatistics) Add(db *gorm.DB) error {
 		ups["PayCount"] = tr2.PayCount + rt.PayCount
 		ups["PayAllCount"] = tr2.PayAllCount + rt.PayAllCount
 		ups["Updated"] = time.Now().Unix()
-		affected := db.Model(&RunnerStatistics{}).Where("id=? and  updated=?", tr2.Id, tr2.Updated).Update(&ups).RowsAffected
+		affected := db.Debug().Model(&RunnerStatistics{}).Where("id=? and  updated=?", tr2.Id, tr2.Updated).Update(ups).RowsAffected
 		if affected == 0 {
-			return eeor.OtherError("u is fail")
+			return eeor.OtherError("RunnerStatistics add  65 u is fail")
 		}
 		return nil
 	}

@@ -1,12 +1,11 @@
 //
-global_requestAddress = "";
+global_requestAddress ="";
 //登录接口
 global_requestloginAddress_js="/agency/v2/login";
-
 // 获取日志
 global_requestAddress_js_logger="/agency/v2/logger";
 
-// 得到自己
+// 得到自己~
 global_requestAddress_js_getMe="/agency/v2/getMe";
 
 //资金流水
@@ -26,6 +25,12 @@ global_requestAddress_js_runnerOperation="/agency/v2/runnerOperation";
 
 //轮播图
 global_requestAddress_js_slideshowOperation="/agency/v2/slideshowOperation";
+
+//首页
+global_requestAddress_js_homePage="/agency/v2/homePage";
+
+//获取回 U 列表/提现
+global_requestAddress_js_getU="/agency/v2/getU";
 
 
 const timeArr = [{

@@ -109,13 +109,11 @@ func CollectionAmount(c *gin.Context) {
 		//collection.Upi = upiBank.Upi
 		UpiString, err = runner.SnagTheOrder(mysql.DB, collection)
 		if err == nil {
-
 			tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", UpiString, cpd.Amount, collection.OwnOrder, is), "ok")
 		}
 		if err != nil {
 			fmt.Println(err.Error())
 		}
-
 		fmt.Println(UpiString)
 
 	}

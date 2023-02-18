@@ -109,6 +109,11 @@ func GetMe(c *gin.Context) {
 	who, _ := c.Get("who")
 	whoMap := who.(model.Runner)
 	whoMap.PayPassword = "******"
+	//判断自己是否存在下级
+	err := mysql.DB.Where("superior=?", whoMap.ID).First(&model.Runner{}).Error
+	if err != nil {
+		whoMap.IfExistSubordinate = 2
+	}
 	tools.ReturnSuccess2000DataCode(c, whoMap, "OK")
 	return
 }

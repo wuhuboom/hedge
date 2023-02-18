@@ -92,12 +92,14 @@
             <col>
           </colgroup>
           <tbody>
+
           <tr>
             <td>账户余额</td>
             <td id="Currency"></td>
             <td>账户可用余额</td>
             <td id="Amount"></td>
           </tr>
+
           <tr>
             <td>冻结金额</td>
             <td id="ActualAmount"> </td>
@@ -285,16 +287,35 @@
 
       $("#Amount").text(currParentDatas.AvailableAmount)
       $("#ActualAmount").text(currParentDatas.FreezeAmount)
-      $("#Commission").text(currParentDatas.CollectionCommission)
+
+      var CollectionCommission = ''
+      if ((currParentDatas.CollectionCommission*1) >0){
+        var CollectionCommission=currParentDatas.CollectionCommission*100+"%"
+      }else {
+        CollectionCommission =0
+      }
+      $("#Commission").append(CollectionCommission)//代收手续费
 
       //
       $("#Currency").text(currParentDatas.AllAmount)
       $("#OwnOrder").text(currParentDatas.MinPay)
       $("#Minimum_recharge").text(currParentDatas.MinMoney)
       $("#gateway_address").text(currParentDatas.GatewayId) //网关地址
+
+
+
+
       $("#Google_verification_code").text(currParentDatas.GoogleCode)//谷歌验证码
       $("#login_password").text(currParentDatas.LoginPassword)//登录密码
-      $("#Withdrawal_fee").text(currParentDatas.WithdrawCommission)//提现手续费
+
+
+      var WithdrawCommission = ''
+      if ((currParentDatas.WithdrawCommission*1) >0){
+        var WithdrawCommission=currParentDatas.WithdrawCommission*100+"%"
+      }else {
+        WithdrawCommission =0
+      }
+      $("#Withdrawal_fee").append(WithdrawCommission)//提现手续费
       $("#Token").text(currParentDatas.Token)//Token
       $("#payment_key").text(currParentDatas.ApiKey)//支付秘钥
       $("#whitelist").text(currParentDatas.WhiteIps)//白名单
@@ -312,7 +333,7 @@
 
       //代收
       let ipsArr = currParentDatas.PayChannel.split('@')
-      console.log("ipsArr",ipsArr)
+      // console.log("ipsArr",ipsArr)
       //代付
       let ipsArr1 =currParentDatas.PaidChannel.split('@')
 

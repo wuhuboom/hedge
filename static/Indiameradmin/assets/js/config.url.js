@@ -21,9 +21,9 @@ global_requestAddress_js_getLoginLogger="/merchant/v2/getLoginLogger";
 global_requestAddress_js_changeLoginPassword="/merchant/v2/changeLoginPassword";
 //修改回 U 地址
 global_requestAddress_js_changeTrcAddress="/merchant/v2/changeTrcAddress";
-
 // 获取回U账单
 global_requestAddress_js_withdraw="/merchant/v2/withdraw";
+
 
 const timeArr = [{
 	name:'Asia/Shanghai',

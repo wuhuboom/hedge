@@ -220,6 +220,8 @@
                             //存起来
                             JsSetCookie('tokenMyb_mer',tokenCK);
                             localStorage.setItem('dq_MerUsername',res.result.MerchantNum)
+
+                            console.log("res.result",res.result)
                             //弹窗
                             layer.msg("登录成功", {icon: 1, time: 1500}, function () {
                                 indexA.clearTabCache();

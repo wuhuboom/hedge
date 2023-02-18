@@ -115,7 +115,7 @@ func (ar *AgencyRunner) ChangeCollectionLimit(db *gorm.DB, changeMoney float64, 
 	ups["CollectionLimit"] = ar.CollectionLimit + changeMoney
 	db = db.Begin()
 	//修改押金
-	affected := db.Model(&AgencyRunner{}).Where("id=? and collection_limit ", ar.ID, ar.CollectionLimit).Update(ups).RowsAffected
+	affected := db.Model(&AgencyRunner{}).Where("id=? and collection_limit =? ", ar.ID, ar.CollectionLimit).Update(ups).RowsAffected
 	if affected == 0 {
 		return eeor.OtherError("u is fail")
 	}

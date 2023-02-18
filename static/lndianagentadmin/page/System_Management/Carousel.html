@@ -369,7 +369,7 @@
                 success: function (res) {
                     if (res.code === 200) {
                         sliderListArr = res.result
-                        console.log("sliderListArr",sliderListArr)
+                        // console.log("sliderListArr",sliderListArr)
                         $("#slideImgsItem").empty();
                         let imageName = global_requestAddress + "/"
                         let itemUrl
@@ -485,10 +485,10 @@
                 var messageTitle = '';
                 var currStatusNum = 0;
                 if(currStatusBool){  //currStatusBool true
-                    messageTitle = '系统将进行显示公告操作,确定显示公告吗?'
+                    messageTitle = '系统将开启当前轮播图,确定开启吗?'
                 }else{ //false
 
-                    messageTitle = '系统将取消公告显示,确定不显示公告吗?'
+                    messageTitle = '系统将关闭当前轮播图,确定关闭吗?'
 
                 }
 

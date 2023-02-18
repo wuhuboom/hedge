@@ -42,7 +42,7 @@
                 <ul class="layui-tab-title">
                     <li class="layui-this">押金</li>
                     <li>代收额度</li>
-                    <li>代付额度</li>
+                    <li>余额账变</li>
                     <li>佣金</li>
                 </ul>
                 <div class="layui-tab-content">
@@ -143,11 +143,16 @@
             var bet_tb_this_tab;
             element.on('tab(tabTableMore)', function(data){
                 // console.log(data);
-                currTabIndex = data.index
+
+                if(data.index === 2){  //2是代表点了子用户余额
+                    currTabIndex = 6
+                }else{  //
+                    currTabIndex = data.index  + 1
+                }
 
                 currTempObj_tab = {}
                 currTempObj_tab.agency_runner_id = player_idS
-                currTempObj_tab.kinds = currTabIndex + 1
+                currTempObj_tab.kinds = currTabIndex
 
                 //2.6.0之前清除保留之前的数据的最有用的方式
                 if (bet_tb_this_tab != null) {
@@ -201,11 +206,11 @@
                 cols: [[
                     // {type: 'checkbox'},
                     {field: 'ID', title: 'ID', width: 60, sort: true, align: "center"},
-                    {field: 'AgencyRunnerId', title: '代理ID', sort: true, align: "center"},
-                    {field: 'RunnerId', title: '奔跑者ID', sort: true, align: "center"},
-                    {field: 'NowAmount', title: '现在的金额', sort: true, align: "center"},
-                    {field: 'ChangeAmount', title: '变化金额', sort: true, align: "center"},
+                    // {field: 'AgencyRunnerId', title: '代理ID', sort: true, align: "center"},
+                    // {field: 'RunnerId', title: '奔跑者ID', sort: true, align: "center"},
                     {field: 'FontAmount', title: '变化前金额', sort: true, align: "center"},
+                    {field: 'ChangeAmount', title: '变化金额', sort: true, align: "center"},
+                    {field: 'NowAmount', title: '变化后的余额', sort: true, align: "center"},
                     {field: 'Kinds', title: '类型', sort: true, align: "center",templet: function (d) {
                             if (d.Kinds=="1"){
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #79aaf1;border-color: #79aaf1;">' + '押金' + '</button>'
@@ -221,7 +226,6 @@
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">' + '余额' + '</button>'
                             }
                         }},
-                    {field: 'RecordId', title: '账单ID', sort: true, align: "center"},
                     {field: 'Remark', title: '备注', sort: true, align: "center"},
                     {field: 'Created', title: '创建时间', sort: true, align: "center",templet:function (d) {
                             return util.toDateString(d.Created * 1000);
@@ -231,7 +235,8 @@
                                 return ''
                             }
                         }},
-                    {field: 'CollectionId', title: '三方订单ID', sort: true, align: "center"},
+                    // {field: 'RecordId', title: '账单ID', sort: true, align: "center"},
+                    // {field: 'CollectionId', title: '三方订单ID', sort: true, align: "center"},
                     // {field: 'BankName', title: '持卡人姓名', sort: true, align: "center",templet:function(d){
                     //         if(d.Bank){
                     //             return d.Bank.Name
@@ -317,6 +322,7 @@
             var currTempObj;
             var bet_tb_this;
             form.on('submit(userTbSearch)', function (data) {
+
                 // console.log("currTempObj",data.field.username)
                 // insTb.reload({where: data.field, page: {curr: 1}});
                 currTempObj = {}
@@ -336,14 +342,9 @@
                         // console.log("book_tb_this----重载后的值",bet_tb_this)
                     }
                 }, false);
-
-
                 return false;
             });
-
-
         });
-
     }
 
 

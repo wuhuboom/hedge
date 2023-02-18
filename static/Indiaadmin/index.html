@@ -28,7 +28,7 @@
             <li class="layui-nav-item" lay-unselect>
                 <a ew-event="flexible" title="侧边伸缩"><i class="layui-icon layui-icon-shrink-right"></i></a>
             </li>
-            <li class="layui-nav-item" lay-unselect>
+            <li class="layui-nav-item"  id="btnRefresh"  lay-unselect>
                 <a ew-event="refresh" title="刷新"><i class="layui-icon layui-icon-refresh-3"></i></a>
             </li>
         </ul>
@@ -124,7 +124,7 @@
                     </dl>
                 </li>
 
-                <!--                <li class="layui-nav-item">-->
+<!--                <li class="layui-nav-item">-->
 <!--                    <a><i class="layui-icon layui-icon-app"></i>&emsp;<cite>支付管理</cite></a>-->
 <!--                    <dl class="layui-nav-child">-->
 <!--                        <dd><a lay-href="page/paying/paying_order.html">支付订单</a></dd>-->
@@ -208,6 +208,13 @@
         var element = layui.element;
         var laytpl = layui.laytpl;
 
+        $('#btnRefresh').click(function() {
+            $('#btnRefresh').removeClass('layui-anim layui-anim-rotate');
+            setTimeout(function() {
+                $('#btnRefresh').addClass('layui-anim layui-anim-rotate');
+                // $('#btnRefresh').addClass('layui-anim layui-anim-rotate layui-anim-loop');
+            });
+        });
 
         // 默认加载主页
         index.loadHome({
@@ -216,7 +223,15 @@
         });
 
         let loadU = localStorage.getItem('dq_AdminUsername')
+
+        // console.log("loadU",loadU)
+
         $("#loadingUserName").text(loadU)
+
+        if (layui.admin.setter.pageTabs && layui.admin.setter.tabAutoRefresh == true){
+            $('.layui-layout-admin>.layui-body>.layui-tab').attr('lay-autoRefresh', 'true');
+        }
+
 
         // //获取配置数据
         // $.ajax({
@@ -237,7 +252,6 @@
         //     }
         // })
 
-
         admin.putSetting('tabAutoRefresh', true);
 
         // // 默认加载主页,如果静态的时候就得放前边
@@ -245,7 +259,6 @@
         //     menuPath: 'page/console/console.html',
         //     menuName: '<i class="layui-icon layui-icon-home"></i>'
         // });
-
 
        //  // console.log("navArray",typeof navArray)
        //
@@ -330,9 +343,6 @@
        //  });
        //  //方式1 ------ 尾巴
        //
-
-
-
 
         // // 方式二 ------ 头
         // menuListArr.forEach((item)=>{

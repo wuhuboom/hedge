@@ -310,6 +310,13 @@
             var laydate = layui.laydate;
 
 
+            getMeFunc()
+
+            window.refreshTab = function() {
+                insTb.reload();
+                getMeFunc()
+            }
+
             //开始日期组件常规用法
             laydate.render({
                 elem: '#startDate'
@@ -342,31 +349,35 @@
             });
 
 
-            //获取数据添加到下拉框中
-            var param = {};
-            // param.page = 1
-            // param.limit = 3000
+            function getMeFunc() {
+                //获取数据添加到下拉框中
+                var param = {};
+                // param.page = 1
+                // param.limit = 3000
 
-            $.ajax({
-                url: global_requestAddress + global_requestAddress_js_getStatistics + "?action=all",
-                headers: {
-                    "token": mybck
-                },
-                dataType: 'json',
-                type: 'post',
-                data: param,
-                success: function (res) {
-                    if (res.code === 200) {
-                        var returnDataArray = res.result
+                $.ajax({
+                    url: global_requestAddress + global_requestAddress_js_getStatistics + "?action=all",
+                    headers: {
+                        "token": mybck
+                    },
+                    dataType: 'json',
+                    type: 'post',
+                    data: param,
+                    success: function (res) {
+                        if (res.code === 200) {
+                            var returnDataArray = res.result
 
-                        $("#collection_all_amount").text(returnDataArray.collection_all_amount)//总代收(成功)
-                        $("#pay_all_amount").text(returnDataArray.pay_all_amount)//总代付(成功)
-                        $("#profit_for_mer").text(returnDataArray.profit_for_mer)//三方盈利
-                        $("#profit_for_run").text(returnDataArray.profit_for_run)//跑分盈利
+                            $("#collection_all_amount").text(returnDataArray.collection_all_amount)//总代收(成功)
+                            $("#pay_all_amount").text(returnDataArray.pay_all_amount)//总代付(成功)
+                            $("#profit_for_mer").text(returnDataArray.profit_for_mer)//三方盈利
+                            $("#profit_for_run").text(returnDataArray.profit_for_run)//跑分盈利
 
+                        }
                     }
-                }
-            })
+                })
+
+
+            }
 
 
 

@@ -52,6 +52,12 @@ func MerchantOperation(c *gin.Context) {
 		mer.LoginPassword = tools.MD5(mer.LoginPassword)
 		mer.MaxPay, _ = strconv.ParseFloat(c.PostForm("max_pay"), 64)
 		mer.MinPay, _ = strconv.ParseFloat(c.PostForm("min_pay"), 64)
+		mer.WithdrawCommission,_=strconv.ParseFloat(c.PostForm("withdraw_commission"), 64)
+
+		mer.PayCommission,_=strconv.ParseFloat(c.PostForm("pay_commission"), 64)
+		mer.CollectionCommission,_=strconv.ParseFloat(c.PostForm("collection_commission"), 64)
+
+
 
 		mer.Token = tools.RandStringRunes(36)
 		//通道币种
@@ -158,6 +164,22 @@ func MerchantOperation(c *gin.Context) {
 		if status, isExist := c.GetPostForm("google_code"); isExist == true {
 			updated["GoogleCode"] = status
 		}
+		if status, isExist := c.GetPostForm("google_code"); isExist == true {
+			updated["GoogleCode"] = status
+		}
+
+		if status, isExist := c.GetPostForm("pay_commission"); isExist == true {
+			updated["PayCommission"] = status
+		}
+		if status, isExist := c.GetPostForm("collection_commission"); isExist == true {
+			updated["CollectionCommission"] = status
+		}
+		if status, isExist := c.GetPostForm("withdraw_commission"); isExist == true {
+			updated["WithdrawCommission"] = status
+		}
+
+
+
 		mysql.DB.Model(&model.Merchant{}).Where("id=?", id).Update(updated)
 		tools.ReturnSuccess2000Code(c, "ok")
 		return

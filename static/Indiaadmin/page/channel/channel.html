@@ -178,7 +178,13 @@
                     // {type: 'checkbox'},
                     {field: 'ID',title:'ID',sort: true,align:"center",width:70},
                     {field: 'ChannelName', title: '通道名字', edit: 'text', sort: true,align:"center"},
-                    {field: 'Rate', title: '通道费率', edit: 'text', sort: true,align:"center"},
+                    {field: 'Rate', title: '通道费率', edit: 'text', sort: true,align:"center",templet:function (d) {
+                            if (d.Rate > 0){
+                                return  d.Rate*100+"%"
+                            }else {
+                                return 0
+                            }
+                        }},
                     {field: 'Currency', title: '币种', edit: 'text', sort: true,align:"center"},
                     {field: 'Kinds', title: '类型', width:130,sort: true,align:"center", templet: function (d) {
                             var vipHtml = '<div><div class="ew-select-fixed"><select lay-filter="templetVipSel">';

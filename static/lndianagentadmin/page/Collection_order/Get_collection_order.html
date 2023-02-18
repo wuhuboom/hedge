@@ -256,6 +256,9 @@
                             else if (d.Status == "6") {
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #3fb9e3;border-color: #3fb9e3;">' + '已释放' + '</button>'
                             }
+                            else if (d.Status == "7") {
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #c53fe3;border-color: #c53fe3;">' + '冲正' + '</button>'
+                            }
                         }},
                     {field: 'Callback', title: '回调',  sort: true,align:"center",templet: function (d) {
                             if (d.Callback == "1") {
@@ -294,7 +297,7 @@
                     {field: 'RunnerId', title: '用户ID',  sort: true,align:"center"},
                     {field: 'RunnerName', title: '用户名',  sort: true,align:"center"},
                     {field: 'AgencyRunnerName', title: '代理名',  sort: true,align:"center"},
-                    {title: '操作', templet:'#orderListBar',fixed:"right",align:"center",width: 200}
+                    // {title: '操作', templet:'#orderListBar',fixed:"right",align:"center",width: 200}
                 ]]
                 return col;
             }

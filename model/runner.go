@@ -48,6 +48,7 @@ type Runner struct {
 	Col                   modelPay.Collection `gorm:"-"`
 	ChangeBalance         float64             `gorm:"-"` //变化的余额
 	ChangeCommission      float64             `gorm:"-"`
+	IfExistSubordinate    int                 `gorm:"-"`  //是否存在下级
 }
 
 func CheckIsExistModelRunner(db *gorm.DB) {
@@ -183,6 +184,7 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 	if err != nil {
 		return err
 	}
+
 	if r.CollectionLimit < 0 {
 		if rr2.CollectionLimit < math.Abs(r.CollectionLimit) {
 			return eeor.OtherError("The collection line is not enough")
@@ -237,7 +239,10 @@ func (r *Runner) ChangeCollectionLimit(db *gorm.DB, IfSystem bool, kinds int) er
 				return err
 			}
 			//玩家统计
-			statistics := RunnerStatistics{RunnerId: r.ID, AgencyRunnerId: r.AgencyRunnerId, CollectionAllAmount: r.Col.Amount, CollectionAllCount: 1}
+			statistics := RunnerStatistics{
+				RunnerId: r.ID, AgencyRunnerId: r.AgencyRunnerId, CollectionAllAmount: r.Col.Amount, CollectionAllCount: 1}
+
+			fmt.Println(statistics)
 			err = statistics.Add(db)
 			if err != nil {
 				db.Rollback()

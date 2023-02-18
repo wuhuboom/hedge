@@ -74,13 +74,13 @@ func RunnerOperation(c *gin.Context) {
 		}
 		//修改密码
 		if password, IsE := c.GetPostForm("password"); IsE == true {
-			runner.Password = password
+			runner.Password = tools.MD5(password)
 			err := runner.ChangePassword(mysql.DB)
 			if err != nil {
 				tools.ReturnErr101Code(c, err)
 				return
 			}
-			tools.ReturnErr101Code(c, "Password changed successfully")
+			tools.ReturnSuccess2000Code(c, "Password changed successfully")
 			return
 		}
 		//修改支付密码

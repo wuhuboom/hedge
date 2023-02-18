@@ -92,7 +92,7 @@
         var currConfigID = 0
         var currTabIndex = 0
 
-        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','element'], function () {
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','element','index'], function () {
             var $ = layui.jquery;
             var layer = layui.layer;
             var form = layui.form;
@@ -101,6 +101,7 @@
             var admin = layui.admin;
             var xmSelect = layui.xmSelect;
             var notice = layui.notice;
+            var indexAAAA = layui.index;
             var element = layui.element;  //tab需要引入到
 
 
@@ -129,42 +130,33 @@
                     type: 'post',
                     data: param,
                     success: function (resultData) {
-
                         if(resultData.code === 200){
 
                             notice.msg(resultData.msg, {icon: 1});
+                            setTimeout(()=>{
+
+                                indexAAAA.openTab({
+                                    title: '商户基本信息',
+                                    url: 'page/merchant/info.html',
+                                    end: function() {
+
+                                    }
+                                });
+
+                                indexAAAA.closeTab('page/set_up/Modify_back_to_U_address.html');
+
+                            },2000)
+
                             // window.location.reload();
-
+                            // window.location.href = "./info.html";
                         }else{
-
                             notice.msg(resultData.msg, {icon: 2});
-
                         }
-
-
-
-
-
                     }
                 })
-
-
-
-
                 return false;
-
             });
-
-
-
-
-
-
-
-
-
         });
-
     }
 
 

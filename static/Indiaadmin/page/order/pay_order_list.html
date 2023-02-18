@@ -102,6 +102,8 @@
                                 <option value="2">支付成功</option>
                                 <option value="3">失败</option>
                                 <option value="4">已过期</option>
+                                <option value="5">已确认</option>
+                                <option value="7">冲正</option>
                             </select>
                         </div>
                     </div>
@@ -166,19 +168,16 @@
 
 <!--数据表格操作工具栏-->
 <script type="text/html" id="orderListBar">
-    {{#  if(d.Status !== 2){ }}
     <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="callbacksuccess" style="background-color: #ffba00"><i
             class="layui-icon layui-icon-ok"></i>回调成功</a>
     <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="detailBtn" style="background-color: #6891f9 "><i
             class="layui-icon layui-icon-transfer"></i>详情</a>
+    {{#  if(d.Status == 1){ }}
     <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="confirpay" style="background-color: #ee00ff"><i
             class="layui-icon layui-icon-windows"></i>审核</a>
-    {{#  } else if(d.Status == 2){ }}
-    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="callbacksuccess" style="background-color: #ffba00"><i
-            class="layui-icon layui-icon-ok"></i>回调成功</a>
-
-    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="detailBtn" style="background-color: #6891f9 "><i
-            class="layui-icon layui-icon-transfer"></i>详情</a>
+    {{#  } else if(d.Status == 2 || d.Status == 3){ }}
+    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="redo" style="background-color: #f9687c "><i
+            class="layui-icon layui-icon-fire"></i>冲正</a>
     {{#  } }}
 </script>
 
@@ -393,11 +392,16 @@
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #28a745;border-color: #28a745;">' + '支付成功' + '</button>'
                             } else if (d.Status == "3") {// 3失败
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #993055;border-color: #993055;">' + '失败' + '</button>'
-                            } else if (d.Status == "4") {//已过期
+                            }else if (d.Status == "4") {//已过期
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">' + '已过期' + '</button>'
-                            } else {
+                            }else if (d.Status == "5") {//已过期
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #85e0f5;border-color: #85e0f5;">' + '已确认' + '</button>'
+                            }else if (d.Status == "7") {//冲正
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #5466de;border-color: #5466de;">' + '冲正' + '</button>'
+                            }else {
                                 return ''
                             }
+
                         }
                     },
                     {
@@ -575,28 +579,22 @@
                 var value = obj.value //得到修改后的值
                     , data = obj.data //得到所在行所有键值
                     , field = obj.field; //得到字段
-
                 var param = {};
                 param['id'] = data.ID;
                 param['bank_information_id'] = data.BankInformationId;
-
                 if (field === "CardNum") {
                     param['card_number'] = util.escape(value);
                 }
                 if (field === "Name") {
                     param['name'] = util.escape(value);
                 }
-
                 if (field === "Remark") {
                     param['remark'] = util.escape(value);
                 }
                 if (field === "IFSC") {
                     param['IFSC'] = util.escape(value);
                 }
-
-
                 // layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改值为：'+ util.escape(value));
-
                 $.ajax({
                     url: global_requestAddress + global_requestAddress_js_bank + "?action=update",
                     data: param,
@@ -606,17 +604,13 @@
                     type: "POST",
                     dataType: "json",
                     success: function (addResult) {
-
                         if (addResult.code === 200) {
                             notice.msg(addResult.msg, {icon: 1});
                         } else {
                             // layer.msg(addResult.msg);
                             notice.msg(addResult.msg, {icon: 2});
                         }
-
-
                     },
-
                 });
             });
 
@@ -778,6 +772,9 @@
 
             /* 表格工具条点击事件 */
             table.on('tool(userTable)', function (obj) {
+
+
+
                 var currDatas = obj.data;
                 if (obj.event === 'callbacksuccess') { // 修改
                     // showEditModel(obj.data);
@@ -867,6 +864,72 @@
                             //直接刷新当前修改的行
                             $(".layui-laypage-btn")[0].click()
 
+                        }
+                    })
+
+
+                } else if (obj.event === 'redo') {
+
+                    var messageTitle = '系统将对该数据进行冲正操作,确定对当前数据进行冲正吗?';
+                    layer.open({
+                        // type: 2,
+                        area: ['450px', '195px'],
+                        fix: false,
+                        //不固定
+                        maxmin: true,
+                        shade: 0.3,
+                        skin: 'layui-layer-rim',//加上边框
+                        title: "温馨提示",
+                        content:messageTitle,
+                        // content: `<div>`+messageTitle+`</div>`,
+                        btn: ['确定','取消'],
+                        // // 弹层外区域关闭
+                        shadeClose: true,
+                        btn1: function(index, layero) {//确定事件
+                            //点击第一个按钮处理逻辑
+                            // layer.msg("1");
+                            //进行ajax请求
+                            var param={};
+                            //这个就是当前那条数据的ID
+                            param.id =currDatas.ID
+
+                            $.ajax({
+                                url:global_requestAddress+global_requestAddress_js_collectionOperation+"?action=striking",
+                                method:'POST',
+                                data:param,
+                                dataType:"json",
+                                headers:{
+                                    token:mybck,
+                                },
+                                success:function (res) {
+                                    if(res.code === 200){  //
+                                        notice.msg(res.msg, {icon: 1});
+                                        //列表的刷新
+                                        insTb.reload();
+                                        //关闭第一个弹窗的组件ID
+                                        layer.close(index);
+                                    }else{
+                                        notice.msg(res.msg, {icon: 2});
+                                        insTb.reload();
+                                        layer.close(index);
+                                    }
+                                }
+                            })
+                        },
+                        btn2: function(index, layero){//取消事件
+                            //点击第二个按钮处理逻辑
+                            // layer.msg("2");
+
+                            notice.msg("取消操作", {icon: 5});
+                            form.render();
+                            layer.close(index);
+                        },
+                        cancel: function(index, layero){//取消事件
+                            //点击第二个按钮处理逻辑
+                            // layer.msg("2");
+                            notice.msg("取消操作", {icon: 5});
+                            form.render();
+                            layer.close(index);
                         }
                     })
 

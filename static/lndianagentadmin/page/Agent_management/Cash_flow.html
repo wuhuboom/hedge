@@ -76,6 +76,7 @@
                         <label class="layui-form-label">选项:</label>
                         <div class="layui-input-inline">
                             <select name="kinds" id="kinds">
+                                <option value="">选项</option>
                                 <option value="1">押金</option>
                                 <option value="2">代收额度</option>
                                 <option value="3">代付额度</option>
@@ -215,8 +216,8 @@
 
 
             var log_login_request_param = {};
-            log_login_request_param['limit']= 10;
-            log_login_request_param['page']= 1;
+                log_login_request_param['limit']= 10;
+                log_login_request_param['page']= 1;
             // log_login_request_param['kinds']= 1;
             // log_login_request_param['username']="";
             // log_login_request_param['token']= $.cookie('tokenMyb');
@@ -224,7 +225,7 @@
             var tableCols = tableSetCol(getTableCols(), local_storage_key);
             var insTb = table.render({
                 elem: '#userTable',
-                url: global_requestAddress + global_requestAddress_js_getAmountChange + "?action=check",
+                url: global_requestAddress + global_requestAddress_js_getAmountChange+"?action=check",
                 method: 'post',
                 headers:{
                     "token":mybck
@@ -255,19 +256,15 @@
                 cols:tableCols,
                 done: function (res, curr, count) {
                     $('tr').css({'background-color': '#fff', 'color': '#191a1c'});
-
                     tableDone(this.elem, insTb.config.cols[0], local_storage_key)
-
                     //重新渲染 固定写法
                     form.render("select");
                     // $(".layui-table-main tr").each(function (index, val) {
                     //     $($(".layui-table-fixed-l .layui-table-body tbody tr")[index]).height($(val).height());
                     //     $($(".layui-table-fixed-r .layui-table-body tbody tr")[index]).height($(val).height());
                     // });
-
                 }
             });
-
 
             //layui表格渲染后，事件需要重新绑定，并记录下筛选信息于localStorage
             function tableDone(elem, col, key){
@@ -284,7 +281,6 @@
                                 key: 'local_config',
                                 value: local_config
                             };
-
                             // console.log("saveColsConfig",saveColsConfig)
                             layui.data(key, saveColsConfig);
                         })
@@ -297,15 +293,15 @@
                 var col = [[
                     // {type: 'checkbox'},
                     {field: 'ID',title:'ID',sort: true,align:"center",width:70},
-                    {field: 'Content', title: '',  sort: true,align:"center"},
-                    {field: 'AgencyRunnerId', title: '', sort: true,align:"center",width:180},
-                    {field: 'Kinds', title: '', sort: true,align:"center",width:120,templet:function(d){
-                            if (d.Kinds == "1") {
-                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #3fb9e3;border-color: #3fb9e3;">' + '登录日志' + '</button>'
-                            }else {
-                                return d.Kinds
-                            }
-                        }},
+                    {field: 'MerchantNum', title: '商户号',  sort: true,align:"center"},
+                    {field: 'ChangeAmount', title: '变动金额', sort: true,align:"center",width:180},
+                    {field: 'FontAmount', title: '变动前的金额', sort: true,align:"center",width:130},
+                    {field: 'After', title: '变动后的金额',  sort: true,align:"center",width:130},
+                    {field: 'Remark', title: '关联订单', sort: true,align:"center"},
+                    {field: 'Created', title: '创建时间',align:"center",width:175, sort: true, templet: function (d) {
+                            // return util.toDateString(d.Created* 1000);
+                            return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
+                        }},,
                     // {field: 'ActualAmount', title: '实际充值金额',  sort: true,align:"center",width:130},
                     // {field: 'Commission', title: '手续费', sort: true,align:"center"},
                     // {field: 'CallbackReturn', title: '回调返回信息', sort: true,align:"center",width:180},

@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>轮播图</title>
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
+    <script src="../../assets/js/moment.js"></script>
+    <link rel="stylesheet" href="../../assets/css/idangerous.swiper2.7.6.css">
+    <script src="../../assets/js/idangerous.swiper2.7.6.js"></script>
+
+
+    <style>
+
+        .currSerachBtn{
+            box-shadow: 0 15px 18px -6px rgb(45 140 240 / 65%) !important;
+        }
+
+        .currReloadBtn{
+            box-shadow: 0 15px 18px -6px rgb(146 109 222 / 65%) !important;
+        }
+
+        .layui-table-cell{
+            height:46px;
+            line-height: 46px;
+        }
+
+        .swiper-container{
+            /*width: 100%;*/
+            height: 400px;
+            margin: 0 100px;
+
+        }
+
+        .slideImgClass{
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            object-position: 50% 50%;
+        }
+
+        /*layui-carousel { display: flex; justify-content: center; align-items: center; }*/
+
+        .layui-carousel-img { margin: 0 auto; }
+
+        .swiper-container{
+            position: relative;
+        }
+
+
+        .swiper-button-prev{
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            margin-top: -10px;
+            z-index: 100;
+            width: 27px;
+            height: 44px;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2027%2044'%3E%3Cpath%20d%3D'M0%2C22L22%2C0l2.1%2C2.1L4.2%2C22l19.9%2C19.9L22%2C44L0%2C22L0%2C22L0%2C22z'%20fill%3D'%23007aff'%2F%3E%3C%2Fsvg%3E");
+        }
+
+        .swiper-button-next{
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            z-index: 100;
+            margin-top: -10px;
+            width: 27px;
+            height: 44px;
+            background-image:url("data:image/svg+xml;charset=utf-8,<svg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2027%2044'><path%20d%3D'M27%2C22L27%2C22L5%2C44l-2.1-2.1L22.8%2C22L2.9%2C2.1L5%2C0L27%2C22L27%2C22z'%20fill%3D'%23007aff'%2F><%2Fsvg>");
+        }
+
+    </style>
+
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-form-item" >
+                    <div class="layui-inline">&emsp;
+                        <button class="layui-btn icon-btn currReloadBtn" lay-filter="reloadData" lay-submit style="background-color: #926dde;border-color: #926dde;">
+                            <i class="layui-icon layui-icon-refresh"></i>刷新数据
+                        </button>
+                        <button type="button" class="layui-btn icon-btn currSerachBtn" id="addSlider" style="background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);">
+                            <i class="layui-icon">&#xe624;</i>添加轮播图
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <!-- 数据表格 -->
+            <table id="userTable" lay-filter="userTable" style="margin-top:10px"></table>
+        </div>
+    </div>
+
+    <!--    <div style="display: flex;align-items: center;justify-content: center;margin-top: 10px">-->
+    <!--        <div class="layui-carousel" id="slideImgsList" lay-filter="slideImgsList" >-->
+    <!--            <div carousel-item="" id="slideImgsItem">-->
+
+    <!--            </div>-->
+
+    <!--        </div>-->
+    <!--    </div>-->
+
+    <div class="swiper-container">
+        <div class="swiper-wrapper" id="slideImgsList" lay-filter="slideImgsList" >
+            <div id="slideImgsItem">
+
+            </div>
+        </div>
+
+        <!-- 分页器 -->
+        <div class="swiper-pagination"></div>
+
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+
+
+</div>
+
+
+<!-- js部分 -->
+<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../../assets/js/common.js?v=318"></script>
+
+<script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
+<script type="text/javascript" src="../../assets/js/config.url.js"></script>
+
+<!--数据表格操作工具栏-->
+<script type="text/html" id="orderListBar">
+    <!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="check" style="background-color: #fb7299;color: #ffffff;"><i class="layui-icon layui-icon-form"></i>查看</a>-->
+    <a class="layui-btn layui-btn-sm layui-btn-danger " lay-event="editbtn" ><i class="layui-icon layui-icon-delete"></i>删除</a>
+    <!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="CashPledge_edit" style="background-color: #1e9fff;color: #fff;border: 1px solid #1e9fff;">修改押金金额</a>-->
+    <!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="CollectionLimit_edit" style="background-color: #926dde;color: #fff;border: 1px solid #926dde;">修改代收额度</a>-->
+    <!--    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="resetGoogle" style="background-color: #ffba00;color: #fff;border: 1px solid #ffba00;">重置google</a>-->
+    <!--        <a class="layui-btn layui-btn-sm  " lay-event="changebtn" style="background-color: #009688"><i class="layui-icon layui-icon-edit"></i>权限设置</a>-->
+    <!--        <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="tixianbtn" style="background-color: #fbc472"><i class="layui-icon layui-icon-down"></i>提现下分</a>-->
+
+</script>
+
+<script>
+
+    var mybck= $.cookie('tokenMyb_acting');
+    //alert(document.cookie);
+    // console.log("mybck",mybck)
+    if(mybck == "" || mybck == null){
+
+        window.top.location.href="../../login.html";
+
+    }else{
+
+        var jsondata ;
+        var agent_information
+        var local_storage_key = 'admin_Carousel_t_list';//修改中间名称
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','treeTable','upload','carousel'], function () {
+            var $ = layui.jquery;
+            var layer = layui.layer;
+            var form = layui.form;
+            var table = layui.table;
+            var util = layui.util;
+            var admin = layui.admin;
+            var xmSelect = layui.xmSelect;
+            var notice = layui.notice;
+            var treeTable = layui.treeTable
+            var upload = layui.upload;
+            var carousel = layui.carousel
+
+            // //常规轮播
+            // var ins_carousel = carousel.render({
+            //     elem: '#slideImgsList'
+            //     , width: '100%'
+            //     ,interval: 1500
+            // });
+
+            var mySwiper = new Swiper ('.swiper-container', {
+                pagination: '.swiper-pagination',
+                loop:true,
+                autoplay:3000,
+                grabCursor: true,
+                paginationClickable: true,
+                preventClicksPropagation : false,//页面区域阻止click冒泡。拖动Swiper时阻止click事件。
+
+            })
+
+            // 前按钮点击事件
+            $('.swiper-button-prev').on('click', function(e){
+                e.preventDefault()
+                mySwiper.swipePrev()
+            })
+            // 后按钮点击事件
+            $('.swiper-button-next').on('click', function(e){
+                e.preventDefault()
+                mySwiper.swipeNext()
+            })
+
+            var log_login_request_param = {};
+            log_login_request_param["limit"]=10;
+            log_login_request_param["page"]=1;
+            // log_login_request_param['token']= $.cookie('tokenMyb');
+
+            /* 渲染表格 */
+            var tableCols = tableSetCol(getTableCols(), local_storage_key);
+            var insTb = table.render({
+                elem: '#userTable',
+                url: global_requestAddress + global_requestAddress_js_slideshowOperation +"?action=check",
+                method: 'POST',
+                headers:{
+                    "token": mybck,
+                },
+                response:{
+                    statusCode: 200,
+                    dataName: 'result',
+                },
+                // toolbar: true,
+                // defaultToolbar: ['filter'],
+                where:log_login_request_param,
+                // toolbar: ['<p>',
+                //     '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+                //     '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                //     '</p>'].join(''),
+                cellMinWidth: 100,
+                page :  { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                    layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                    //,curr: 5 //设定初始在第 5 页
+                    ,groups: 10 //只显示 1 个连续页码
+                    ,first: "首页" //不显示首页
+                    ,last: "尾页"//不显示尾页
+                },
+                // height : "full-100",
+                height:320,
+                limit : 15,
+                limits : [15,30,50,100],
+                // id : "systemLog",
+                cols: tableCols,
+
+                done: function (res, curr, count) {
+                    $('tr').css({'background-color': '#fff', 'color': '#191a1c'});
+
+                    tableDone(this.elem, insTb.config.cols[0], local_storage_key)
+
+                    // all_withdrawal
+                }
+            });
+
+
+            //layui表格渲染后，事件需要重新绑定，并记录下筛选信息于localStorage
+            function tableDone(elem, col, key) {
+                elem.next().find('[lay-event="LAYTABLE_COLS"]').click(function (e) {
+                    setTimeout(function () {
+                        layui.$(e.currentTarget).find('.layui-form-checkbox').click(function () {
+                            var local_config = {};
+                            for (var i = 0; i <= col.length - 1; i++) {
+                                if (typeof col[i].field !== 'undefined') {
+                                    local_config[col[i].field] = col[i].hide;
+                                }
+                            }
+                            var saveColsConfig = {
+                                key: 'local_config',
+                                value: local_config
+                            };
+
+                            // console.log("saveColsConfig",saveColsConfig)
+                            layui.data(key, saveColsConfig);
+                        })
+                    }, 50);
+                })
+            }
+
+
+            //表格 头部数据函数封装
+            function getTableCols() {
+                var col = [[
+                    {type: 'checkbox'},
+                    {
+                        field: 'Url', title: '图片', sort: true, align: "center", templet: function (d) {
+                            if (d.Url) {
+                                var imageName = global_requestAddress + "/" + d.Url;
+                                return '<div><img src="' + imageName + '" ' + 'alt=""></a></div>';
+                            } else {
+                                return '<button class="layui-btn  layui-btn-xs" style="background-color: #ff5722;border-color: #ff5722;">' + '无' + '</button>'
+                            }
+                        }
+                    },
+                    {field: 'Status', title: '状态', sort: true,align:"center",templet:function(d){
+                            var state = "";
+                            if(d.Status == "1"){//正常,checked 打开
+                                state = "<input type='checkbox' value='" + d.Status + "' id='table_status' lay-filter='table_status'  name='table_status'  lay-skin='switch' lay-text='正常|禁用' checked>";
+                                return state;
+                            }else if(d.Status == "2"){//禁用
+                                state = "<input type='checkbox' value='" + d.Status + "' id='table_status' lay-filter='table_status'  name='table_status'  lay-skin='switch' lay-text='正常|禁用'>";
+                                return state;
+                            }else{
+                                return ''
+                            }
+
+                        }},
+                    {field: 'Created', title: '创建时间',  sort: true,align:"center",templet:function (d){
+                            return util.toDateString(d.Created * 1000);
+                        }},
+                    // {title: '操作', templet:'#orderListBar',fixed:"right",align:"center",width: 200}
+                ]]
+                return col;
+            }
+
+            //layuitable reload或第一次加载的时候，根据存储的local_config 确定哪些列是否选中
+            function tableSetCol(col, key) {
+                let colArr = col[0]
+                var config_custom = layui.data(key);
+                var local_config = config_custom['local_config'] || {};
+                if (JSON.stringify(local_config) != '{}') {
+                    for (var i = 0; i <= colArr.length - 1; i++) {
+                        if (typeof colArr[i].field !== "undefined") {
+                            colArr[i].hide = local_config[colArr[i].field];
+                        }
+                    }
+                }
+                return [colArr];
+            }
+
+            //执行实例
+            var uploadInst = upload.render({
+                elem: '#addSlider'//绑定元素
+                ,headers: {token: mybck}
+                ,url: global_requestAddress+global_requestAddress_js_slideshowOperation+'?action=add' //上传接口
+                ,done: function(res){
+                    // console.log("res",res)
+                    if(res.code == 200){
+                        //上传完毕回调
+                        layer.msg(res.msg, {icon: 1});
+                        insTb.reload({})
+                    }else{
+                        layer.msg("上传错误", {icon: 2});
+                    }
+
+
+                }
+                ,error: function(){
+                    //请求异常回调
+                    layer.msg("上传错误", {icon: 2});
+                }
+            });
+
+
+            var param = {};
+            param.page = 1
+            param.limit = 3000
+            var sliderListArr
+            $.ajax({
+                url: global_requestAddress + global_requestAddress_js_slideshowOperation + "?action=check",
+                headers: {
+                    "token": mybck
+                },
+                dataType: 'json',
+                type: 'post',
+                data: param,
+                success: function (res) {
+                    if (res.code === 200) {
+                        sliderListArr = res.result
+                        console.log("sliderListArr",sliderListArr)
+                        $("#slideImgsItem").empty();
+                        let imageName = global_requestAddress + "/"
+                        let itemUrl
+                        let sliderHtml = ""
+                        $.each(sliderListArr, function (index, item) {
+                            itemUrl = ""
+                            itemUrl = item.Url
+                            itemUrl = itemUrl.replaceAll('./static','static')
+                            sliderHtml += '<div class="swiper-slide" ><img class="slideImgClass" src="'+imageName + itemUrl+'"/></div>'
+                            mySwiper.appendSlide('<div class="swiper-slide" ><img class="slideImgClass" src="'+imageName + itemUrl+'"/></div>')
+                        });
+
+
+                        // $('#slideImgsItem').append(sliderHtml);// 下拉菜单里添加元素
+                        // //重置轮播
+                        // ins_carousel.reload({});
+                    }
+                }
+            })
+
+
+
+            /* 表格搜索 */
+            var currTempObj;
+            var bet_tb_this;
+            form.on('submit(userTbSearch)', function (data) {
+
+                // console.log("currTempObj",data.field.username)
+                // insTb.reload({where: data.field, page: {curr: 1}});
+                currTempObj = {}
+                // currTempObj.token = $.cookie('tokenMyb');
+                // currTempObj.status = 1;
+
+                if(data.field.merchant === ""){
+
+                }else{
+                    currTempObj.merchant = data.field.merchant
+                }
+
+
+                // if(data.field.phone === ""){
+                //
+                //
+                // }else{
+                //     currTempObj.phone = data.field.phone
+                // }
+                //
+                //
+                // if(data.field.qq_nums === ""){
+                //
+                //
+                // }else{
+                //     currTempObj.qq_nums = data.field.qq_nums
+                // }
+                //
+                //
+                // if(data.field.definition === ""){
+                //
+                //
+                // }else{
+                //     currTempObj.definition = data.field.definition
+                // }
+                //
+                // if(data.field.nickname === ""){
+                //
+                //
+                // }else{
+                //     currTempObj.nickname = data.field.nickname
+                // }
+
+
+
+                //2.6.0之前清除保留之前的数据的最有用的方式
+                if (bet_tb_this != null) {
+                    // console.log("book_tb_this--不为null",bet_tb_this)
+                    bet_tb_this.where = {};  //置空where
+                }
+                insTb.reload({
+                    where: currTempObj,
+                    // headers:{
+                    //   token:mybck,
+                    // },
+                    page: {curr: 1},
+                    done:function(){
+                        bet_tb_this = this;
+                        // console.log("book_tb_this----重载后的值",bet_tb_this)
+                    }
+                },false);
+
+
+                return false;
+            });
+            //监听状态开关按钮操作
+            form.on('switch(table_status)', function(obj){
+
+                // console.log("obj",obj)
+
+                // 获取当前控件
+                var selectIfKey=obj.othis;
+                // 获取当前所在行
+                var parentTr = selectIfKey.parents("tr");
+                // 获取当前所在行的索引
+                // var parentTrIndex = parentTr.attr("data-index");
+
+                //通过相对位置找对应行数据
+                // 获取当前行第一和三列的值
+                var currentwx_id = parentTr.find(('td:eq(0)')).text().trim();
+                // console.log("currentwx_id",currentwx_id)
+
+
+                var currStatusBool = obj.elem.checked;
+                // console.log("currStatusBool",currStatusBool)
+                var messageTitle = '';
+                var currStatusNum = 0;
+                if(currStatusBool){  //currStatusBool true
+                    messageTitle = '系统将进行显示公告操作,确定显示公告吗?'
+                }else{ //false
+
+                    messageTitle = '系统将取消公告显示,确定不显示公告吗?'
+
+                }
+
+                //弹窗组件
+                layer.open({
+                    // type: 2,
+                    area: ['450px', '195px'],
+                    fix: false,
+                    //不固定
+                    maxmin: true,
+                    shade: 0.3,
+                    skin: 'layui-layer-rim',//加上边框
+                    title: "温馨提示",
+                    content:messageTitle,
+                    // content: `<div>`+messageTitle+`</div>`,
+                    btn: ['确定','取消'],
+                    // // 弹层外区域关闭
+                    shadeClose: true,
+                    btn1: function(index, layero) {//确定事件
+                        //点击第一个按钮处理逻辑
+                        // layer.msg("1");
+                        if(currStatusBool){
+                            currStatusNum = 1
+                        }else{
+                            currStatusNum = 2
+                        }
+
+                        //进行ajax请求
+                        var param={};
+                        param.status = currStatusNum
+                        //这个就是当前那条数据的ID
+                        param.id = currentwx_id
+
+                        $.ajax({
+                            // url:global_requestAddress+global_requestAddress_js_announcementOperation+"?action=update",
+                            method:'POST',
+                            data:param,
+                            dataType:"json",
+                            headers:{
+                                token:mybck,
+                            },
+                            success:function (res) {
+                                if(res.code === 200){  //
+                                    notice.msg(res.msg, {icon: 1});
+                                    //列表的刷新
+                                    insTb.reload();
+                                    //关闭第一个弹窗的组件ID
+                                    layer.close(index);
+                                }else{
+                                    notice.msg(res.msg, {icon: 2});
+                                    insTb.reload();
+                                    layer.close(index);
+                                }
+                            }
+                        })
+
+
+
+
+                    },
+                    btn2: function(index, layero){//取消事件
+                        //点击第二个按钮处理逻辑
+                        // layer.msg("2");
+
+                        notice.msg("取消操作", {icon: 5});
+                        // $.message({
+                        //     message: "取消操作",
+                        //     type: 'info',
+                        //     showClose: true
+                        // });
+
+                        var x = obj.elem.checked;
+
+                        obj.elem.checked = !x;
+                        form.render();
+                        layer.close(index);
+                    },
+                    cancel: function(index, layero){//取消事件
+                        //点击第二个按钮处理逻辑
+                        // layer.msg("2");
+                        notice.msg("取消操作", {icon: 5});
+                        var x = obj.elem.checked;
+                        obj.elem.checked = !x;
+                        form.render();
+                        layer.close(index);
+                    }
+                })
+
+
+
+
+
+            });
+            //监听谷歌开关按钮操作
+            form.on('switch(Google_status)', function(obj){
+
+                // console.log("obj",obj)
+
+                // 获取当前控件
+                var selectIfKey=obj.othis;
+                // 获取当前所在行
+                var parentTr = selectIfKey.parents("tr");
+                // 获取当前所在行的索引
+                // var parentTrIndex = parentTr.attr("data-index");
+
+                //通过相对位置找对应行数据
+                // 获取当前行第一和三列的值
+                var currentwx_id = parentTr.find(('td:eq(0)')).text().trim();
+                // console.log("currentwx_id",currentwx_id)
+
+
+                var currStatusBool = obj.elem.checked;
+                // console.log("currStatusBool",currStatusBool)
+                var messageTitle = '';
+                var currStatusNum = 0;
+                if(currStatusBool){  //currStatusBool true
+                    messageTitle = '系统将对该商户号的谷歌状态进行开启操作,确定对当前商户号谷歌状态进行开启操作吗?'
+                }else{ //false
+
+                    messageTitle = '系统将对该商户号谷歌状态进行关闭操作,确定对当前商户号谷歌状态进行关闭操作吗?'
+
+                }
+
+                //弹窗组件
+                layer.open({
+                    // type: 2,
+                    area: ['450px', '195px'],
+                    fix: false,
+                    //不固定
+                    maxmin: true,
+                    shade: 0.3,
+                    skin: 'layui-layer-rim',//加上边框
+                    title: "温馨提示",
+                    content:messageTitle,
+                    // content: `<div>`+messageTitle+`</div>`,
+                    btn: ['确定','取消'],
+                    // // 弹层外区域关闭
+                    shadeClose: true,
+                    btn1: function(index, layero) {//确定事件
+                        //点击第一个按钮处理逻辑
+                        // layer.msg("1");
+                        if(currStatusBool){
+                            currStatusNum = 1
+                        }else{
+                            currStatusNum = 2
+                        }
+
+                        //进行ajax请求
+                        var param={};
+                        param.google_switch = currStatusNum
+                        //这个就是当前那条数据的ID
+                        param.id = currentwx_id
+
+                        $.ajax({
+                            url:global_requestAddress+global_requestAddress_js_agencyOperation+"?action=update",
+                            method:'POST',
+                            data:param,
+                            dataType:"json",
+                            headers:{
+                                token:mybck,
+                            },
+                            success:function (res) {
+                                if(res.code === 200){  //
+                                    notice.msg(res.msg, {icon: 1});
+                                    //列表的刷新
+                                    insTb.reload();
+                                    //关闭第一个弹窗的组件ID
+                                    layer.close(index);
+                                }else{
+                                    notice.msg(res.msg, {icon: 2});
+                                    insTb.reload();
+                                    layer.close(index);
+                                }
+                            }
+                        })
+
+
+
+
+                    },
+                    btn2: function(index, layero){//取消事件
+                        //点击第二个按钮处理逻辑
+                        // layer.msg("2");
+
+                        notice.msg("取消操作", {icon: 5});
+                        // $.message({
+                        //     message: "取消操作",
+                        //     type: 'info',
+                        //     showClose: true
+                        // });
+
+                        var x = obj.elem.checked;
+
+                        obj.elem.checked = !x;
+                        form.render();
+                        layer.close(index);
+                    },
+                    cancel: function(index, layero){//取消事件
+                        //点击第二个按钮处理逻辑
+                        // layer.msg("2");
+                        notice.msg("取消操作", {icon: 5});
+                        var x = obj.elem.checked;
+                        obj.elem.checked = !x;
+                        form.render();
+                        layer.close(index);
+                    }
+                })
+            });
+            //监听单元格编辑
+            table.on('edit(userTable)', function(obj){
+
+                var value = obj.value //得到修改后的值
+                    ,data = obj.data //得到所在行所有键值
+                    ,field = obj.field; //得到字段
+
+                // layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改值为：'+ util.escape(value));
+
+                // console.log("field",field)
+
+                var param = {};
+                if(field === "WhiteIps"){
+                    param['ips'] = util.escape(value);
+                }else if(field === "MinMoney"){
+                    param['min_money'] = util.escape(value);
+                }else if(field === "MaxMoney"){
+
+                    param['max_money'] = util.escape(value);
+                }
+                param['id'] = data.ID;
+
+                $.ajax({
+                    url: global_requestAddress+global_requestAddress_js_merchant+"?action=update",
+                    headers:{
+                        token:mybck,
+                    },
+                    data: param,
+                    type: "POST",
+                    dataType: "json",
+                    success: function (addResult) {
+
+                        if (addResult.code === 200) {
+
+                            notice.msg(addResult.msg, {icon: 1});
+
+                        } else {
+
+                            // layer.msg(addResult.msg);
+                            notice.msg(addResult.msg, {icon: 2});
+
+                        }
+
+
+                    },
+
+
+                });
+
+
+            });
+            /* 表格工具条点击事件 */
+            table.on('tool(userTable)', function (obj) {
+                var currDatas  = obj.data;
+                if (obj.event === 'editbtn') { // 删除公告
+                    // jsondata = JSON.stringify(currDatas)
+                    //弹窗组件
+                    layer.open({
+                        // type: 2,
+                        area: ['450px', '200'],
+                        fix: false,
+                        //不固定
+                        maxmin: true,
+                        shade: 0.3,
+                        skin: 'layui-layer-rim',//加上边框
+                        title: "重置提醒",
+                        content:"你确定要删除这条公告吗？",
+                        // content: `<div>`+messageTitle+`</div>`,
+                        btn: ['确定','取消'],
+                        // // 弹层外区域关闭
+                        shadeClose: true,
+                        btn1: function(index, layero) {//确定事件
+                            //点击第一个按钮处理逻辑
+                            // layer.msg("1");
+                            //进行ajax请求
+                            var param={};
+                            param.id = currDatas.ID
+                            $.ajax({
+                                url:global_requestAddress+global_requestAddress_js_announcementOperation+"?action=del",
+                                method:'POST',
+                                data:param,
+                                dataType:"json",
+                                headers:{
+                                    token:mybck,
+                                },
+                                success:function (res) {
+                                    if(res.code === 200){  //
+                                        notice.msg(res.msg, {icon: 1});
+                                        //列表的刷新
+                                        insTb.reload();
+                                        //关闭第一个弹窗的组件ID
+                                        layer.close(index);
+                                    }else{
+                                        notice.msg(res.msg, {icon: 2});
+                                        insTb.reload();
+                                        layer.close(index);
+                                    }
+                                }
+                            })
+                        },
+                        btn2: function(index, layero){//取消事件
+                            //点击第二个按钮处理逻辑
+                            // layer.msg("2");
+                            notice.msg("取消操作", {icon: 5});
+                            form.render();
+                            layer.close(index);
+                        },
+                        cancel: function(index, layero){//取消事件
+                            //点击第二个按钮处理逻辑
+                            // layer.msg("2");
+                            notice.msg("取消操作", {icon: 5});
+                            form.render();
+                            layer.close(index);
+                        }
+                    })
+                }
+
+            });
+
+
+        });
+    }
+</script>
+</body>
+</html>

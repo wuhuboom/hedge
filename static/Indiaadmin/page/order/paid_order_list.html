@@ -102,6 +102,7 @@
                                 <option value="2">支付成功</option>
                                 <option value="3">失败</option>
                                 <option value="4">已过期</option>
+                                <option value="5">已确认</option>
                             </select>
                         </div>
                     </div>
@@ -166,20 +167,19 @@
 
 <!--数据表格操作工具栏-->
 <script type="text/html" id="orderListBar">
-    {{#  if(d.Status !== 2){ }}
     <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="callbacksuccess" style="background-color: #ffba00"><i
             class="layui-icon layui-icon-ok"></i>回调成功</a>
     <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="detailBtn" style="background-color: #6891f9 "><i
             class="layui-icon layui-icon-transfer"></i>详情</a>
+    {{#  if(d.Status == 1){ }}
     <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="confirpay" style="background-color: #ee00ff"><i
             class="layui-icon layui-icon-windows"></i>审核</a>
-    {{#  } else if(d.Status == 2){ }}
-    <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="callbacksuccess" style="background-color: #ffba00"><i
-            class="layui-icon layui-icon-ok"></i>回调成功</a>
-
-    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="detailBtn" style="background-color: #6891f9 "><i
-            class="layui-icon layui-icon-transfer"></i>详情</a>
+    {{#  } else if(d.Status == 2 || d.Status == 3){ }}
+    <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="redo" style="background-color: #f9687c "><i
+            class="layui-icon layui-icon-fire"></i>冲正</a>
     {{#  } }}
+
+
 </script>
 
 <script>
@@ -198,7 +198,7 @@
 
         var currDateVal
         var currDateVal_end
-        var local_storage_key = 'admin_paid_order_list_t_list';
+        var local_storage_key = 'admin_pay_order_list_t_list';
         layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice', 'treeTable', 'laydate'], function () {
             var $ = layui.jquery;
             var layer = layui.layer;
@@ -336,6 +336,7 @@
                     {field: 'Currency', title: '币种', sort: true, align: "center"},
                     {field: 'OwnOrder', title: '我方平台订单', sort: true, align: "center", width: 180},
                     {field: 'ProofOfPayment', title: '支付凭证', sort: true, align: "center", width: 180},
+                    {field: 'IFSC', title: 'IFSC', sort: true,align:"center",width:180},
 
                     // {field: 'BankName', title: '银行名', width:130,sort: true,align:"center", templet: function (d) {
                     //         var vipHtml = '<div><div class="ew-select-fixed"><select lay-filter="templetBankSel">';
@@ -393,9 +394,11 @@
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #28a745;border-color: #28a745;">' + '支付成功' + '</button>'
                             } else if (d.Status == "3") {// 3失败
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #993055;border-color: #993055;">' + '失败' + '</button>'
-                            } else if (d.Status == "4") {//已过期
+                            }else if (d.Status == "4") {//已过期
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">' + '已过期' + '</button>'
-                            } else {
+                            }else if (d.Status == "5") {//已过期
+                                return '<button class="layui-btn  layui-btn-sm" style="background-color: #85e0f5;border-color: #85e0f5;">' + '已确认' + '</button>'
+                            }else {
                                 return ''
                             }
                         }
@@ -575,28 +578,22 @@
                 var value = obj.value //得到修改后的值
                     , data = obj.data //得到所在行所有键值
                     , field = obj.field; //得到字段
-
                 var param = {};
                 param['id'] = data.ID;
                 param['bank_information_id'] = data.BankInformationId;
-
                 if (field === "CardNum") {
                     param['card_number'] = util.escape(value);
                 }
                 if (field === "Name") {
                     param['name'] = util.escape(value);
                 }
-
                 if (field === "Remark") {
                     param['remark'] = util.escape(value);
                 }
                 if (field === "IFSC") {
                     param['IFSC'] = util.escape(value);
                 }
-
-
                 // layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改值为：'+ util.escape(value));
-
                 $.ajax({
                     url: global_requestAddress + global_requestAddress_js_bank + "?action=update",
                     data: param,
@@ -606,17 +603,13 @@
                     type: "POST",
                     dataType: "json",
                     success: function (addResult) {
-
                         if (addResult.code === 200) {
                             notice.msg(addResult.msg, {icon: 1});
                         } else {
                             // layer.msg(addResult.msg);
                             notice.msg(addResult.msg, {icon: 2});
                         }
-
-
                     },
-
                 });
             });
 

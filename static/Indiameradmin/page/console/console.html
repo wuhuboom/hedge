@@ -261,6 +261,14 @@
             var treeTable = layui.treeTable
             var laydate = layui.laydate;
 
+            getMeFunc()
+
+
+            window.refreshTab = function() {
+                insTb.reload();
+                getMeFunc()
+            }
+
 
             //开始日期组件常规用法
             laydate.render({
@@ -294,34 +302,39 @@
             });
 
 
-            //获取数据添加到下拉框中
-            var param = {};
-            // param.page = 1
-            // param.limit = 3000
+          function getMeFunc() {
 
-            $.ajax({
-                url: global_requestAddress + global_requestAddress_js_statistics + "?action=all",
-                headers: {
-                    "token": mybck
-                },
-                dataType: 'json',
-                type: 'post',
-                data: param,
-                success: function (res) {
-                    if (res.code === 200) {
-                        var returnDataArray = res.result
-                        $("#TodayCollection").text(returnDataArray.TodayCollection)
-                        $("#TodayCollectionAmount").text(returnDataArray.TodayCollectionAmount)
-                        $("#TodayCollectionCommission").text(returnDataArray.TodayCollectionCommission)
-                        $("#TodayPay").text(returnDataArray.TodayPay)
-                        $("#TodayPayCommission").text(returnDataArray.TodayPayCommission)
-                        $("#TodayPayAmount").text(returnDataArray.TodayPayAmount)
-                        $("#AllAmount").text(returnDataArray.AllAmount)
-                        $("#AvailableAmount").text(returnDataArray.AvailableAmount)
-                        $("#FreezeAmount").text(returnDataArray.FreezeAmount)
-                    }
-                }
-            })
+              //获取数据添加到下拉框中
+              var param = {};
+              // param.page = 1
+              // param.limit = 3000
+
+              $.ajax({
+                  url: global_requestAddress + global_requestAddress_js_statistics + "?action=all",
+                  headers: {
+                      "token": mybck
+                  },
+                  dataType: 'json',
+                  type: 'post',
+                  data: param,
+                  success: function (res) {
+                      if (res.code === 200) {
+                          var returnDataArray = res.result
+                          $("#TodayCollection").text(returnDataArray.TodayCollection)
+                          $("#TodayCollectionAmount").text(returnDataArray.TodayCollectionAmount)
+                          $("#TodayCollectionCommission").text(returnDataArray.TodayCollectionCommission)
+                          $("#TodayPay").text(returnDataArray.TodayPay)
+                          $("#TodayPayCommission").text(returnDataArray.TodayPayCommission)
+                          $("#TodayPayAmount").text(returnDataArray.TodayPayAmount)
+                          $("#AllAmount").text(returnDataArray.AllAmount)
+                          $("#AvailableAmount").text(returnDataArray.AvailableAmount)
+                          $("#FreezeAmount").text(returnDataArray.FreezeAmount)
+                      }
+                  }
+              })
+
+
+          }
 
 
 
@@ -417,8 +430,6 @@
                     {field: 'TodayPayCommission', title: '代收手续费', sort: true,align:"center",width:180},
                     {field: 'TodayPayAmount', title: '代付金额(成功)', sort: true,align:"center",width:180},
                     {field: 'TodayPayAllAmount', title: '代付金额(总)', sort: true,align:"center",width:180},
-
-
                     // {field: 'Created', title: '创建时间',align:"center",width:175, sort: true, templet: function (d) {
                     //         // return util.toDateString(d.Created* 1000);
                     //         return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');

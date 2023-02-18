@@ -219,7 +219,7 @@
                             var tokenCK  =  res.result.Token
                             //存起来
                             JsSetCookie('tokenMyb_acting',tokenCK);
-                            localStorage.setItem('dq_MerUsername',res.result.MerchantNum)
+                            localStorage.setItem('acting_Username',res.result.Username)
                             //弹窗
                             layer.msg("登录成功", {icon: 1, time: 1500}, function () {
                                 indexA.clearTabCache();
@@ -279,6 +279,7 @@
             }
 
 
+
             //用来供子页面成功后调用
             window.success  = function(dataRes){
 
@@ -294,7 +295,7 @@
                 var tokenCK  =  dataRes.result.Token
                 //存起来
                 JsSetCookie('tokenMyb_acting',tokenCK);
-                localStorage.setItem('dq_MerUsername',dataRes.result.MerchantNum)
+                localStorage.setItem('acting_Username',dataRes.result.Username)
                 //弹窗
                 layer.msg("登录成功", {icon: 1, time: 1500}, function () {
                     indexA.clearTabCache();

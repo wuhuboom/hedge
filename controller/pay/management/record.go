@@ -241,7 +241,7 @@ func GetRecord(c *gin.Context) {
 		}
 
 		//支付凭证
-		if certificate, isE := c.FormFile("certificate"); isE != nil {
+		if certificate, isE := c.FormFile("certificate"); isE == nil {
 			//成功 需要上传  转账 凭证
 			nameArray := strings.Split(certificate.Filename, ".")
 			//判断文件夹是否存在
@@ -261,9 +261,10 @@ func GetRecord(c *gin.Context) {
 			ups["Certificate"] = path
 
 		}
+
 		affected := mysql.DB.Model(&model.Record{}).Where("id=?", id).Update(ups).RowsAffected
 		if affected == 0 {
-			tools.ReturnErr101Code(c, eeor.OtherError("u f"))
+			tools.ReturnErr101Code(c, eeor.OtherError("Don't repeat changes").Error())
 			return
 		}
 		tools.ReturnSuccess2000Code(c, "OK")

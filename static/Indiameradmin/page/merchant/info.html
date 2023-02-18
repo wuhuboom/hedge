@@ -8,7 +8,7 @@
     <title>用户列表</title>
     <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
     <link rel="stylesheet" href="../../assets/module/admin.css?v=318"/>
-    <script type="text/javascript" src="../../assets/js/clipboard.min.js"></script>
+<!--    <script type="text/javascript" src="../../assets/js/clipboard.min.js"></script>-->
     <script src="../../assets/js/moment.js"></script>
 
     <style>
@@ -136,7 +136,6 @@
                     </thead>
                     <tbody id="tablePay">
 
-
                     </tbody>
                 </table>
             </div>
@@ -178,7 +177,7 @@
         var currDateVal
         var currDateVal_end
         var local_storage_key = 'pay_order_list_t_list';
-        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','treeTable','laydate'], function () {
+        layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect','notice','treeTable','laydate','ClipboardJS'], function () {
             var $ = layui.jquery;
             var layer = layui.layer;
             var form = layui.form;
@@ -189,6 +188,7 @@
             var notice = layui.notice;
             var treeTable = layui.treeTable
             var laydate = layui.laydate;
+            var ClipboardJS = layui.ClipboardJS;
 
 
             //获取数据添加到下拉框中
@@ -208,7 +208,10 @@
                     if (res.code === 200) {
                         var returnDataArray = res.result
                         $("#MerchantNum").text(returnDataArray.MerchantNum)
+
                         // <span className = "layui-badge"> 赤 < /span>
+
+                        /*白名单处理逻辑*/
                         let ipsArr = returnDataArray.WhiteIps.split('@').filter(item => item != '')
 
                         let ipsHtml = ""
@@ -221,15 +224,21 @@
                             }
                         })
                         $("#WhiteIps").append(ipsHtml)
+                        /*白名单处理逻辑*/
 
+                        //密钥
                         let apikeyhtml =  '<span id="copystr"> ' + returnDataArray.ApiKey + '</span>'
                         apikeyhtml += '<button type="button" class="layui-btn layui-btn-sm layui-btn-radius" id="copyBtn" style="margin-left: 10px">复制</button>'
-
                         $("#ApiKey").append(apikeyhtml)
+                        //密钥
 
                         $("#Gateway").text(returnDataArray.Gateway)
-                        $("#Trc").text(returnDataArray.TrcAddress)
 
+                        let TrcAddress =  '<span id="TrcAddress">' + returnDataArray.TrcAddress + '</span>'
+                        TrcAddress += '<button type="button" class="layui-btn layui-btn-sm layui-btn-radius" id="TrcAddress1" style="margin-left: 10px">复制</button>'
+                        $("#Trc").append(TrcAddress)
+
+                         // 代收/代付列表
                         let payCArr = returnDataArray.PayC
                         let paycHtml = ""
 
@@ -254,6 +263,7 @@
                         })
 
                         $("#tablePay").append(paycHtml)
+
                         // < tr >
                         // < td align = "center" > 1 < /td>
                         // <td align="center">1234</td>
@@ -271,7 +281,8 @@
             //复制内容监听函数
             var clipboard2 = new ClipboardJS('#copyBtn', {
                 text: function () {
-                    return $("#copystr").text();
+                    let realStr = $("#copystr").text().trim()
+                    return realStr;
                 }
             });
             clipboard2.on('success', function (e) {
@@ -280,6 +291,21 @@
             clipboard2.on('error', function (e) {
                 layer.msg("复制失败！请手动复制")
             });
+
+
+            var clipboard2 = new ClipboardJS('#TrcAddress1', {
+                text: function () {
+                    return $("#TrcAddress").text();
+                }
+            });
+            clipboard2.on('success', function (e) {
+                layer.msg("复制成功！");
+            });
+            clipboard2.on('error', function (e) {
+                layer.msg("复制失败！请手动复制")
+            });
+
+
 
 
             // var log_login_request_param = {};

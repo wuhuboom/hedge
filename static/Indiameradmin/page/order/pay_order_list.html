@@ -69,6 +69,7 @@
                                 <option value="2">支付成功</option>
                                 <option value="3">失败</option>
                                 <option value="4">已过期</option>
+                                <option value="5">已确认</option>
                             </select>
                         </div>
                     </div>
@@ -287,7 +288,7 @@
                         {field: 'ActualAmount', title: '实际充值金额',  sort: true,align:"center",width:130},
                         {field: 'Commission', title: '手续费', sort: true,align:"center"},
                         {field: 'CallbackReturn', title: '回调返回信息', sort: true,align:"center",width:180},
-
+                        // {field: 'IFSC', title: 'IFSC', sort: true,align:"center",width:180},
                         {field: 'NoticeUrl', title: '回调地址', sort: true,align:"center",width:180},
                         {field: 'Currency', title: '币种', sort: true,align:"center"},
                         {field: 'OwnOrder', title: '我方平台订单', sort: true,align:"center",width:180},
@@ -325,7 +326,10 @@
                                     return '<button class="layui-btn  layui-btn-sm" style="background-color: #993055;border-color: #993055;">'+'失败'+'</button>'
                                 }else if(d.Status == "4"){//已过期
                                     return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">'+'已过期'+'</button>'
-                                }else{
+                                }else if(d.Status == "5"){//已确认
+                                    return '<button class="layui-btn  layui-btn-sm" style="background-color: #a2bee7;border-color: #a2bee7;">'+'已确认'+'</button>'
+                                }
+                                else{
                                     return ''
                                 }
 

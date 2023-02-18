@@ -89,9 +89,14 @@
                         </div>
                     </div>
 
+                    <div class="layui-inline layui-col-md5">
+                        <label class="layui-form-label">谷歌code</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="google_code" placeholder="谷歌code">
+                        </div>
+                    </div>
+
                 </div>
-
-
             </div>
         </div>
 
@@ -154,12 +159,10 @@
 
     var mybck = $.cookie('tokenMyb');
     if (mybck == "" || mybck == null) {
-
         window.top.location.href = "../../login.html";
-
     } else {
         var currParentDatas = eval('(' + parent.jsondata + ')')
-        // console.log(currParentDatas)
+        console.log(currParentDatas)
         $("#merchant").text(currParentDatas.MerchantNum)
         $("#ips").val(currParentDatas.WhiteIps)
         $("#login_password").val()
@@ -170,19 +173,21 @@
         $("#min_pay").val(currParentDatas.MinPay)
         $("#max_pay").val(currParentDatas.MaxPay)
         $("#withdraw_commission").val(currParentDatas.WithdrawCommission)
+        $("#google_code").val(currParentDatas.GoogleCode)
 
 
         var payChannelParant =  currParentDatas.PayChannel
         payChannelParant = payChannelParant.split('@')
-        // console.log("payChannelParant",payChannelParant)
+        // console.log("payChannelParant",payChannelParant);
         // var payChannelParantArray  =  eval('(' + payChannelParant.split('@') + ')');
         var paidChannelParant =   currParentDatas.PaidChannel
         paidChannelParant = paidChannelParant.split('@')
-        // console.log("paidChannelParant",paidChannelParant)
+        // console.log("paidChannelParant",paidChannelParant);
 
         var payChannelArrS = []
         var payingChannelArrS = []
         var CC
+
         layui.use(['layer', 'form', 'table', 'util', 'admin', 'xmSelect', 'notice'], function () {
             var $ = layui.jquery;
             var layer = layui.layer;
@@ -261,7 +266,6 @@
                                     value:item.ID
                                 })
                             }
-
                         })
 
                         paySel.update({
@@ -360,11 +364,11 @@
                 //     return false
                 // }
 
-                if(!$("#login_password").val()){
-
-                    layer.msg("登录密码不允许为空!", {icon: 2});
-                    return false
-                }
+                // if(!$("#login_password").val()){
+                //
+                //     layer.msg("登录密码不允许为空!", {icon: 2});
+                //     return false
+                // }
 
                 if(!$("#min_money").val()){
 
@@ -391,6 +395,12 @@
                 param['max_pay'] = $('#max_pay').val();
                 param['google_switch'] = $('#google_switch').val();
                 param['withdraw_commission'] = $('#withdraw_commission').val();
+
+                var google_code=$('#google_code').val();
+                if (google_code){
+                    param['google_code'] = google_code;
+                }
+
 
                 var pay_selectArr = paySel.getValue("name");
                 var pay_selectArrValue = paySel.getValue("value");

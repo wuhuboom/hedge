@@ -15,7 +15,7 @@ global_requestAddress_js_bankInformation="/admin/v1/bankInformation";
 //获取银行卡接口
 global_requestAddress_js_bank="/admin/v1/bank";
 
-//商户号管理/重置谷歌
+//商户号管理/重置谷歌/修改账户余额
 global_requestAddress_js_merchant="/admin/v1/merchant";
 
 // 代收订单
@@ -31,11 +31,17 @@ global_requestAddress_js_configOperation="/admin/v1/configOperation";
 global_requestAddress_js_gatewayOperation="/admin/v1/gatewayOperation";
 //首页每日数据/总数据
 global_requestAddress_js_getStatistics="/admin/v1/getStatistics";
-//账变
+//代理列表账变
 global_requestAddress_js_agencyChangeAmount="/admin/v1/agencyChangeAmount";
+
+//商户号列表账变
+global_requestAddress_js_merChangeAmount="/admin/v1/merChangeAmount";
 
 // 获取提现列表
 global_requestAddress_js_getRecord="/admin/v1/getRecord";
+
+
+
 
 const timeArr = [{
 	name:'Asia/Shanghai',

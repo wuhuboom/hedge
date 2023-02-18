@@ -178,7 +178,14 @@ func SetMyselfConfig(c *gin.Context) {
 	}
 	//JuniorPoint  下级税点
 	if ca, isE := c.GetPostForm("junior_point"); isE == true {
-		ups["JuniorPoint"], _ = strconv.ParseFloat(ca, 64)
+		parseFloat, _ := strconv.ParseFloat(ca, 64)
+		ups["JuniorPoint"]= parseFloat
+		if parseFloat >whoMap.PayPoint   || parseFloat >whoMap.CollectionPoint {
+			tools.ReturnErr101Code(c,"cant  > Cannot be greater than its own profit point ")
+			return
+		}
+
+
 	}
 
 	//min_withdraw 代理最小提现金额
@@ -186,10 +193,6 @@ func SetMyselfConfig(c *gin.Context) {
 		ups["MinWithdraw"], _ = strconv.ParseFloat(ca, 64)
 	}
 
-	///exchange_rate
-	if ca, isE := c.GetPostForm("exchange_rate"); isE == true {
-		ups["ExchangeRate"], _ = strconv.ParseFloat(ca, 64)
-	}
 	err := mysql.DB.Model(&model.AgencyRunner{}).Where("id=?", whoMap.ID).Update(ups).Error
 	if err != nil {
 		tools.ReturnErr101Code(c, "sorry, "+err.Error())

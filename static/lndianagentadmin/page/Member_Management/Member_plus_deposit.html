@@ -42,15 +42,15 @@
         </div>
     </div>
 
-    <div class="layui-form-item center" style=" margin: 15px 0 15px 0" >
-        <label class="layui-form-label">操作选项</label>
-        <div class="layui-input-block" style="width: 300px">
-            <select name="balance"  id="balance">
-                <option value="1">增加押金</option>
-                <option value="2">减少押金</option>
-            </select>
-        </div>
-    </div>
+<!--    <div class="layui-form-item center" style=" margin: 15px 0 15px 0" >-->
+<!--        <label class="layui-form-label">操作选项</label>-->
+<!--        <div class="layui-input-block" style="width: 300px">-->
+<!--            <select name="balance"  id="balance">-->
+<!--                <option value="1">增加押金</option>-->
+<!--                <option value="2">减少押金</option>-->
+<!--            </select>-->
+<!--        </div>-->
+<!--    </div>-->
 
 
     <div class="layui-form-item">
@@ -102,8 +102,6 @@
             var table = layui.table;
             var notice = layui.notice;
 
-
-
             form.val('example',{
                 "username":currParentDatas.Username,
             })
@@ -131,11 +129,6 @@
                     layer.msg("押金不允许为空!");
                     return false
                 }
-
-
-
-
-
 
                 var User_Info = {}
                 var Aval=form.val('example')
@@ -170,7 +163,6 @@
                         }else{
                             notice.msg(data.msg, {icon: 2});
                         }
-
                     },
                     error:function (err) {
                         console.log("err",err)
