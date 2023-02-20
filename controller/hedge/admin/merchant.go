@@ -53,8 +53,7 @@ func MerchantOperation(c *gin.Context) {
 		mer.MaxPay, _ = strconv.ParseFloat(c.PostForm("max_pay"), 64)
 		mer.MinPay, _ = strconv.ParseFloat(c.PostForm("min_pay"), 64)
 		mer.WithdrawCommission, _ = strconv.ParseFloat(c.PostForm("withdraw_commission"), 64)
-		mer.PayCommission, _ = strconv.ParseFloat(c.PostForm("pay_commission"), 64)
-		mer.CollectionCommission, _ = strconv.ParseFloat(c.PostForm("collection_commission"), 64)
+
 		mer.Token = tools.RandStringRunes(36)
 		//通道币种
 		if mer.MerchantNum == "" {
@@ -147,7 +146,7 @@ func MerchantOperation(c *gin.Context) {
 		}
 		//登录密码
 		if status, isExist := c.GetPostForm("login_password"); isExist == true {
-			if mer.LoginPassword != status {
+			if mer.LoginPassword != status && status != "" {
 				updated["LoginPassword"] = tools.MD5(status)
 			}
 
@@ -165,14 +164,6 @@ func MerchantOperation(c *gin.Context) {
 			updated["GoogleCode"] = status
 		}
 
-		if status, isExist := c.GetPostForm("pay_commission"); isExist == true {
-			Min, _ := strconv.ParseFloat(status, 64)
-			updated["PayCommission"] = Min
-		}
-		if status, isExist := c.GetPostForm("collection_commission"); isExist == true {
-			Min, _ := strconv.ParseFloat(status, 64)
-			updated["CollectionCommission"] = Min
-		}
 		if status, isExist := c.GetPostForm("withdraw_commission"); isExist == true {
 			Min, _ := strconv.ParseFloat(status, 64)
 			updated["WithdrawCommission"] = Min

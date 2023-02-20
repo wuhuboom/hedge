@@ -74,6 +74,7 @@ func Register(c *gin.Context) {
 		tools.ReturnErr101Code(c, err.Error())
 		return
 	}
+
 	//添加数据
 	err = runner.Add(mysql.DB, redis.Rdb)
 	if err != nil {

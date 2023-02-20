@@ -81,10 +81,10 @@ func Withdraw(c *gin.Context) {
 		//账变
 		change := modelPay.AmountChange{
 			MerchantNum: whoMap.MerchantNum,
-			Amount:      amount,
+			Amount:      -amount,
 			Before:      whoMap.AvailableAmount,
 			After:       whoMap.AvailableAmount - amount,
-			Kinds:       1, RecordId: record.ID}
+			Kinds:       1, RecordId: record.ID, Remark: "提现订单:" + record.OrderNum}
 		err = change.Add(db)
 		if err != nil {
 			db.Rollback()

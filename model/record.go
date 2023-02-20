@@ -23,7 +23,7 @@ type Record struct {
 	Remark               string
 	ActualAmount         float64 `gorm:"type:decimal(10,2);default:0"` //实际提现金额  U
 	ExchangeRate         float64 `gorm:"type:decimal(10,2);default:0"`
-	WithdrawalCommission float64 `gorm:"type:decimal(10,2);default:0"`
+	WithdrawalCommission float64 `gorm:"type:decimal(10,2);default:0"` //提现手续费
 	Date                 string
 	Certificate          string //凭证截图
 	TrcAddress           string `gorm:"-"`

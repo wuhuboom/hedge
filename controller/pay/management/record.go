@@ -1,6 +1,7 @@
 package management
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
@@ -131,7 +132,7 @@ func GetRecord(c *gin.Context) {
 			}
 		}
 		db := mysql.DB.Begin()
-		defer db.Commit()
+
 		//商户订单
 		if re.MerchantNum != "" && re.AgencyRunnerId == 0 {
 			//查询商户
@@ -143,22 +144,27 @@ func GetRecord(c *gin.Context) {
 			}
 			ups := make(map[string]interface{})
 			if status == 2 {
-				//成功   1 修改订单的状态  2扣除商户的冻结金额   3.生成管理的账变  4.管理生成账变
+				//成功   1 router/router.go  2扣除商户的冻结金额   3.生成管理的账变  4.管理生成账变
 				affected := db.Model(&model.Record{}).Where("id=?", id).Update(&model.Record{
 					Status: 2, Certificate: path, ExchangeRate: exchangeRate, ActualAmount: ActualAmount}).RowsAffected
 				if affected == 0 {
-					tools.ReturnErr101Code(c, eeor.OtherError("u f"))
+					tools.ReturnErr101Code(c, eeor.OtherError("u f").Error())
 					return
 				}
-				affected = db.Model(&model.Admin{}).Where("id=? and  profit=?", whoMap.ID, whoMap.Profit).Update(map[string]interface{}{"Profit": whoMap.Profit + re.WithdrawalCommission}).RowsAffected
+
+				fmt.Println(whoMap.Profit)
+				fmt.Println(re.WithdrawalCommission)
+				affected = db.Model(&model.Admin{}).
+					Where("id=? and  profit=?", whoMap.ID, whoMap.Profit).Update(map[string]interface{}{"Profit": whoMap.Profit + re.WithdrawalCommission}).RowsAffected
 				if affected == 0 {
 					db.Rollback()
-					tools.ReturnErr101Code(c, eeor.OtherError("u f"))
+					tools.ReturnErr101Code(c, eeor.OtherError("156 u f").Error())
 					return
 				}
 
 				//生成账变
-				change := model.AdminAccountChange{NowAmount: whoMap.Profit + re.WithdrawalCommission, ChangeAmount: re.WithdrawalCommission, FontAmount: whoMap.Profit, Kinds: 1, RecordId: re.ID}
+				change := model.AdminAccountChange{
+					NowAmount: whoMap.Profit + re.WithdrawalCommission, ChangeAmount: re.WithdrawalCommission, FontAmount: whoMap.Profit, Kinds: 1, RecordId: re.ID}
 				err = change.Add(db)
 				if err != nil {
 					db.Rollback()
@@ -174,7 +180,12 @@ func GetRecord(c *gin.Context) {
 				}
 				ups["AvailableAmount"] = mer.AvailableAmount + re.Amount + re.WithdrawalCommission
 				//商户账变
-				change := modelPay.AmountChange{MerchantNum: mer.MerchantNum, Amount: re.Amount + re.WithdrawalCommission, Before: mer.AvailableAmount, After: mer.AvailableAmount + re.Amount + re.WithdrawalCommission, RecordId: re.ID, Remark: remark}
+				change := modelPay.AmountChange{
+					MerchantNum: mer.MerchantNum,
+					Amount:      re.Amount + re.WithdrawalCommission,
+					Before:      mer.AvailableAmount,
+					After:       mer.AvailableAmount + re.Amount + re.WithdrawalCommission,
+					RecordId:    re.ID, Remark: "驳回提现订单:" + re.OrderNum + ";原因:" + remark}
 				err = change.Add(db)
 				if err != nil {
 					db.Rollback()
@@ -194,7 +205,6 @@ func GetRecord(c *gin.Context) {
 		} else if re.MerchantNum == "" && re.AgencyRunnerId != 0 {
 			//代理
 			//查询代理
-
 			agency := model.AgencyRunner{}
 			err := db.Where("id=?", re.AgencyRunnerId).First(&agency).Error
 			if err != nil {
@@ -214,6 +224,8 @@ func GetRecord(c *gin.Context) {
 			tools.ReturnErr101Code(c, "system is  fail")
 			return
 		}
+
+		db.Commit()
 		tools.ReturnSuccess2000Code(c, "OK")
 		redis.Rdb.Set("CashOrder_"+id, "12233", 5*time.Second)
 		return

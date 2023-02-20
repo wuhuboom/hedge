@@ -107,12 +107,12 @@
             <td id="Withdrawal_fee"></td>
           </tr>
 
-          <tr>
-            <td>代付手续费</td>
-            <td id="PayCommission"></td>
-            <td>代收手续费</td>
-            <td id="Commission"></td>
-          </tr>
+<!--          <tr>-->
+<!--            <td>代付手续费</td>-->
+<!--            <td id="PayCommission"></td>-->
+<!--            <td>代收手续费</td>-->
+<!--            <td id="Commission"></td>-->
+<!--          </tr>-->
 
           <tr>
             <td>最小充值金额</td>
@@ -251,7 +251,12 @@
 
 
 
-    var currParentDatas = eval('(' + parent.jsondata + ')')
+    var currParentDatasID = eval('(' + parent.jsondata + ')')
+    var currParentDatasID=currParentDatasID.ID
+    console.log("currParentDatasID",currParentDatasID)
+
+
+
     var currChannelData = eval('(' + parent.jsonPayPaidData + ')')
     channel = currChannelData.channelData
     var bankListArr = []
@@ -277,149 +282,167 @@
       var laydate = layui.laydate;
 
 
-      $("#MerChantNum").text(currParentDatas.MerchantNum)
-      $("#MerchantOrderNum").text(currParentDatas.MaxMoney)
-      $("#ChannelId").text(currParentDatas.MaxPay)
+      var param = {};
+      param['id']= currParentDatasID
+      param['limit']= 10
+      param['page']= 1
 
-      var statusHtml = ''
-      if(currParentDatas.Kinds === 1){
-        statusHtml ='<span class="layui-badge " style="background-color: #337ab7;border-color: #337ab7;">对冲账号</span>'
-      }else if(currParentDatas.Kinds === 2){
-        statusHtml ='<span class="layui-badge " style="background-color: #f3ba44;border-color: #f3ba44;">印度支付</span>'
-      }
-      $("#Status").append(statusHtml)
+      $.ajax({
+        url: global_requestAddress + global_requestAddress_js_merchant + "?action=one",
+        headers: {
+          "token": mybck
+        },
+        dataType: 'json',
+        type: 'post',
+        data: param,
+        success:function (res) {
+          if (res.code == 200){
+            currParentDatas=res.result
 
+            $("#MerChantNum").text(currParentDatas.MerchantNum)//商户号
+            $("#MerchantOrderNum").text(currParentDatas.MaxMoney)//最大充值金额
+            $("#ChannelId").text(currParentDatas.MaxPay)//最大代付金额
 
-      $("#Amount").text(currParentDatas.AvailableAmount)
-      $("#ActualAmount").text(currParentDatas.FreezeAmount)
-
-      var CollectionCommission = ''
-      if ((currParentDatas.CollectionCommission*1) >0){
-        CollectionCommission=currParentDatas.CollectionCommission*100+"%"
-      }else {
-        CollectionCommission =0
-      }
-      $("#Commission").append(CollectionCommission)//代收手续费
-
-
-
-      var PayCommission = ''
-      if ((currParentDatas.PayCommission*1) >0){
-         PayCommission=currParentDatas.PayCommission*100+"%"
-      }else {
-        PayCommission = 0
-      }
-
-      $("#PayCommission").append(PayCommission)//代收手续费
-
-
-
-
-
-      //
-      $("#Currency").text(currParentDatas.AllAmount)
-      $("#OwnOrder").text(currParentDatas.MinPay)
-      $("#Minimum_recharge").text(currParentDatas.MinMoney)
-      $("#gateway_address").text(currParentDatas.Gateway) //网关地址
-
-
-
-
-      $("#Google_verification_code").text(currParentDatas.GoogleCode)//谷歌验证码
-      $("#login_password").text(currParentDatas.LoginPassword)//登录密码
-
-
-      var WithdrawCommission = ''
-      if ((currParentDatas.WithdrawCommission*1) >0){
-        var WithdrawCommission=currParentDatas.WithdrawCommission*100+"%"
-      }else {
-        WithdrawCommission =0
-      }
-      $("#Withdrawal_fee").append(WithdrawCommission)//提现手续费
-      $("#Token").text(currParentDatas.Token)//Token
-      $("#payment_key").text(currParentDatas.ApiKey)//支付秘钥
-      $("#whitelist").text(currParentDatas.WhiteIps)//白名单
-
-      $("#Created").text(moment(currParentDatas.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
-      $("#Updated").text(moment(currParentDatas.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
-
-
-
-
-
-      //
-
-      // console.log("currParentDatas",currParentDatas)
-
-      //代收
-      let ipsArr = currParentDatas.PayChannel.split('@')
-      // console.log("ipsArr",ipsArr)
-      //代付
-      let ipsArr1 =currParentDatas.PaidChannel.split('@')
-
-      //代付通道
-      for (var i=0;i<channel.length;i++){
-
-        if (channel[i].Kinds == "2"){
-          for (var a=0;a<ipsArr1.length;a++){
-            if (channel[i].ID == ipsArr1[a]){
-              payChannelArrS.push(channel[i].ChannelName)
+            var statusHtml = ''
+            if(currParentDatas.Kinds === 1){
+              statusHtml ='<span class="layui-badge " style="background-color: #337ab7;border-color: #337ab7;">对冲账号</span>'
+            }else if(currParentDatas.Kinds === 2){
+              statusHtml ='<span class="layui-badge " style="background-color: #f3ba44;border-color: #f3ba44;">印度支付</span>'
             }
-          }
-        }
+            $("#Status").append(statusHtml)//类型
 
-        //代收通道
-        else if (channel[i].Kinds == "1"){
-          for (var b=0;b<ipsArr.length;b++){
-            if (channel[i].ID == ipsArr[b]){
-              payingChannelArrS.push(channel[i].ChannelName)
+            $("#Amount").text(currParentDatas.AvailableAmount)//账户可用余额
+            $("#ActualAmount").text(currParentDatas.FreezeAmount)//冻结金额
+
+            var CollectionCommission = ''
+            if ((currParentDatas.CollectionCommission*1) >0){
+              if (currParentDatas.CollectionCommission == 0.07){
+                CollectionCommission="7%"
+              }else {
+                CollectionCommission=currParentDatas.CollectionCommission*100+"%"
+              }
+            }else {
+              CollectionCommission =0
             }
+            $("#Commission").append(CollectionCommission)//代收手续费
+
+            var PayCommission = ''
+            if ((currParentDatas.PayCommission*1) >0){
+              if (currParentDatas.PayCommission== 0.07){
+                PayCommission="7%"
+              }else {
+                PayCommission=currParentDatas.PayCommission*100+"%"
+              }
+            }else {
+              PayCommission = 0
+            }
+            $("#PayCommission").append(PayCommission)//代付手续费
+            $("#Currency").text(currParentDatas.AllAmount)//账户余额
+            $("#OwnOrder").text(currParentDatas.MinPay)//最小代付金额
+            $("#Minimum_recharge").text(currParentDatas.MinMoney)//最小充值金额
+            $("#gateway_address").text(currParentDatas.Gateway) //网关地址
+
+            $("#Google_verification_code").text(currParentDatas.GoogleCode)//谷歌验证码
+            $("#login_password").text(currParentDatas.LoginPassword)//登录密码
+
+            var WithdrawCommission = ''
+            if ((currParentDatas.WithdrawCommission*1) >0){
+              if (currParentDatas.WithdrawCommission == 0.07){
+                WithdrawCommission="7%"
+              }else {
+                WithdrawCommission=currParentDatas.WithdrawCommission*100+"%"
+              }
+            }else {
+              WithdrawCommission =0
+            }
+            $("#Withdrawal_fee").append(WithdrawCommission)//提现手续费
+            $("#Token").text(currParentDatas.Token)//Token
+            $("#payment_key").text(currParentDatas.ApiKey)//支付秘钥
+            $("#whitelist").text(currParentDatas.WhiteIps)//白名单
+
+            $("#Created").text(moment(currParentDatas.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))//创建时间
+            $("#Updated").text(moment(currParentDatas.Updated * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))//更新时间
+
+            // console.log("currParentDatas",currParentDatas)
+
+            //代收
+            let ipsArr = currParentDatas.PayChannel.split('@')
+            // console.log("ipsArr",ipsArr)
+            //代付
+            let ipsArr1 =currParentDatas.PaidChannel.split('@')
+
+            //代付通道
+            for (var i=0;i<channel.length;i++){
+
+              if (channel[i].Kinds == "2"){
+                for (var a=0;a<ipsArr1.length;a++){
+                  if (channel[i].ID == ipsArr1[a]){
+                    payChannelArrS.push(channel[i].ChannelName)
+                  }
+                }
+              }
+
+              //代收通道
+              else if (channel[i].Kinds == "1"){
+                for (var b=0;b<ipsArr.length;b++){
+                  if (channel[i].ID == ipsArr[b]){
+                    payingChannelArrS.push(channel[i].ChannelName)
+                  }
+                }
+
+              }
+            }
+
+            // channel.result.forEach((item,index)=>{
+            //   if(item.Kinds == '1'){
+            //     console.log("代付",item)
+            //     ipsArr1.forEach((itemE,index)=>{
+            //         if(item.ID == itemE){
+            //           payingChannelArrS.push(item.ChannelName)
+            //         }
+            //     })
+            //   }else{
+            //     ipsArr.forEach((itemE,index)=>{
+            //       if(item.ID == itemE){
+            //         payChannelArrS.push(item.ChannelName)
+            //       }
+            //     })
+            //   }
+            // })
+
+
+            //代付通道
+            let Name1 = payChannelArrS
+            let ipsHtml1 = ""
+            Name1.forEach((item,index)=>{
+              if(index == 0){
+                ipsHtml1 = ipsHtml1 +'<span class="layui-badge paycolor" > ' + item + '</span>'
+              }else{
+                ipsHtml1 = ipsHtml1 + '<span class="layui-badge paycolor" style=\'margin-left: 10px\'> ' + item + '</span>'
+              }
+            })
+            $("#PaymentChannel").append(ipsHtml1)
+
+            //代收渠道
+            let Name = payingChannelArrS
+            let ipsHtml = ""
+            Name.forEach((item,index)=>{
+              if(index == 0){
+                ipsHtml = ipsHtml +'<span class="layui-badge paidcolor" > ' + item + '</span>'
+              }else{
+                ipsHtml = ipsHtml + '<span class="layui-badge paidcolor" style=\'margin-left: 10px\'> ' + item + '</span>'
+              }
+            })
+            $("#ProofOfPayment").append(ipsHtml)
           }
 
-        }
-      }
-
-      // channel.result.forEach((item,index)=>{
-      //   if(item.Kinds == '1'){
-      //     console.log("代付",item)
-      //     ipsArr1.forEach((itemE,index)=>{
-      //         if(item.ID == itemE){
-      //           payingChannelArrS.push(item.ChannelName)
-      //         }
-      //     })
-      //   }else{
-      //     ipsArr.forEach((itemE,index)=>{
-      //       if(item.ID == itemE){
-      //         payChannelArrS.push(item.ChannelName)
-      //       }
-      //     })
-      //   }
-      // })
 
 
-      //代付通道
-      let Name1 = payChannelArrS
-      let ipsHtml1 = ""
-      Name1.forEach((item,index)=>{
-        if(index == 0){
-          ipsHtml1 = ipsHtml1 +'<span class="layui-badge paycolor" > ' + item + '</span>'
-        }else{
-          ipsHtml1 = ipsHtml1 + '<span class="layui-badge paycolor" style=\'margin-left: 10px\'> ' + item + '</span>'
+
         }
       })
-      $("#PaymentChannel").append(ipsHtml1)
 
-      //代收渠道
-      let Name = payingChannelArrS
-      let ipsHtml = ""
-      Name.forEach((item,index)=>{
-        if(index == 0){
-          ipsHtml = ipsHtml +'<span class="layui-badge paidcolor" > ' + item + '</span>'
-        }else{
-          ipsHtml = ipsHtml + '<span class="layui-badge paidcolor" style=\'margin-left: 10px\'> ' + item + '</span>'
-        }
-      })
-      $("#ProofOfPayment").append(ipsHtml)
+
 
 
     });

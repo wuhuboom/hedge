@@ -49,7 +49,7 @@ type Runner struct {
 	ChangeBalance         float64             `gorm:"-"` //变化的余额
 	ChangeCommission      float64             `gorm:"-"`
 	IfExistSubordinate    int                 `gorm:"-"` //是否存在下级
-	SuperiorName          string              `gorm:"-"`   //上级用户名
+	SuperiorName          string              `gorm:"-"` //上级用户名
 }
 
 func CheckIsExistModelRunner(db *gorm.DB) {
@@ -71,10 +71,6 @@ func (r *Runner) GetRunnerUsername(db *gorm.DB) string {
 	db.Where("id=?", r.ID).First(r)
 	return r.Username
 }
-
-
-
-
 
 // Add 创建奔跑者
 func (r *Runner) Add(db *gorm.DB, redis *redis.Client) error {
@@ -132,6 +128,7 @@ func (r *Runner) CheckInvitationCode(db *gorm.DB) (*Runner, error) {
 		r.CollectionPoint = agencyRunner.JuniorPoint
 		r.PayPoint = agencyRunner.JuniorPoint
 		r.WithdrawCommission = agencyRunner.JuniorWithdrawCommission
+		r.JuniorPoint = runner.JuniorPoint
 		return r, nil
 	} else if len(r.InvitationCode) == 6 {
 		//上级代理
@@ -144,6 +141,7 @@ func (r *Runner) CheckInvitationCode(db *gorm.DB) (*Runner, error) {
 		r.CollectionPoint = agencyRunner.JuniorPoint
 		r.PayPoint = agencyRunner.JuniorPoint
 		r.WithdrawCommission = agencyRunner.JuniorWithdrawCommission
+		r.JuniorPoint = agencyRunner.JuniorPoint
 		return r, nil
 	} else {
 		return r, eeor.OtherError("The invitation code is invalid")

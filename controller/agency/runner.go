@@ -79,25 +79,31 @@ func RunnerOperation(c *gin.Context) {
 		}
 		//修改密码
 		if password, IsE := c.GetPostForm("password"); IsE == true {
-			runner.Password = tools.MD5(password)
-			err := runner.ChangePassword(mysql.DB)
-			if err != nil {
-				tools.ReturnErr101Code(c, err)
+			if password != "" {
+				runner.Password = tools.MD5(password)
+				err := runner.ChangePassword(mysql.DB)
+				if err != nil {
+					tools.ReturnErr101Code(c, err)
+					return
+				}
+				tools.ReturnSuccess2000Code(c, "Password changed successfully")
 				return
 			}
-			tools.ReturnSuccess2000Code(c, "Password changed successfully")
-			return
 		}
 		//修改支付密码
 		if password, IsE := c.GetPostForm("pay_password"); IsE == true {
-			runner.PayPassword = password
-			err := runner.ChangePayPassword(mysql.DB)
-			if err != nil {
-				tools.ReturnErr101Code(c, err)
+
+			if password != "" {
+				runner.PayPassword = password
+				err := runner.ChangePayPassword(mysql.DB)
+				if err != nil {
+					tools.ReturnErr101Code(c, err)
+					return
+				}
+				tools.ReturnSuccess2000Code(c, "pay_password changed successfully")
 				return
 			}
-			tools.ReturnSuccess2000Code(c, "pay_password changed successfully")
-			return
+
 		}
 		//修改玩家押金
 		if cashPledge, isE := c.GetPostForm("cash_pledge"); isE == true {

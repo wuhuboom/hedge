@@ -89,19 +89,19 @@
                         </div>
                     </div>
 
-                    <div class="layui-inline layui-col-md3">
-                        <label class="layui-form-label">代收手续费</label>
-                        <div class="layui-input-block">
-                            <input type="text" class="layui-input " id="collection_commission" placeholder="请在此输入代收手续费">
-                        </div>
-                    </div>
+<!--                    <div class="layui-inline layui-col-md3">-->
+<!--                        <label class="layui-form-label">代收手续费</label>-->
+<!--                        <div class="layui-input-block">-->
+<!--                            <input type="text" class="layui-input " id="collection_commission" placeholder="请在此输入代收手续费">-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <div class="layui-inline layui-col-md3">
-                        <label class="layui-form-label">代付手续费</label>
-                        <div class="layui-input-block">
-                            <input type="text" class="layui-input " id="pay_commission" placeholder="请在此输入代付手续费">
-                        </div>
-                    </div>
+<!--                    <div class="layui-inline layui-col-md3">-->
+<!--                        <label class="layui-form-label">代付手续费</label>-->
+<!--                        <div class="layui-input-block">-->
+<!--                            <input type="text" class="layui-input " id="pay_commission" placeholder="请在此输入代付手续费">-->
+<!--                        </div>-->
+<!--                    </div>-->
 
                     <div class="layui-inline layui-col-md5">
                         <label class="layui-form-label">谷歌code</label>
@@ -189,8 +189,8 @@
         $("#withdraw_commission").val(currParentDatas.WithdrawCommission)
         $("#google_code").val(currParentDatas.GoogleCode)
 
-        $("#collection_commission").val(currParentDatas.CollectionCommission)
-        $("#pay_commission").val(currParentDatas.PayCommission)
+        // $("#collection_commission").val(currParentDatas.CollectionCommission)
+        // $("#pay_commission").val(currParentDatas.PayCommission)
 
 
         var payChannelParant =  currParentDatas.PayChannel
@@ -400,21 +400,53 @@
                 }
 
                 var param = {};
+
+
+
                 param['id'] = currParentDatas.ID;
-                param['kinds'] = 2;
-                param['login_password'] = $('#login_password').val();
-                param['min_money'] =$('#min_money').val();
-                param['max_money'] = $('#max_money').val();
-                param['ips'] = $('#ips').val();
+                // param['kinds'] = 2;
 
-                param['gateway_id'] = $('#gateway').val();
-                param['min_pay'] = $('#min_pay').val();
-                param['max_pay'] = $('#max_pay').val();
-                param['google_switch'] = $('#google_switch').val();
-                param['withdraw_commission'] = $('#withdraw_commission').val();
+                if ($('#login_password').val()){
+                    param['login_password'] = $('#login_password').val();//登录密码
+                }
+                if ($('#min_money').val()){
+                    param['min_money'] =$('#min_money').val();//最小金额
+                }
+                if ($('#max_money').val()){
+                    param['max_money'] = $('#max_money').val();//最大金额
+                }
+                if ($('#ips').val()){
+                    param['ips'] = $('#ips').val();//IP白名单
+                }
 
-                param['collection_commission'] = $('#collection_commission').val();
-                param['pay_commission'] = $('#pay_commission').val();
+                if ($('#gateway').val()){
+                    param['gateway_id'] = $('#gateway').val();//网关地址
+                }
+
+                if ($('#min_pay').val()){
+                    param['min_pay'] = $('#min_pay').val();//最小代付
+                }
+
+                if ($('#max_pay').val()){
+                    param['max_pay'] = $('#max_pay').val();//最大代付
+                }
+
+                if ($('#google_switch').val()){
+                    param['google_switch'] = $('#google_switch').val();//谷歌开关
+                }
+
+                if ($('#withdraw_commission').val()){
+                    param['withdraw_commission'] = $('#withdraw_commission').val();//提现手续费
+                }
+
+                // if ($('#collection_commission').val()){
+                //     param['collection_commission'] = $('#collection_commission').val();//代收手续费
+                // }
+
+                // if ($('#pay_commission').val()){
+                //     param['pay_commission'] = $('#pay_commission').val();//代付手续费
+                // }
+
 
                 var google_code=$('#google_code').val();
                 if (google_code){
