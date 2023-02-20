@@ -34,6 +34,11 @@ func RunnerOperation(c *gin.Context) {
 		db.Model(model.Runner{}).Count(&total)
 		db = db.Model(&model.Runner{}).Offset((page - 1) * limit).Limit(limit).Order("register_time desc")
 		db.Find(&sl)
+		for i, runner := range sl {
+			m := model.Runner{ID: runner.Superior, Username: whoMap.Username}
+			m.GetRunnerUsername(mysql.DB)
+			sl[i].SuperiorName = m.Username
+		}
 		admin.ReturnDataLIst2000(c, sl, total)
 		return
 	}
@@ -91,7 +96,7 @@ func RunnerOperation(c *gin.Context) {
 				tools.ReturnErr101Code(c, err)
 				return
 			}
-			tools.ReturnErr101Code(c, "pay_password changed successfully")
+			tools.ReturnSuccess2000Code(c, "pay_password changed successfully")
 			return
 		}
 		//修改玩家押金
@@ -159,7 +164,7 @@ func RunnerOperation(c *gin.Context) {
 			err := runner.ChangeCommissionAndBalance(db)
 			if err != nil {
 				db.Rollback()
-				tools.ReturnErr101Code(c, err)
+				tools.ReturnErr101Code(c, err.Error())
 				return
 			}
 			db.Commit()
@@ -217,7 +222,46 @@ func RunnerOperation(c *gin.Context) {
 		id := c.PostForm("id")
 		runner := model.Runner{}
 		mysql.DB.Where("id=? and  agency_runner_id=?", id, whoMap.ID).First(&runner)
+		m2 := model.Runner{ID: runner.Superior, Username: whoMap.Username}
+		m2.GetRunnerUsername(mysql.DB)
+		runner.SuperiorName = m2.Username
 		tools.ReturnSuccess2000DataCode(c, runner, "OK")
+		return
+	}
+
+}
+
+// GetRunnerAmountChange 奔跑者账变
+func GetRunnerAmountChange(c *gin.Context) {
+	who, _ := c.Get("who")
+	whoMap := who.(model.AgencyRunner)
+	action := c.Query("action")
+	if action == "check" {
+		id := c.PostForm("id")
+		err := mysql.DB.Where("id=?  and  agency_runner_id=?", id, whoMap.ID).First(&model.Runner{}).Error
+		if err != nil {
+			tools.ReturnErr101Code(c, "runner is  not  exist")
+			return
+		}
+		//查询bankCard
+		limit, _ := strconv.Atoi(c.PostForm("limit"))
+		page, _ := strconv.Atoi(c.PostForm("page"))
+		sl := make([]model.RunnerAmountChange, 0)
+		db := mysql.DB.Where("runner_id=?", id)
+		var total int
+		//  状态
+		if kinds, IsE := c.GetPostForm("kinds"); IsE == true {
+			db = db.Where("kinds=?", kinds)
+		}
+		db.Model(model.RunnerAmountChange{}).Count(&total)
+		db = db.Model(&model.RunnerAmountChange{}).Offset((page - 1) * limit).Limit(limit).Order("created desc")
+		db.Find(&sl)
+		for i, runner := range sl {
+			m := model.Runner{ID: runner.RunnerId}
+			m.GetRunnerUsername(mysql.DB)
+			sl[i].RunnerName = m.Username
+		}
+		admin.ReturnDataLIst2000(c, sl, total)
 		return
 	}
 

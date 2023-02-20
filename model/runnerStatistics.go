@@ -61,7 +61,7 @@ func (rt *RunnerStatistics) Add(db *gorm.DB) error {
 		ups["PayCount"] = tr2.PayCount + rt.PayCount
 		ups["PayAllCount"] = tr2.PayAllCount + rt.PayAllCount
 		ups["Updated"] = time.Now().Unix()
-		affected := db.Debug().Model(&RunnerStatistics{}).Where("id=? and  updated=?", tr2.Id, tr2.Updated).Update(ups).RowsAffected
+		affected := db.Model(&RunnerStatistics{}).Where("id=? and  updated=?", tr2.Id, tr2.Updated).Update(ups).RowsAffected
 		if affected == 0 {
 			return eeor.OtherError("RunnerStatistics add  65 u is fail")
 		}

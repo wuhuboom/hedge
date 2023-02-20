@@ -49,15 +49,15 @@
 <!--        </div>-->
 <!--    </div>-->
 
-<!--    <div class="layui-form-item center" style=" margin: 15px 0 15px 0" >-->
-<!--        <label class="layui-form-label">操作选项</label>-->
-<!--        <div class="layui-input-block" style="width: 300px">-->
-<!--            <select name="balance"  id="balance">-->
-<!--                <option value="1">增加余额</option>-->
-<!--                <option value="2">减少余额</option>-->
-<!--            </select>-->
-<!--        </div>-->
-<!--    </div>-->
+    <div class="layui-form-item center" style=" margin: 15px 0 15px 0" >
+        <label class="layui-form-label">操作选项</label>
+        <div class="layui-input-block" style="width: 300px">
+            <select name="balance"  id="balance">
+                <option value="1">增加余额</option>
+                <option value="2">减少余额</option>
+            </select>
+        </div>
+    </div>
 
 
     <div class="layui-form-item">
@@ -109,7 +109,7 @@
             var table = layui.table;
             var notice = layui.notice;
 
-            console.log("currParentDatas",currParentDatas)
+            // console.log("currParentDatas",currParentDatas)
             form.val('example',{
                 "username":currParentDatas.Username,
                 "current_balance":currParentDatas.Balance,
@@ -128,11 +128,6 @@
 
             //确定发送到数据库并闭窗口
             $("#confirm").click(function () {
-
-                // if (!$("#remark").val()){
-                //     layer.msg("备注不允许为空!");
-                //     return false
-                // }
 
                 if (!$("#modify_balance").val()){
                     layer.msg("余额不允许为空!");
@@ -157,7 +152,7 @@
                 User_Info.balance=Aval.modify_balance
                 User_Info.remark=Aval.remark
 
-                // console.log("User_Info",User_Info)
+                console.log("User_Info",User_Info)
 
                 $.ajax({
                     url: global_requestAddress+global_requestAddress_js_runnerOperation+"?action=update",

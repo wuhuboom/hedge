@@ -20,6 +20,7 @@ type RunnerAmountChange struct {
 	RecordId     int
 	Date         string
 	Col          modelPay.Collection `gorm:"-"`
+	RunnerName   string              `gorm:"-"`
 }
 
 func CheckIsExistModelRunnerAmountChange(db *gorm.DB) {

@@ -48,7 +48,8 @@ type Runner struct {
 	Col                   modelPay.Collection `gorm:"-"`
 	ChangeBalance         float64             `gorm:"-"` //变化的余额
 	ChangeCommission      float64             `gorm:"-"`
-	IfExistSubordinate    int                 `gorm:"-"`  //是否存在下级
+	IfExistSubordinate    int                 `gorm:"-"` //是否存在下级
+	SuperiorName          string              `gorm:"-"`   //上级用户名
 }
 
 func CheckIsExistModelRunner(db *gorm.DB) {
@@ -70,6 +71,10 @@ func (r *Runner) GetRunnerUsername(db *gorm.DB) string {
 	db.Where("id=?", r.ID).First(r)
 	return r.Username
 }
+
+
+
+
 
 // Add 创建奔跑者
 func (r *Runner) Add(db *gorm.DB, redis *redis.Client) error {
@@ -345,7 +350,8 @@ func (r *Runner) ChangeCommissionAndBalance(db *gorm.DB) error {
 	ups := make(map[string]interface{})
 	db1 := db
 	db = db.Model(&Runner{}).Where("id=?", r.ID)
-	if r.Balance != 0 {
+
+	if r.ChangeBalance != 0 {
 		ups["Balance"] = r.Balance + r.ChangeBalance
 		db = db.Where("balance=?", r.Balance)
 		//添加账变(余额)
@@ -359,7 +365,7 @@ func (r *Runner) ChangeCommissionAndBalance(db *gorm.DB) error {
 			return err
 		}
 	}
-	if r.Commission != 0 {
+	if r.ChangeCommission != 0 {
 		ups["Commission"] = r.Commission + r.ChangeCommission
 		db = db.Where("commission=?", r.Commission)
 		//添加账变(佣金)
@@ -375,7 +381,7 @@ func (r *Runner) ChangeCommissionAndBalance(db *gorm.DB) error {
 	}
 	affected := db.Update(ups).RowsAffected
 	if affected == 0 {
-		return eeor.OtherError("Failed to update")
+		return eeor.OtherError("ChangeCommissionAndBalance  383  Failed to update")
 	}
 	return nil
 }

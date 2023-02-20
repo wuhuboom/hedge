@@ -133,12 +133,15 @@
     <!-- 下拉菜单 -->
     <ul class="dropdown-menu-nav dropdown-bottom-center layui-hide  " id="userTbDrop{{d.LAY_INDEX}}">
         <div class="dropdown-anchor"></div>
-        <li><a lay-event="CashPledge_edit">修改押金</a></li>
         <li><a lay-event="modify_balance">修改余额</a></li>
-        <li><a lay-event="CollectionLimit_edit">修改代收额度</a></li>
-        <li><a lay-event="grundlegende_Modifikation">修改</a></li>
+    <li><a lay-event="grundlegende_Modifikation">修改</a></li>
         <li><a lay-event="account_change">账变</a></li>
-        <li><a lay-event="Withdrawal_Amount">提现金额</a></li>
+        <li><a lay-event="Withdrawal_Amount">修改提现手续费</a></li>
+        <li><a lay-event="CashPledge_edit">修改押金</a></li>
+        <li><a lay-event="password_vip">修改密码</a></li>
+        <li><a lay-event="pay_password_vip">修改支付密码</a></li>
+        <li><a lay-event="CollectionLimit_edit">修改代收金额</a></li>
+<!--    <li><a lay-event="collection_limit_vip">修改代收金额</a></li>-->
 <!--    <li><a lay-event="resetGoogle">重置google</a></li>-->
     </ul>
 
@@ -177,7 +180,8 @@
             var dropdown = layui.dropdown;
 
             var log_login_request_param = {};
-            // log_login_request_param['token']= $.cookie('tokenMyb');
+            log_login_request_param['token']= $.cookie('tokenMyb');
+            log_login_request_param['token']= $.cookie('tokenMyb');
 
             /* 渲染表格 */
             var tableCols = tableSetCol(getTableCols(), local_storage_key);
@@ -249,7 +253,7 @@
 
                     {field: 'Username', title: '代理账号 ',  sort: true,align:"center",width: 150},
 
-                    {field: 'Superior', title: '上级玩家',  sort: true,align:"center",width: 150},
+                    {field: 'superior_name', title: '上级玩家',  sort: true,align:"center",width: 150},
 
                     {field: 'CashPledge', title: '押金',  sort: true,align:"center",width: 150},
 
@@ -287,7 +291,7 @@
 
                         }},
 
-                    {field: 'PaySwitch', title: '代付开关',  sort: true,align:"center",width: 150,//
+                    {field: 'PaySwitch', title: '代付开关',  sort: true,align:"center",width: 150,
                         templet:function (d) {
                             var state = "";
                             if(d.PaySwitch == "1"){//正常,checked 打开
@@ -326,6 +330,7 @@
                     //             return ''
                     //         }
                     //     }},
+
                     {field: 'InvitationCode', title: '邀请码',  sort: true,align:"center",width: 150,hide:true},
 
                     {field: 'LeverTree', title: 'LeverTree',  sort: true,align:"center",width: 150,hide:true},
@@ -349,8 +354,12 @@
 
                     // {field: 'FreezeMonet', title: '提现冻结金额',  sort: true,align:"center",width: 150},
 
-                    {field: 'WithdrawCommission', title: '提现手续费',  sort: true,align:"center",width: 150,hide:true,templet:function (d) {
-                            // console.log("WithdrawCommission",d.WithdrawCommission)
+                    {field: 'WithdrawCommission', title: '提现金额手续费',  sort: true,align:"center",width: 150,hide:true,templet:function (d) {
+                            if ((d.WithdrawCommission*1) >0){
+                                var number=d.WithdrawCommission*100+"%"
+                                return number
+                            }
+                            return 0
                         }},
 
                     // {field: 'FreezeCashPledge', title: '冻结的额度',  sort: true,align:"center",width: 150},
@@ -358,7 +367,6 @@
 
                     {field: 'Token', title: 'token',  sort: true,align:"center",width: 150,hide:true},
 
-                    //
                     // {field: 'Created', title: '创建时间',width:170, sort: true,align:"center",templet: function(d){
                     //         return moment(d.Created * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss');
                     //         // return util.toDateString(d.Created * 1000);
@@ -469,7 +477,6 @@
                     }
                 },false);
 
-
                 return false;
             });
             //监听状态开关按钮操作
@@ -497,9 +504,7 @@
                 if(currStatusBool){  //currStatusBool true
                     messageTitle = '系统将对该商户号进行解禁操作,确定对当前商户号进行解禁操作吗?'
                 }else{ //false
-
                     messageTitle = '系统将对该商户号进行禁用操作,确定对当前商户号进行禁用操作吗?'
-
                 }
 
                 //弹窗组件
@@ -847,7 +852,7 @@
                 else if (obj.event === 'CashPledge_edit'){
                     jsondata = JSON.stringify(currDatas)
                     var index = layui.layer.open({
-                        area: ['500px', '250px'],
+                        area: ['500px', '300px'],
                         fixed: false, //不固定
                         maxmin: false,
                         title : "押金修改",
@@ -878,7 +883,7 @@
                 else if (obj.event === 'CollectionLimit_edit'){
                     jsondata = JSON.stringify(currDatas)
                     var index = layui.layer.open({
-                        area: ['500px', '350px'],
+                        area: ['500px', '400px'],
                         fixed: false, //不固定
                         maxmin: false,
                         title : "修改代收额度",
@@ -904,7 +909,7 @@
                     jsondata = JSON.stringify(currDatas)
                     var index = layui.layer.open({
                         // area: ['1200px', '785px'],//加入备注
-                        area: ['1200px', '650px'],
+                        area: ['500px', '300px'],
                         fixed: false, //不固定
                         maxmin: false,
                         title : "修改",
@@ -978,14 +983,14 @@
                     })
                 }
 
-                //提现金额
+                //提现金额手续费
                 else if (obj.event === 'Withdrawal_Amount'){
                     jsondata = JSON.stringify(currDatas)
                     var index = layui.layer.open({
                         area: ['500px', '250px'],
                         fixed: false, //不固定
                         maxmin: false,
-                        title : "提现金额",
+                        title : "提现金额手续费",
                         skin: 'layui-layer-rim',//加上边框
                         type : 2,
                         content : "Withdrawal_Amount.html",
@@ -1003,6 +1008,84 @@
                         }
                     })
                 }
+
+                //修改密码
+                else if (obj.event === 'password_vip'){
+                    jsondata = JSON.stringify(currDatas)
+                    var index = layui.layer.open({
+                        area: ['500px', '250px'],
+                        fixed: false, //不固定
+                        maxmin: false,
+                        title : "修改代理账号登录密码",
+                        skin: 'layui-layer-rim',//加上边框
+                        type : 2,
+                        content : "password_vip.html",
+                        success : function(layero, index){
+                            var body = layui.layer.getChildFrame('body', index);
+                            if(currDatas) {
+                            }
+                        },
+                        end : function() {//弹窗关闭后的回调函数
+                            //利用laypage实现局部刷新,以下两种方式都可以
+                            // $(".layui-laypage-btn").click()
+                            //直接刷新当前修改的行
+                            $(".layui-laypage-btn")[0].click()
+
+                        }
+                    })
+                }
+
+                //支付密码
+                else if (obj.event === 'pay_password_vip'){
+                    jsondata = JSON.stringify(currDatas)
+                    var index = layui.layer.open({
+                        area: ['500px', '250px'],
+                        fixed: false, //不固定
+                        maxmin: false,
+                        title : "修改代理账号支付密码",
+                        skin: 'layui-layer-rim',//加上边框
+                        type : 2,
+                        content : "pay_password_vip.html",
+                        success : function(layero, index){
+                            var body = layui.layer.getChildFrame('body', index);
+                            if(currDatas) {
+                            }
+                        },
+                        end : function() {//弹窗关闭后的回调函数
+                            //利用laypage实现局部刷新,以下两种方式都可以
+                            // $(".layui-laypage-btn").click()
+                            //直接刷新当前修改的行
+                            $(".layui-laypage-btn")[0].click()
+
+                        }
+                    })
+                }
+
+                //代收金额
+                // else if (obj.event === 'collection_limit_vip'){
+                //     jsondata = JSON.stringify(currDatas)
+                //     var index = layui.layer.open({
+                //         area: ['500px', '250px'],
+                //         fixed: false, //不固定
+                //         maxmin: false,
+                //         title : "提现金额",
+                //         skin: 'layui-layer-rim',//加上边框
+                //         type : 2,
+                //         content : "Withdrawal_Amount.html",
+                //         success : function(layero, index){
+                //             var body = layui.layer.getChildFrame('body', index);
+                //             if(currDatas) {
+                //             }
+                //         },
+                //         end : function() {//弹窗关闭后的回调函数
+                //             //利用laypage实现局部刷新,以下两种方式都可以
+                //             // $(".layui-laypage-btn").click()
+                //             //直接刷新当前修改的行
+                //             $(".layui-laypage-btn")[0].click()
+                //
+                //         }
+                //     })
+                // }
 
             });
             // 添加

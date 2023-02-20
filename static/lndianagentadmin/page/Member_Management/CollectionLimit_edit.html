@@ -49,15 +49,15 @@
 <!--        </div>-->
 <!--    </div>-->
 
-<!--    <div class="layui-form-item center" style=" margin: 15px 0 15px 0" >-->
-<!--        <label class="layui-form-label">操作选项</label>-->
-<!--        <div class="layui-input-block" style="width: 300px">-->
-<!--            <select name="balance"  id="balance">-->
-<!--                <option value="1">增加代收额度</option>-->
-<!--                <option value="2">减少代收额度</option>-->
-<!--            </select>-->
-<!--        </div>-->
-<!--    </div>-->
+    <div class="layui-form-item center" style=" margin: 15px 0 15px 0" >
+        <label class="layui-form-label">操作选项</label>
+        <div class="layui-input-block" style="width: 300px">
+            <select name="balance"  id="balance">
+                <option value="1">增加代收额度</option>
+                <option value="2">减少代收额度</option>
+            </select>
+        </div>
+    </div>
 
     <div class="layui-form-item">
         <label class="layui-form-label">代收金额</label>
@@ -151,12 +151,13 @@
                     Aval.balance_change *=-1
                 }
 
+
                 //返回结果
                 User_Info.id=currParentDatas.ID
                 User_Info.collection_limit=Aval.balance_change
                 User_Info.remark=Aval.remark
 
-                // console.log("User_Info",User_Info)
+                console.log("User_Info",User_Info)
 
                 $.ajax({
                     url: global_requestAddress+global_requestAddress_js_runnerOperation+"?action=update",

@@ -103,15 +103,6 @@
 <div class="layui-fluid ew-console-wrapper">
     <!-- 快捷方式 -->
     <div class="layui-row layui-col-space15">
-
-<!--        <div class="layui-col-md4 layui-col-sm4 layui-col-xs6">-->
-<!--            <div class="console-link-block">-->
-<!--                <div class="console-link-block-num" id="AllAmount">0</div>-->
-<!--                <div class="console-link-block-text">总金额</div>-->
-<!--                <i class="console-link-block-icon layui-icon layui-icon-log"></i>-->
-<!--            </div>-->
-<!--        </div>-->
-
         <div class="layui-col-md4 layui-col-sm4 layui-col-xs6">
             <div class="console-link-block">
                 <div class="console-link-block-num" id="AvailableAmount">0</div>
@@ -137,45 +128,55 @@
             </div>
         </div>
 
-<!--        <div class="layui-col-md4 layui-col-sm4 layui-col-xs6">-->
-<!--            <div class="console-link-block">-->
-<!--                <div class="console-link-block-num" id="TodayCollectionAmount">0</div>-->
-<!--                <div class="console-link-block-text">今日代收金额</div>-->
-<!--                <i class="console-link-block-icon layui-icon layui-icon-dollar"></i>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div class="layui-col-md4 layui-col-sm4 layui-col-xs6">
+            <div class="console-link-block">
+                <div class="console-link-block-num" id="AllAmount">0</div>
+                <div class="console-link-block-text">代收总金额</div>
+                <i class="console-link-block-icon layui-icon layui-icon-log"></i>
+            </div>
+        </div>
 
-<!--        <div class="layui-col-md4 layui-col-sm4 layui-col-xs6">-->
-<!--            <div class="console-link-block">-->
-<!--                <div class="console-link-block-num" id="TodayCollectionCommission">0</div>-->
-<!--                <div class="console-link-block-text">今日代收手续费</div>-->
-<!--                <i class="console-link-block-icon layui-icon layui-icon-diamond"></i>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div class="layui-col-md4 layui-col-sm4 layui-col-xs6">
+            <div class="console-link-block">
+                <div class="console-link-block-num" id="TodayPayAmount">0</div>
+                <div class="console-link-block-text">代付总金额</div>
+                <i class="console-link-block-icon layui-icon layui-icon-diamond"></i>
+            </div>
+        </div>
 
-<!--        <div class="layui-col-md4 layui-col-sm4 layui-col-xs6">-->
-<!--            <div class="console-link-block">-->
-<!--                <div class="console-link-block-num" id="TodayPay">0</div>-->
-<!--                <div class="console-link-block-text">今日代付笔数</div>-->
-<!--                <i class="console-link-block-icon layui-icon layui-icon-diamond"></i>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div class="layui-col-md4 layui-col-sm4 layui-col-xs6">
+            <div class="console-link-block">
+                <div class="console-link-block-num" id="TodayCollectionAmount">0</div>
+                <div class="console-link-block-text">今日代收金额</div>
+                <i class="console-link-block-icon layui-icon layui-icon-dollar"></i>
+            </div>
+        </div>
 
-<!--        <div class="layui-col-md4 layui-col-sm4 layui-col-xs6">-->
-<!--            <div class="console-link-block">-->
-<!--                <div class="console-link-block-num" id="TodayPayCommission">0</div>-->
-<!--                <div class="console-link-block-text">今日代付金额</div>-->
-<!--                <i class="console-link-block-icon layui-icon layui-icon-diamond"></i>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div class="layui-col-md4 layui-col-sm4 layui-col-xs6">
+            <div class="console-link-block">
+                <div class="console-link-block-num" id="TodayCollectionCommission">0</div>
+                <div class="console-link-block-text">今日代收成功单数</div>
+                <i class="console-link-block-icon layui-icon layui-icon-diamond"></i>
+            </div>
+        </div>
 
-<!--        <div class="layui-col-md4 layui-col-sm4 layui-col-xs6">-->
-<!--            <div class="console-link-block">-->
-<!--                <div class="console-link-block-num" id="TodayPayAmount">0</div>-->
-<!--                <div class="console-link-block-text">今日代付手续费</div>-->
-<!--                <i class="console-link-block-icon layui-icon layui-icon-diamond"></i>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div class="layui-col-md4 layui-col-sm4 layui-col-xs6">
+            <div class="console-link-block">
+                <div class="console-link-block-num" id="TodayPay">0</div>
+                <div class="console-link-block-text">今日代付成功单数</div>
+                <i class="console-link-block-icon layui-icon layui-icon-diamond"></i>
+            </div>
+        </div>
+
+        <div class="layui-col-md4 layui-col-sm4 layui-col-xs6">
+            <div class="console-link-block">
+                <div class="console-link-block-num" id="TodayPayCommission">0</div>
+                <div class="console-link-block-text">今日代付金额</div>
+                <i class="console-link-block-icon layui-icon layui-icon-diamond"></i>
+            </div>
+        </div>
+
+
 
 
     </div>
@@ -315,17 +316,76 @@
                 success: function (res) {
                     if (res.code === 200) {
                         var returnDataArray = res.result
+                        // console.log("returnDataArray1",returnDataArray)
 
-                        console.log("returnDataArray",returnDataArray)
-
-                        $("#TodayCollection").text(returnDataArray.balance)//佣金
-                        $("#TodayCollectionAmount").text(returnDataArray.TodayCollectionAmount)
-                        $("#TodayCollectionCommission").text(returnDataArray.TodayCollectionCommission)
-                        $("#TodayPay").text(returnDataArray.TodayPay)
-                        $("#TodayPayCommission").text(returnDataArray.TodayPayCommission)
-                        $("#TodayPayAmount").text(returnDataArray.TodayPayAmount)
+                        $("#TodayCollection").text(returnDataArray.commission)//佣金
                         $("#AvailableAmount").text(returnDataArray.balance)//余额
                         $("#FreezeAmount").text(returnDataArray.freeze_money)//冻结资金
+                    }
+                }
+            })
+
+            $.ajax({
+                url: global_requestAddress + global_requestAddress_js_homePage + "?action=list" ,
+                headers: {
+                    "token": mybck
+                },
+                dataType: 'json',
+                type: 'post',
+                data: param,
+                success: function (res) {
+                    if (res.code === 200) {
+                        var returnDataArray = res.result
+
+                        // console.log("returnDataArray",returnDataArray.date)
+
+                        var day = new Date();
+                        var date = day.getDate() < 10 ? '0' + day.getDate() : day.getDate()
+                        var yue = (day.getMonth() + 1) < 10 ? '0' + (day.getMonth() + 1) : (day.getMonth() + 1)
+                        var showday = day.getFullYear() + '-' + yue + '-' + date ;
+                        // var showday = "2023-02-09" ;
+
+                        //今日代收金额
+                        for (var a=0;a<returnDataArray.length;a++){
+                            if (returnDataArray[a].date == showday){
+                                $("#TodayCollectionAmount").text(returnDataArray[a].collection_amount)
+                            }
+                        }
+
+                        //今日代收成功单数
+                        for (var b=0;b<returnDataArray.length;b++){
+                            if (returnDataArray[b].date == showday){
+                                $("#TodayCollectionCommission").text(returnDataArray[b].collection_count)
+                            }
+                        }
+
+                        //今日代付成功单数
+                        for (var c=0;c<returnDataArray.length;c++){
+                            if (returnDataArray[c].date == showday){
+                                $("#TodayPay").text(returnDataArray[c].pay_count)
+                            }
+                        }
+
+                        //今日代付金额
+                        for (var d=0;d<returnDataArray.length;d++){
+                            if (returnDataArray[d].date == showday){
+                                $("#TodayPayCommission").text(returnDataArray[d].pay_amount)
+                            }
+                        }
+
+                        //代付总金额
+                        var total1=0
+                        for (var i=0;i<returnDataArray.length;i++){
+                            total1 =total1+returnDataArray[i].pay_all_amount
+                        }
+                        $("#TodayPayAmount").text(total1)
+
+                        //代收总金额
+                        var total=0
+                        for (var i=0;i<returnDataArray.length;i++){
+                            total =total+returnDataArray[i].collection_all_amount
+                        }
+                        $("#AllAmount").text(total)
                     }
                 }
             })

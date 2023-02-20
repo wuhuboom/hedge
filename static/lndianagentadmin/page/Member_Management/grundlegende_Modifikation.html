@@ -21,134 +21,29 @@
 </head>
 <body class="childrenBody">
 <form class="layui-form" lay-filter="add_proxy">
-    <div class="layui-fluid" style="padding-bottom: 75px;">
-        <!-- <div class="layui-card">
-            <div class="layui-card-header">通道修改</div>
 
-            <div class="layui-form-item">
-                <label class="layui-form-label">代收通道</label>
-                <div class="layui-input-block" id="Collection_channel"></div>
-                <div class="layui-form-mid" style="color: red;margin-left: 115px;"></div>
-            </div>
-
-        </div> -->
-
-<!--        <div class="layui-card">-->
-<!--            <div class="layui-card-header">通道配置</div>-->
-<!--            <div class="layui-card-body">-->
-<!--                <div class="layui-form-item layui-row">-->
-<!--                    <div class="layui-inline layui-col-md5">-->
-<!--                        <label class="layui-form-label">代收通道</label>-->
-<!--                        <div class="layui-input-block">-->
-<!--                            <div id="pay_select" ></div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-<!--                    <div class="layui-inline layui-col-md5">-->
-<!--                        <label class="layui-form-label">代付通道</label>-->
-<!--                        <div class="layui-input-block">-->
-<!--                            <div id="paying_select"></div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-
-        <div class="layui-card">
-            <div class="layui-card-header">修改</div>
-            <div class="layui-card-body">
-                <div class="layui-form-item layui-row">
-                    <div class="layui-inline layui-col-md5">
-                        <label class="layui-form-label">用户名</label>
-                        <div class="layui-input-block">
-                            <!--                            <input type="text" class="layui-input" name="username" id="username" placeholder="请输入代理用户名">-->
-                            <input type="text" name="username" autocomplete="off" class="layui-input outline:none " readonly="true" style=" outline:none;border: none; " name="username" id="username" placeholder="请输入代理用户名">
-                        </div>
-                    </div>
-
-                    <div class="layui-inline layui-col-md5">
-                        <label class="layui-form-label">密码</label>
-                        <div class="layui-input-block">
-                            <input type="text" class="layui-input" name="password" id="password" placeholder="请输入代理密码">
-                        </div>
-                    </div>
-
-                    <div class="layui-inline layui-col-md5">
-                        <label class="layui-form-label">支付密码</label>
-                        <div class="layui-input-block">
-                            <input type="text" lay-verify="number" class="layui-input" name="pay_password" id="pay_password" placeholder="请输入支付密码">
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">代收盈利点</label>
+        <div class="layui-input-block">
+            <input type="text" name="collection_point" id="collection_point" placeholder="请输入代收盈利点" autocomplete="off" class="layui-input" style="width: 300px">
         </div>
+    </div>
 
-
-        <div class="layui-card">
-            <div class="layui-card-header">金额</div>
-            <div class="layui-card-body">
-                <div class="layui-form-item layui-row">
-                    <div class="layui-inline layui-col-md5">
-                        <label class="layui-form-label">押金</label>
-                        <div class="layui-input-block">
-                            <input type="text" class="layui-input" name="cash_pledge" id="cash_pledge" placeholder="请输入押金">
-                        </div>
-                    </div>
-
-<!--                    <div class="layui-inline layui-col-md5">-->
-<!--                        <label class="layui-form-label">代收金额</label>-->
-<!--                        <div class="layui-input-block">-->
-<!--                            <input type="text" class="layui-input" name="collection_limit" id="collection_limit" placeholder="请输入代收金额">-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-                </div>
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">代付盈利点</label>
+        <div class="layui-input-block">
+            <input type="text" name="pay_point" id="pay_point" placeholder="请输入代付盈利点" autocomplete="off" class="layui-input" style="width: 300px">
         </div>
+    </div>
 
-
-        <div class="layui-card">
-            <div class="layui-card-header">盈利点</div>
-            <div class="layui-card-body">
-                <div class="layui-form-item layui-row">
-
-                    <div class="layui-inline layui-col-md3">
-                        <label class="layui-form-label" style="color: #1e9fff">代收盈利点</label>
-                        <div class="layui-input-block">
-                            <input type="text" class="layui-input " name="collection_point" id="collection_point" placeholder="请在此输入代收盈利点">
-                        </div>
-                    </div>
-
-                    <div class="layui-inline layui-col-md3">
-                        <label class="layui-form-label" style="color: #ff00fe">代付盈利点</label>
-                        <div class="layui-input-block">
-                            <input type="text" class="layui-input " name="pay_point" id="pay_point" placeholder="请在此输入代付盈利点">
-                        </div>
-                    </div>
-
-                    <div class="layui-inline layui-col-md3">
-                        <label class="layui-form-label">下级税点</label>
-                        <div class="layui-input-block">
-                            <input type="text" class="layui-input " name="junior_point" id="junior_point" placeholder="请在此设置下级税点">
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">下级税点</label>
+        <div class="layui-input-block">
+            <input type="text" name="junior_point" id="junior_point" placeholder="请输入下级税点" autocomplete="off" class="layui-input" style="width: 300px">
         </div>
+    </div>
 
-<!--        <div class="layui-card">-->
-<!--            <div class="layui-card-body">-->
-<!--                <label class="layui-form-label">备注</label>-->
-<!--                <div class="layui-input-block" >-->
-<!--                    <textarea placeholder="请输入备注" name="remark" id="remark" class="layui-textarea" ></textarea>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-
-        <div class="form-group-bottom text-right" style="margin-bottom: 20px;">
+        <div class="form-group-bottom text-right" style="margin-bottom: 20px; margin: 0 200px 0 0">
             <button class="layui-btn layui-btn-lg" lay-filter="comfireAdd" id="comfireAdd">确认修改</button>
             <button class="layui-btn layui-btn-lg layui-btn-primary" lay-filter="cancelAdd" id="cancelAdd">取消</button>
         </div>

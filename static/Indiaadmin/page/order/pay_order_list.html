@@ -172,7 +172,7 @@
             class="layui-icon layui-icon-ok"></i>回调成功</a>
     <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="detailBtn" style="background-color: #6891f9 "><i
             class="layui-icon layui-icon-transfer"></i>详情</a>
-    {{#  if(d.Status == 1){ }}
+    {{#  if(d.Status == 1 || d.Status == 4 || d.Status == 5){ }}
     <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="confirpay" style="background-color: #ee00ff"><i
             class="layui-icon layui-icon-windows"></i>审核</a>
     {{#  } else if(d.Status == 2 || d.Status == 3){ }}
@@ -394,7 +394,7 @@
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #993055;border-color: #993055;">' + '失败' + '</button>'
                             }else if (d.Status == "4") {//已过期
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">' + '已过期' + '</button>'
-                            }else if (d.Status == "5") {//已过期
+                            }else if (d.Status == "5") {//已确认
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #85e0f5;border-color: #85e0f5;">' + '已确认' + '</button>'
                             }else if (d.Status == "7") {//冲正
                                 return '<button class="layui-btn  layui-btn-sm" style="background-color: #5466de;border-color: #5466de;">' + '冲正' + '</button>'

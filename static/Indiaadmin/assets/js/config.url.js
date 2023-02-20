@@ -1,5 +1,5 @@
 //
-global_requestAddress = "";
+global_requestAddress = "http://127.0.0.1:8080";
 //登录接口
 global_requestloginAddress_js="/admin/v1/login";
 

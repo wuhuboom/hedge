@@ -52,13 +52,9 @@ func MerchantOperation(c *gin.Context) {
 		mer.LoginPassword = tools.MD5(mer.LoginPassword)
 		mer.MaxPay, _ = strconv.ParseFloat(c.PostForm("max_pay"), 64)
 		mer.MinPay, _ = strconv.ParseFloat(c.PostForm("min_pay"), 64)
-		mer.WithdrawCommission,_=strconv.ParseFloat(c.PostForm("withdraw_commission"), 64)
-
-		mer.PayCommission,_=strconv.ParseFloat(c.PostForm("pay_commission"), 64)
-		mer.CollectionCommission,_=strconv.ParseFloat(c.PostForm("collection_commission"), 64)
-
-
-
+		mer.WithdrawCommission, _ = strconv.ParseFloat(c.PostForm("withdraw_commission"), 64)
+		mer.PayCommission, _ = strconv.ParseFloat(c.PostForm("pay_commission"), 64)
+		mer.CollectionCommission, _ = strconv.ParseFloat(c.PostForm("collection_commission"), 64)
 		mer.Token = tools.RandStringRunes(36)
 		//通道币种
 		if mer.MerchantNum == "" {
@@ -156,6 +152,7 @@ func MerchantOperation(c *gin.Context) {
 			}
 
 		}
+
 		//谷歌开关
 		if status, isExist := c.GetPostForm("google_switch"); isExist == true {
 			updated["GoogleSwitch"], _ = strconv.Atoi(status)
@@ -169,16 +166,17 @@ func MerchantOperation(c *gin.Context) {
 		}
 
 		if status, isExist := c.GetPostForm("pay_commission"); isExist == true {
-			updated["PayCommission"] = status
+			Min, _ := strconv.ParseFloat(status, 64)
+			updated["PayCommission"] = Min
 		}
 		if status, isExist := c.GetPostForm("collection_commission"); isExist == true {
-			updated["CollectionCommission"] = status
+			Min, _ := strconv.ParseFloat(status, 64)
+			updated["CollectionCommission"] = Min
 		}
 		if status, isExist := c.GetPostForm("withdraw_commission"); isExist == true {
-			updated["WithdrawCommission"] = status
+			Min, _ := strconv.ParseFloat(status, 64)
+			updated["WithdrawCommission"] = Min
 		}
-
-
 
 		mysql.DB.Model(&model.Merchant{}).Where("id=?", id).Update(updated)
 		tools.ReturnSuccess2000Code(c, "ok")
@@ -248,6 +246,15 @@ func MerchantOperation(c *gin.Context) {
 
 		redis.Rdb.Set("available_amount_"+id, "---", 5*time.Second)
 
+		return
+	}
+
+	//单个查看
+	if action == "one" {
+		id := c.PostForm("id")
+		runner := model.Merchant{}
+		mysql.DB.Where("id=?", id).First(&runner)
+		tools.ReturnSuccess2000DataCode(c, runner, "ok")
 		return
 	}
 

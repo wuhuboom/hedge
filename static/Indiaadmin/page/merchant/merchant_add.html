@@ -80,6 +80,27 @@
                             <input type="text" class="layui-input " id="max_money" placeholder="请在此输入最大金额">
                         </div>
                     </div>
+
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label">提现手续费</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input " id="withdraw_commission" placeholder="请在此输入提现手续费">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label">代收手续费</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input " id="collection_commission" placeholder="请在此输入代收手续费">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label">代付手续费</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input " id="pay_commission" placeholder="请在此输代付手续费">
+                        </div>
+                    </div>
                 </div>
 
 
@@ -270,6 +291,25 @@
                     layer.msg("代付最大金额不允许为空!", {icon: 2});
                     return false
                 }
+
+                if(!$("#withdraw_commission").val()){
+                    layer.msg("提现手续费不允许为空!", {icon: 2});
+                    return false
+                }
+                if(!$("#collection_commission").val()){
+                    layer.msg("代收手续费不允许为空!", {icon: 2});
+                    return false
+                }
+                if(!$("#pay_commission").val()){
+                    layer.msg("代付手续费不允许为空!", {icon: 2});
+                    return false
+                }
+
+
+
+
+
+
                 var param = {};
                 param['kinds'] = 2;
                 param['merchant'] = $("#merchant").val();
@@ -280,6 +320,9 @@
                 param['gateway_id'] = $('#gateway').val();
                 param['min_pay'] = $('#min_pay').val();
                 param['max_pay'] = $('#max_pay').val();
+                param['withdraw_commission'] = $('#withdraw_commission').val();
+                param['collection_commission'] = $('#collection_commission').val();
+                param['pay_commission'] = $('#pay_commission').val();
                 // param['google_switch'] = 1
                 var arr_box = [];
                 var paying_arr_box = [];

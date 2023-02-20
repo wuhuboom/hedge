@@ -100,6 +100,14 @@
                         <td>提现手续费</td>
                         <td id="WithdrawCommission"></td>
                     </tr>
+                    <tr>
+                        <td>代收余额</td>
+                        <td id="CollectionLimit"></td>
+                    </tr>
+                    <tr>
+                        <td>累计押金</td>
+                        <td id="CashPledge"></td>
+                    </tr>
 
                     </tbody>
                 </table>
@@ -235,6 +243,8 @@
                         }
                         $("#WithdrawCommission").append(WithdrawCommission)//提现手续费
 
+                        $("#CollectionLimit").text(returnDataArray.CollectionLimit)//代收余额
+                        $("#CashPledge").text(returnDataArray.CashPledge)//累计押金
                         // <span className = "layui-badge"> 赤 < /span>
 
                         // let ipsArr = returnDataArray.WhiteIps.split('@').filter(item => item != '')

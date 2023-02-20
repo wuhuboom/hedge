@@ -89,6 +89,20 @@
                         </div>
                     </div>
 
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label">代收手续费</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input " id="collection_commission" placeholder="请在此输入代收手续费">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline layui-col-md3">
+                        <label class="layui-form-label">代付手续费</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input " id="pay_commission" placeholder="请在此输入代付手续费">
+                        </div>
+                    </div>
+
                     <div class="layui-inline layui-col-md5">
                         <label class="layui-form-label">谷歌code</label>
                         <div class="layui-input-block">
@@ -174,6 +188,9 @@
         $("#max_pay").val(currParentDatas.MaxPay)
         $("#withdraw_commission").val(currParentDatas.WithdrawCommission)
         $("#google_code").val(currParentDatas.GoogleCode)
+
+        $("#collection_commission").val(currParentDatas.CollectionCommission)
+        $("#pay_commission").val(currParentDatas.PayCommission)
 
 
         var payChannelParant =  currParentDatas.PayChannel
@@ -395,6 +412,9 @@
                 param['max_pay'] = $('#max_pay').val();
                 param['google_switch'] = $('#google_switch').val();
                 param['withdraw_commission'] = $('#withdraw_commission').val();
+
+                param['collection_commission'] = $('#collection_commission').val();
+                param['pay_commission'] = $('#pay_commission').val();
 
                 var google_code=$('#google_code').val();
                 if (google_code){

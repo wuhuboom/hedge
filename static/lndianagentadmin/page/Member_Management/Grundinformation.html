@@ -91,7 +91,7 @@
                     <tr>
                         <td>上级玩家</td>
                         <td id="Superior"></td>
-                        <td>LeverTree</td>
+                        <td>等级树</td>
                         <td id="LeverTree"></td>
                     </tr>
 
@@ -348,6 +348,7 @@
                     $("#RegisterTime").text(moment(currParentDatas.RegisterTime * 1000).utc().utcOffset(currTimeZoneValue).format('YYYY-MM-DD HH:mm:ss'))
                     $("#Superior").text(currParentDatas.Superior)//上级玩家
                     $("#LeverTree").text(currParentDatas.LeverTree)//LeverTree
+
                     $("#ActiveGrade").text(currParentDatas.ActiveGrade)//活跃分数
                     $("#CreditScore").text(currParentDatas.CreditScore)//信用分
 

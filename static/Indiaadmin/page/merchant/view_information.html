@@ -103,13 +103,13 @@
           <tr>
             <td>冻结金额</td>
             <td id="ActualAmount"> </td>
-            <td>类型</td>
-            <td id="Status"> </td>
+            <td>提现手续费</td>
+            <td id="Withdrawal_fee"></td>
           </tr>
 
           <tr>
-            <td>提现手续费</td>
-            <td id="Withdrawal_fee"></td>
+            <td>代付手续费</td>
+            <td id="PayCommission"></td>
             <td>代收手续费</td>
             <td id="Commission"></td>
           </tr>
@@ -125,6 +125,11 @@
             <td id="OwnOrder"> </td>
             <td>最大代付金额</td>
             <td id="ChannelId"></td>
+          </tr>
+
+          <tr>
+            <td>类型</td>
+            <td id="Status"> </td>
           </tr>
           </tbody>
         </table>
@@ -290,17 +295,32 @@
 
       var CollectionCommission = ''
       if ((currParentDatas.CollectionCommission*1) >0){
-        var CollectionCommission=currParentDatas.CollectionCommission*100+"%"
+        CollectionCommission=currParentDatas.CollectionCommission*100+"%"
       }else {
         CollectionCommission =0
       }
       $("#Commission").append(CollectionCommission)//代收手续费
 
+
+
+      var PayCommission = ''
+      if ((currParentDatas.PayCommission*1) >0){
+         PayCommission=currParentDatas.PayCommission*100+"%"
+      }else {
+        PayCommission = 0
+      }
+
+      $("#PayCommission").append(PayCommission)//代收手续费
+
+
+
+
+
       //
       $("#Currency").text(currParentDatas.AllAmount)
       $("#OwnOrder").text(currParentDatas.MinPay)
       $("#Minimum_recharge").text(currParentDatas.MinMoney)
-      $("#gateway_address").text(currParentDatas.GatewayId) //网关地址
+      $("#gateway_address").text(currParentDatas.Gateway) //网关地址
 
 
 

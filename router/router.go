@@ -30,6 +30,22 @@ import (
 	"time"
 )
 
+//var (
+//	requestHistogram = prometheus.NewHistogramVec(prometheus.HistogramOpts{
+//		Namespace:   "http_server",
+//		Subsystem:   "",
+//		Name:        "requests_seconds",
+//		Help:        "Histogram of response latency (seconds) of http handlers.",
+//		ConstLabels: nil,
+//		Buckets:     []float64{0, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 1, 2, 5, 10},
+//	}, []string{"userId", "requestType"})
+//)
+//
+////注册监控指标
+//func init() {
+//	prometheus.MustRegister(requestHistogram)
+//}
+
 func Setup() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
@@ -39,6 +55,7 @@ func Setup() *gin.Engine {
 	r.NoRoute(eeor.HandleNotFound)
 	r.Static("/static", "./static")
 	//r.Use(PermissionToCheck())
+	//r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	ad := r.Group("/admin/v1", PermissionToCheckForAdmin())
 	{
@@ -180,6 +197,7 @@ func Setup() *gin.Engine {
 		ay.POST("/collectionOperation", agency.CollectionOperation)
 		ay.POST("/getU", agency.GetU)
 		ay.POST("/homePage", agency.HomePage)
+		ay.POST("/getRunnerAmountChange", agency.GetRunnerAmountChange)
 
 	}
 

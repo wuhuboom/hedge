@@ -40,61 +40,42 @@
                 <div class="layui-tab-content">
                     <div class="layui-tab-item layui-show layui-text">
                         <!-- 表格工具栏 -->
-                        <form class="layui-form toolbar">
-
-                            <!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
-                            <!--                                <label class="layui-form-label" style="width: 120px">用户请求频率</label>-->
-                            <!--                                <div class="layui-input-inline">-->
-                            <!--                                    <input type="text" id="RequestLimit" class="layui-input " placeholder="请在此输入用户请求频率-->
-                            <!--" />-->
-                            <!--                                </div>-->
-                            <!--                            </div>-->
-                            <!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
-                            <!--                                <label class="layui-form-label" style="width: 120px">时区</label>-->
-                            <!--                                <div class="layui-input-inline">-->
-                            <!--                                    <select name="timezone_filter" id="timezone_filter" lay-filter="timezone_filter">-->
-                            <!--                                        <option value="Asia/Shanghai">中国</option>-->
-                            <!--                                        <option value="Asia/Kolkata">印度</option>-->
-                            <!--                                        <option value="America/Mexico_City">墨西哥</option>-->
-                            <!--                                        <option value="America/Bogota">哥伦比亚</option>-->
-                            <!--                                    </select>-->
-                            <!--                                </div>-->
-                            <!--                            </div>-->
+                        <form class="layui-form toolbar" lay-filter="setting">
 
                             <div class="layui-form-item" style="margin-top: 10px;">
                                 <label class="layui-form-label" style="width: 150px">客服地址</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" id="customer_service_address" class="layui-input " placeholder="请在此输入客服地址" />
+                                    <input type="text" id="customer_service_address" name="customer_service_address" class="layui-input " placeholder="请在此输入客服地址" />
                                 </div>
                             </div>
 
                             <div class="layui-form-item" style="margin-top: 10px;">
                                 <label class="layui-form-label" style="width: 150px">下级提现手续费</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" id="junior_withdraw_commission" class="layui-input " placeholder="请在此输入下级提现手续费" />
+                                    <input type="text" id="junior_withdraw_commission" name="junior_withdraw_commission" class="layui-input " placeholder="请在此输入下级提现手续费" />
                                 </div>
                             </div>
 
                             <div class="layui-form-item" style="margin-top: 10px;">
                                 <label class="layui-form-label" style="width: 150px">下级盈利点</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" id="junior_point" class="layui-input " placeholder="请在此输入下级盈利点" />
+                                    <input type="text" id="junior_point" name="junior_point" class="layui-input " placeholder="请在此输入下级盈利点" />
                                 </div>
                             </div>
 
                             <div class="layui-form-item" style="margin-top: 10px;">
                                 <label class="layui-form-label" style="width: 150px">下级代理最小提现金额</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" id="min_withdraw" class="layui-input" placeholder="下级代理最小提现金额" />
+                                    <input type="text" id="min_withdraw" name="min_withdraw" class="layui-input" placeholder="下级代理最小提现金额" />
                                 </div>
                             </div>
 
-                            <div class="layui-form-item" style="margin-top: 10px;">
-                                <label class="layui-form-label" style="width: 150px">U汇率</label>
-                                <div class="layui-input-inline">
-                                    <input type="text" id="exchange_rate" class="layui-input " placeholder="请在此输入U汇率" />
-                                </div>
-                            </div>
+<!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
+<!--                                <label class="layui-form-label" style="width: 150px">U汇率</label>-->
+<!--                                <div class="layui-input-inline">-->
+<!--                                    <input type="text" id="exchange_rate" class="layui-input " placeholder="请在此输入U汇率" />-->
+<!--                                </div>-->
+<!--                            </div>-->
 
 <!--                            <div class="layui-form-item" style="margin-top: 10px;">-->
 <!--                                <label class="layui-form-label" style="width: 120px">过期时间(Min)</label>-->
@@ -242,7 +223,7 @@
 
     }else{
 
-        var currStatusBoolVal = 0
+        var currStatusBoolVal
 
         var currConfigID = 0
         var currTabIndex = 0
@@ -269,6 +250,30 @@
                 //     copyContent = $("#inviteCode").val()
                 // }
             });
+
+
+            $.ajax({
+                url: global_requestAddress + global_requestAddress_js_getMe + "?action=one",
+                headers: {
+                    "token": mybck
+                },
+                dataType: 'json',
+                type: 'post',
+                data: param,
+                success: function (res) {//setting
+                    if (res.code == 200){
+                        currStatusBoolVal=res.result
+                        console.log("11111111111",currStatusBoolVal.JuniorWithdrawCommission)
+                        form.val('setting',{
+                            "customer_service_address": currStatusBoolVal.CustomerServiceAddress,
+                            "junior_withdraw_commission":currStatusBoolVal.JuniorWithdrawCommission,
+                            "junior_point":currStatusBoolVal.JuniorPoint,
+                            "min_withdraw":currStatusBoolVal.MinWithdraw,
+
+                        })
+                    }
+                }
+            })
 
             var param={};
             //获取配置数据
@@ -361,20 +366,32 @@
 
 
 
+
+
+
+            form.render();
             //总配置提交按钮
             $("#confirmBtn").click(function(){
                 var param={};
-                param.id = currConfigID
-                param.kinds = currTabIndex + 1
+                // param.id = currConfigID
+                // param.kinds = currTabIndex + 1
                 if(currTabIndex === 0){ //基本配置
-                    param['customer_service_address'] = $("#customer_service_address").val();
-                    param['exchange_rate'] = $("#exchange_rate").val();
-                    param['junior_withdraw_commission']= $("#junior_withdraw_commission").val();
-                    param['junior_point'] = $("#junior_point").val();
-                    param['min_withdraw']= $("#min_withdraw").val();
-                    // param['system_currency'] = $("#SystemCurrency").val();
-                    // param['php_url'] = $("#PhpUrl").val();
-                    // param['time_zone'] = $('#timezone_filter').val();
+                    if ($("#customer_service_address").val()){
+                        param['customer_service_address'] = $("#customer_service_address").val();
+                    }
+                    if ($("#junior_withdraw_commission").val()){
+                        param['junior_withdraw_commission']= $("#junior_withdraw_commission").val();
+                    }
+                    if ($("#junior_point").val()){
+                        param['junior_point'] = $("#junior_point").val();
+                    }
+                    if ($("#min_withdraw").val()){
+                        param['min_withdraw']= $("#min_withdraw").val();
+                    }
+
+
+
+
                 }
                     // else if(currTabIndex === 1){//财务配置
                     //     // param['initialize_balance']= $("#initialize_balance").val();
@@ -428,126 +445,6 @@
                 return false;
 
             });
-
-
-            //监听自动上分开关
-            form.on('switch(automatic_points_switch)', function(data){
-
-
-                if(data.elem.checked){
-                    $("#automatic_points_switch").attr("value", '1');
-                    // console.log(data.value);
-                }else{
-                    $("#automatic_points_switch").attr("value", '2');
-                }
-
-
-                var param={};
-                param.id = currConfigID
-                param.kinds = 2
-                param['automatic_points'] = $("#automatic_points_switch").val();
-
-                //获取期数添加到下拉框中
-                $.ajax({
-                    url: global_requestAddress+global_requestAddress_js_systemParameter+"?action=update",
-                    dataType: 'json',
-                    headers:{
-                        token:mybck
-                    },
-                    type: 'post',
-                    data: param,
-                    success: function (resultData) {
-
-                        if(resultData.code == 2000){
-                            notice.msg(resultData.msg, {icon: 1});
-                            // window.location.reload();
-                        }else{
-                            notice.msg(resultData.msg, {icon: 2});
-                        }
-                    }
-                })
-
-            })
-
-            //监听谷歌验证开关
-            form.on('switch(IfUseGoogleCode_switch)', function(data){
-
-
-                if(data.elem.checked){
-                    $("#IfUseGoogleCode_switch").attr("value", '1');
-                    // console.log(data.value);
-                }else{
-                    $("#IfUseGoogleCode_switch").attr("value", '2');
-                }
-
-
-                var param={};
-                param.id = currConfigID
-                param.kinds = 3
-                param['admin_google_status'] = $("#IfUseGoogleCode_switch").val();
-
-                //获取期数添加到下拉框中
-                $.ajax({
-                    url: global_requestAddress+global_requestAddress_js_systemParameter+"?action=update",
-                    dataType: 'json',
-                    headers:{
-                        token:mybck
-                    },
-                    type: 'post',
-                    data: param,
-                    success: function (resultData) {
-
-                        if(resultData.code == 2000){
-                            notice.msg(resultData.msg, {icon: 1});
-                            // window.location.reload();
-                        }else{
-                            notice.msg(resultData.msg, {icon: 2});
-                        }
-                    }
-                })
-
-            })
-
-            //监听白名单开关
-            form.on('switch(WhiteIpsSwitch_switch)', function(data){
-
-
-                if(data.elem.checked){
-                    $("#WhiteIpsSwitch_switch").attr("value", '1');
-                    // console.log(data.value);
-                }else{
-                    $("#WhiteIpsSwitch_switch").attr("value", '2');
-                }
-
-
-                var param={};
-                param.id = currConfigID
-                param.kinds = 3
-                param['white_ips_switch'] = $("#WhiteIpsSwitch_switch").val();
-
-                //获取期数添加到下拉框中
-                $.ajax({
-                    url: global_requestAddress+global_requestAddress_js_systemParameter+"?action=update",
-                    dataType: 'json',
-                    headers:{
-                        token:mybck
-                    },
-                    type: 'post',
-                    data: param,
-                    success: function (resultData) {
-
-                        if(resultData.code == 2000){
-                            notice.msg(resultData.msg, {icon: 1});
-                            // window.location.reload();
-                        }else{
-                            notice.msg(resultData.msg, {icon: 2});
-                        }
-                    }
-                })
-
-            })
-
-
 
         });
 
