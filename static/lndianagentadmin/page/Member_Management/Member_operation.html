@@ -253,15 +253,20 @@
 
                     {field: 'Username', title: '代理账号 ',  sort: true,align:"center",width: 150},
 
-                    {field: 'superior_name', title: '上级玩家',  sort: true,align:"center",width: 150},
+                    {field: 'SuperiorName', title: '上级玩家',  sort: true,align:"center",width: 150},
 
                     {field: 'CashPledge', title: '押金',  sort: true,align:"center",width: 150},
 
                     {field: 'CollectionLimit', title: '代收额度',  sort: true,align:"center",width: 150},
 
                     {field: 'CollectionPoint', title: '代收盈利点',  sort: true,align:"center",width: 150,templet:function (d) {
+                            var number
                             if (d.CollectionPoint !=0){
-                                var number=d.CollectionPoint*100+"%"
+                                if (d.CollectionPoint == 0.07){
+                                     number="7%"
+                                }else {
+                                     number=d.CollectionPoint*100+"%"
+                                }
                                 return number
                             }
                             return 0
@@ -272,8 +277,11 @@
                             if ((d.PayPoint*1) <=0){
                                 return 0
                             }
-
-                            var number=d.PayPoint*100+"%"
+                            if (d.PayPoint == 0.07){
+                                var number="7%"
+                            }else {
+                                number=d.PayPoint*100+"%"
+                            }
                             return number
                         }},
 
@@ -346,7 +354,11 @@
 
                     {field: 'JuniorPoint', title: '下级税点',  sort: true,align:"center",width: 150,hide:true,templet:function (d) {//
                             if ((d.JuniorPoint*1) >0){
-                                var number=d.JuniorPoint*100+"%"
+                                if (d.JuniorPoint == 0.07){
+                                    var number="7%"
+                                }else {
+                                        number=d.JuniorPoint*100+"%"
+                                }
                                 return number
                             }
                             return 0
@@ -356,7 +368,11 @@
 
                     {field: 'WithdrawCommission', title: '提现金额手续费',  sort: true,align:"center",width: 150,hide:true,templet:function (d) {
                             if ((d.WithdrawCommission*1) >0){
-                                var number=d.WithdrawCommission*100+"%"
+                                if (d.WithdrawCommission == 0.07){
+                                    var number="7%"
+                                }else {
+                                    number=d.WithdrawCommission*100+"%"
+                                }
                                 return number
                             }
                             return 0
@@ -852,7 +868,7 @@
                 else if (obj.event === 'CashPledge_edit'){
                     jsondata = JSON.stringify(currDatas)
                     var index = layui.layer.open({
-                        area: ['500px', '300px'],
+                        area: ['500px', '400px'],
                         fixed: false, //不固定
                         maxmin: false,
                         title : "押金修改",
@@ -987,7 +1003,7 @@
                 else if (obj.event === 'Withdrawal_Amount'){
                     jsondata = JSON.stringify(currDatas)
                     var index = layui.layer.open({
-                        area: ['500px', '250px'],
+                        area: ['500px', '400px'],
                         fixed: false, //不固定
                         maxmin: false,
                         title : "提现金额手续费",
@@ -1013,7 +1029,7 @@
                 else if (obj.event === 'password_vip'){
                     jsondata = JSON.stringify(currDatas)
                     var index = layui.layer.open({
-                        area: ['500px', '250px'],
+                        area: ['500px', '400px'],
                         fixed: false, //不固定
                         maxmin: false,
                         title : "修改代理账号登录密码",
@@ -1039,7 +1055,7 @@
                 else if (obj.event === 'pay_password_vip'){
                     jsondata = JSON.stringify(currDatas)
                     var index = layui.layer.open({
-                        area: ['500px', '250px'],
+                        area: ['500px', '400px'],
                         fixed: false, //不固定
                         maxmin: false,
                         title : "修改代理账号支付密码",

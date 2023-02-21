@@ -13,43 +13,44 @@ import (
 )
 
 type Runner struct {
-	ID                    int    `gorm:"primaryKey"`
-	Username              string `gorm:"unique_index"`
-	Password              string
-	PayPassword           string              `gorm:"default:123123"` //提现密码
-	AgencyRunnerId        int                 //代理账号
-	InvitationCode        string              `gorm:"unique_index"` //邀请码
-	RegisterTime          int64               //注册时间
-	Status                int                 `gorm:"default:1"` //状态 1正常 2封
-	Superior              int                 //上级 玩家
-	LeverTree             string              //上级树  @ 分割
-	CollectionPoint       float64             `gorm:"type:decimal(10,2)"`           //代收赢利点
-	PayPoint              float64             `gorm:"type:decimal(10,2)"`           //代付盈利点
-	CashPledge            float64             `gorm:"type:decimal(10,2);default:0"` //押金
-	CollectionLimit       float64             `gorm:"type:decimal(10,2);default:0"` //代收额度
-	FreezeCollectionLimit float64             `gorm:"type:decimal(10,2);default:0"` //冻结代收额度
-	PayLimit              float64             `gorm:"type:decimal(10,2);default:0"` //代付额度
-	Commission            float64             `gorm:"type:decimal(10,2);default:0"` //佣金
-	FreezeMoney           float64             `gorm:"type:decimal(10,2);default:0"` //提现冻结金额
-	JuniorPoint           float64             `gorm:"type:decimal(10,2)"`           //下级税点
-	WithdrawCommission    float64             `gorm:"type:decimal(10,2);default:0"` //提现手续费
-	Token                 string              `gorm:"unique_index"`                 //Token   唯一标识   长度  48位
-	Balance               float64             `gorm:"type:decimal(10,2);default:0"` //玩家余额
-	LastLoginTime         int64               //最后一次登陆时间
-	LastLoginIp           string              //最后一次登录的ip
-	LastLoginRegion       string              //最后一次登录地区
-	PaySwitch             int                 `gorm:"default:2"`  //代付开关   1开  2关
-	ActiveGrade           int                 `gorm:"default:60"` //活跃分数
-	CreditScore           int                 `gorm:"default:60"` //信用分
-	Working               int                 `gorm:"default:1"`  //1  待机   2  工作     //工作状态
-	CollectionTime        int                 `gorm:"default:0"`  //代收次数
-	Remark                string              `gorm:"-"`
-	LastGetOrderTime      int64               `gorm:"default:0"` //最后一次获取订单的时间  也就是我要关闭  接单的按钮
-	Col                   modelPay.Collection `gorm:"-"`
-	ChangeBalance         float64             `gorm:"-"` //变化的余额
-	ChangeCommission      float64             `gorm:"-"`
-	IfExistSubordinate    int                 `gorm:"-"` //是否存在下级
-	SuperiorName          string              `gorm:"-"` //上级用户名
+	ID                         int    `gorm:"primaryKey"`
+	Username                   string `gorm:"unique_index"`
+	Password                   string
+	PayPassword                string              `gorm:"default:123123"` //提现密码
+	AgencyRunnerId             int                 //代理账号
+	InvitationCode             string              `gorm:"unique_index"` //邀请码
+	RegisterTime               int64               //注册时间
+	Status                     int                 `gorm:"default:1"` //状态 1正常 2封
+	Superior                   int                 //上级 玩家
+	LeverTree                  string              //上级树  @ 分割
+	CollectionPoint            float64             `gorm:"type:decimal(10,2)"`           //代收赢利点
+	PayPoint                   float64             `gorm:"type:decimal(10,2)"`           //代付盈利点
+	CashPledge                 float64             `gorm:"type:decimal(10,2);default:0"` //押金
+	CollectionLimit            float64             `gorm:"type:decimal(10,2);default:0"` //代收额度
+	FreezeCollectionLimit      float64             `gorm:"type:decimal(10,2);default:0"` //冻结代收额度
+	PayLimit                   float64             `gorm:"type:decimal(10,2);default:0"` //代付额度
+	Commission                 float64             `gorm:"type:decimal(10,2);default:0"` //佣金
+	FreezeMoney                float64             `gorm:"type:decimal(10,2);default:0"` //提现冻结金额
+	JuniorPoint                float64             `gorm:"type:decimal(10,2)"`           //下级税点
+	WithdrawCommission         float64             `gorm:"type:decimal(10,2);default:0"` //提现手续费
+	Token                      string              `gorm:"unique_index"`                 //Token   唯一标识   长度  48位
+	Balance                    float64             `gorm:"type:decimal(10,2);default:0"` //玩家余额
+	LastLoginTime              int64               //最后一次登陆时间
+	LastLoginIp                string              //最后一次登录的ip
+	LastLoginRegion            string              //最后一次登录地区
+	PaySwitch                  int                 `gorm:"default:2"`  //代付开关   1开  2关
+	ActiveGrade                int                 `gorm:"default:60"` //活跃分数
+	CreditScore                int                 `gorm:"default:60"` //信用分
+	Working                    int                 `gorm:"default:1"`  //1  待机   2  工作     //工作状态
+	CollectionTime             int                 `gorm:"default:0"`  //代收次数
+	Remark                     string              `gorm:"-"`
+	LastGetOrderTime           int64               `gorm:"default:0"` //最后一次获取订单的时间  也就是我要关闭  接单的按钮
+	Col                        modelPay.Collection `gorm:"-"`
+	ChangeBalance              float64             `gorm:"-"` //变化的余额
+	ChangeCommission           float64             `gorm:"-"`
+	ChangeCollectionLimitMoney float64             `gorm:"-"` //改变的代收额度
+	IfExistSubordinate         int                 `gorm:"-"` //是否存在下级
+	SuperiorName               string              `gorm:"-"` //上级用户名
 }
 
 func CheckIsExistModelRunner(db *gorm.DB) {
@@ -120,14 +121,14 @@ func (r *Runner) CheckInvitationCode(db *gorm.DB) (*Runner, error) {
 		r.LeverTree = runner.LeverTree + strconv.Itoa(r.Superior) + "@"
 		r.AgencyRunnerId = runner.AgencyRunnerId
 		//查询这个代理
-		agencyRunner := AgencyRunner{}
+		agencyRunner := Runner{}
 		err = db.Where("id=?", runner.AgencyRunnerId).First(&agencyRunner).Error
 		if err != nil {
 			return r, eeor.OtherError("The invitation code is invalid or expired")
 		}
 		r.CollectionPoint = agencyRunner.JuniorPoint
 		r.PayPoint = agencyRunner.JuniorPoint
-		r.WithdrawCommission = agencyRunner.JuniorWithdrawCommission
+		r.WithdrawCommission = 0
 		r.JuniorPoint = runner.JuniorPoint
 		return r, nil
 	} else if len(r.InvitationCode) == 6 {
@@ -377,6 +378,23 @@ func (r *Runner) ChangeCommissionAndBalance(db *gorm.DB) error {
 			return err
 		}
 	}
+
+	//代收额度  变化
+	if r.ChangeCollectionLimitMoney != 0 {
+		ups["CollectionLimit"] = r.CollectionLimit + r.ChangeCollectionLimitMoney
+		//添加账变(佣金)
+		change := RunnerAmountChange{RunnerId: r.ID,
+			Remark:       r.Remark,
+			NowAmount:    r.Balance + r.ChangeBalance,
+			ChangeAmount: r.ChangeBalance,
+			FontAmount:   r.Balance, Kinds: 2}
+		err := change.Add(db1)
+		if err != nil {
+			return err
+		}
+		db = db.Where("collection_limit=?", r.CollectionLimit)
+	}
+
 	affected := db.Update(ups).RowsAffected
 	if affected == 0 {
 		return eeor.OtherError("ChangeCommissionAndBalance  383  Failed to update")
@@ -409,16 +427,25 @@ func (sk *Striking) Striking(db *gorm.DB) error {
 	//修改账户余额(本账号)
 	runner.ChangeBalance = sk.Rate * sk.Col.ActualAmount * sk.Symbol
 	runner.ChangeCommission = sk.Rate * sk.Col.ActualAmount * sk.Symbol
+	runner.ChangeCollectionLimitMoney = sk.Col.Amount
 	err = runner.ChangeCommissionAndBalance(db)
+
 	if err != nil {
-		return err
+		return eeor.OtherError("414" + err.Error())
 	}
 	//奔跑者 统计发生变化
 	statistics := RunnerStatistics{}
 	if sk.Kinds == 1 {
 		statistics.Commission = sk.Rate * sk.Col.ActualAmount * sk.Symbol
-		statistics.CollectionAmount = sk.Rate * sk.Col.ActualAmount * sk.Symbol
+		statistics.CollectionAmount = sk.Symbol * sk.Col.ActualAmount //sk.Rate * sk.Col.ActualAmount * sk.Symbol
 		statistics.CollectionCount = int(sk.Symbol) * 1
+		statistics.RunnerId = sk.RunnerId
+		statistics.AgencyRunnerId = sk.AgencyRunnerId
+
+		err := statistics.Add(db)
+		if err != nil {
+			return err
+		}
 	}
 	if runner.LeverTree != "" { //说明不是顶级代理(要和上级代理进行 费率对比)
 		runner2 := Runner{}
@@ -431,7 +458,6 @@ func (sk *Striking) Striking(db *gorm.DB) error {
 		} else {
 			sk.Rate = runner2.PayPoint - sk.Rate
 		}
-
 		if sk.Rate > 0 {
 			runner2.ChangeBalance = sk.Rate * sk.Col.ActualAmount * sk.Symbol
 			runner2.ChangeCommission = sk.Rate * sk.Col.ActualAmount * sk.Symbol
@@ -445,6 +471,8 @@ func (sk *Striking) Striking(db *gorm.DB) error {
 				statistics.Commission = sk.Rate * sk.Col.ActualAmount * sk.Symbol
 				statistics.CollectionAmount = sk.Rate * sk.Col.ActualAmount * sk.Symbol
 				statistics.CollectionCount = int(sk.Symbol) * 1
+				statistics.RunnerId = runner2.ID
+				statistics.AgencyRunnerId = runner2.ID
 			}
 			err := statistics.Add(db)
 			if err != nil {
@@ -457,6 +485,7 @@ func (sk *Striking) Striking(db *gorm.DB) error {
 			sk.Rate = runner2.PayPoint
 		}
 	}
+
 	//代操作内容
 	agg := AgencyRunner{}
 	err = db.Where("id=?", sk.AgencyRunnerId).First(&agg).Error
@@ -472,7 +501,9 @@ func (sk *Striking) Striking(db *gorm.DB) error {
 
 	if sk.Rate > 0 { //处理代理的账变
 		agencyRunner := AgencyRunner{
-			Balance: sk.Symbol * sk.Rate * sk.Col.ActualAmount, Commission: sk.Symbol * sk.Rate * sk.Col.ActualAmount}
+			Balance:    sk.Symbol * sk.Rate * sk.Col.ActualAmount,
+			Commission: sk.Symbol * sk.Rate * sk.Col.ActualAmount,
+			ID:         sk.AgencyRunnerId, Col: sk.Col}
 		err := agencyRunner.ChangeCommissionAndBalance(db)
 		if err != nil {
 			return err

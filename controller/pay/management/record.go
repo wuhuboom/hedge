@@ -29,8 +29,9 @@ func GetRecord(c *gin.Context) {
 		db := mysql.DB.Where("kinds=1").Where("runner_id=0")
 		var total int
 		if status, IsE := c.GetPostForm("merchant_num"); IsE == true {
-			db = db.Where("mer_chant_num=?", status)
+			db = db.Where("merchant_num=?", status)
 		}
+
 		//填写代理名字
 		if aUsername, isE := c.GetPostForm("agency_runner_name"); isE == true {
 			runner := model.AgencyRunner{Username: aUsername}

@@ -72,3 +72,23 @@ func MerChangeAmount(c *gin.Context) {
 	return
 
 }
+
+// GetAdminChangeAmount 获取管理的账变
+func GetAdminChangeAmount(c *gin.Context) {
+	limit, _ := strconv.Atoi(c.PostForm("limit"))
+	page, _ := strconv.Atoi(c.PostForm("page"))
+	sl := make([]model.AdminAccountChange, 0)
+	db := mysql.DB
+	//Kinds        int     //类型 1盈利金额  2累计押金
+	if status, isE := c.GetPostForm("kinds"); isE == true {
+		db.Where("kinds=?", status)
+	}
+
+	var total int
+	db.Model(&model.AdminAccountChange{}).Count(&total)
+	db = db.Model(&model.AdminAccountChange{}).Offset((page - 1) * limit).Limit(limit).Order("created desc")
+	db.Find(&sl)
+	tools.ReturnDataLIst2000(c, sl, total)
+	return
+
+}

@@ -264,8 +264,7 @@ func CollectionOperation(c *gin.Context) {
 				}
 
 			} else {
-				if col.Species == 3 {
-					//跑分逻辑
+				if col.Species == 3 { //跑分逻辑
 					runner := model.Runner{ID: col.RunnerId}
 					runner.CollectionLimit = 0
 					runner.FreezeCollectionLimit = -ActualAmount
@@ -275,7 +274,6 @@ func CollectionOperation(c *gin.Context) {
 						tools.ReturnErr101Code(c, err.Error())
 						return
 					}
-
 				} else { //普通三方逻辑
 					merchant := model.Merchant{MerchantNum: col.MerChantNum}
 					err, _ := merchant.AmountChange(mysql.DB, ActualAmount, col.ChannelId, col.ID, col.OwnOrder, 1, col)
@@ -322,7 +320,6 @@ func CollectionOperation(c *gin.Context) {
 	}
 	//回调
 	if action == "callback" {
-
 		id := c.PostForm("id")
 		col := modelPay.Collection{}
 		err := mysql.DB.Where("id=?", id).First(&col).Error
@@ -419,30 +416,35 @@ func CollectionOperation(c *gin.Context) {
 			tools.ReturnErr101Code(c, "status  is fail")
 			return
 		}
-		//判断是否是跑分订单
-
-		//判断是代付订单 还是代付订单
+		//判断是代收订单 还是代付订单
 		if col.Kinds == 1 {
+
 			if col.Status != 2 {
 				tools.ReturnErr101Code(c, "the order's status is not  right")
 				return
 			}
 			//减少总金额   可用金额  代收成功数量  代收成功金额   超管的盈利增加?
 			db := mysql.DB.Begin()
-			affected := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).Update(&modelPay.Collection{Status: 7, Updated: time.Now().Unix()}).RowsAffected
+			//修改订单的状态
+			affected := db.Model(&modelPay.Collection{}).Where("id=? and status=? ", id, col.Status).
+				Update(&modelPay.Collection{Status: 7, Updated: time.Now().Unix()}).RowsAffected
 			if affected == 0 {
-				tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
+				tools.ReturnErr101Code(c, eeor.OtherError("434 u fail"))
 				return
 			}
+			//修改商户的总金额  和可用金额
 			ups := make(map[string]interface{})
 			ups["AvailableAmount"] = mer.AvailableAmount - (col.ActualAmount - col.Commission)
 			ups["AllAmount"] = mer.AllAmount - col.ActualAmount
-			affected = db.Model(&model.Merchant{}).Where("id=?  and  available_amount=? and  all_amount=? ", mer.ID, mer.AvailableAmount, mer.AllAmount).Update(ups).RowsAffected
+			affected = db.Model(&model.Merchant{}).
+				Where("id=?  and  available_amount=? and  all_amount=? ", mer.ID, mer.AvailableAmount, mer.AllAmount).
+				Update(ups).RowsAffected
 			if err != nil {
 				db.Rollback()
-				tools.ReturnErr101Code(c, eeor.OtherError("u fail"))
+				tools.ReturnErr101Code(c, eeor.OtherError("441 u fail"))
 				return
 			}
+
 			//新增账变
 			change := modelPay.AmountChange{
 				MerchantNum: mer.MerchantNum,
@@ -498,6 +500,7 @@ func CollectionOperation(c *gin.Context) {
 			db.Commit()
 			tools.ReturnSuccess2000Code(c, "OK")
 			return
+
 		} else { //代付订单冲正
 			if col.Status == 3 {
 				//失败的冲正(实际上是代付成功了)

@@ -183,7 +183,11 @@
                     {field: 'ChannelName', title: '通道名字', edit: 'text', sort: true,align:"center"},
                     {field: 'Rate', title: '通道费率', edit: 'text', sort: true,align:"center",templet:function (d) {
                             if (d.Rate>0){
-                                return d.Rate*100+"%"
+                                if (d.Rate == 0.07){
+                                    return "7%"
+                                }else {
+                                    return d.Rate*100+"%"
+                                }
                             }else {
                                 return 0
                             }

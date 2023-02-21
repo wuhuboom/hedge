@@ -56,8 +56,10 @@ func RunnerOperation(c *gin.Context) {
 		add.AgencyRunnerId = whoMap.ID
 		add.CollectionPoint, _ = strconv.ParseFloat(ro.CollectionPoint, 64)
 		add.PayPoint, _ = strconv.ParseFloat(ro.PayPoint, 64)
+		//添加下级税点
+		add.JuniorPoint, _ = strconv.ParseFloat(ro.JuniorPoint, 64)
 		//对代付 代收的 盈利点  大小判断
-		if add.CollectionPoint > whoMap.CollectionPoint || add.PayPoint > whoMap.PayPoint {
+		if add.CollectionPoint > whoMap.CollectionPoint || add.PayPoint > whoMap.PayPoint || add.JuniorPoint > whoMap.JuniorPoint {
 			tools.ReturnErr101Code(c, "Payment collection profit point can not be greater than itself")
 			return
 		}

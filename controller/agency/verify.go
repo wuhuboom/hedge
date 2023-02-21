@@ -12,4 +12,5 @@ type RunnerOperationAdd struct {
 	Password        string `form:"password"  binding:"required"`
 	CollectionPoint string `form:"collection_point" binding:"required"`
 	PayPoint        string `form:"pay_point" binding:"required"`
+	JuniorPoint     string `form:"junior_point"  binding:"required"`
 }

@@ -60,12 +60,12 @@
         </div>
     </div>
 
-<!--    <div class="layui-form-item layui-form-text">-->
-<!--        <label class="layui-form-label">备注</label>-->
-<!--        <div class="layui-input-block" >-->
-<!--            <textarea placeholder="请输入修改原因" name="remark" id="remark" class="layui-textarea" style="width: 300px"></textarea>-->
-<!--        </div>-->
-<!--    </div>-->
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block" >
+            <textarea placeholder="请输入修改原因" name="remark" id="remark" class="layui-textarea" style="width: 300px"></textarea>
+        </div>
+    </div>
 
     <div class="layui-form-item">
         <div class="layui-input-block">
@@ -110,7 +110,6 @@
             //
             //取消并关闭窗口
             $("#Cancel").click(function () {
-
                 notice.msg('取消操作!', {icon: 5});
                 var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                 parent.layer.close(index);
@@ -120,30 +119,33 @@
             //确定发送到数据库并闭窗口
             $("#confirm").click(function () {
 
-                // if (!$("#remark").val()){
-                //     layer.msg("备注不允许为空!");
-                //     return false
-                // }
-
                 if (!$("#balance_change").val()){
                     layer.msg("押金不允许为空!");
+                    return false
+                }
+
+                if (!$("#remark").val()){
+                    layer.msg("备注不允许为空!");
                     return false
                 }
 
                 var User_Info = {}
                 var Aval=form.val('example')
 
-                //减少押金
+                //减少
                 if (Aval.balance==2){
                     Aval.balance_change *=-1
                 }
 
                 User_Info.id=currParentDatas.ID
-                User_Info.cash_pledge=Aval.balance_change
-                // User_Info.remark=Aval.remark
+                if (Aval.balance_change){
+                    User_Info.cash_pledge=Aval.balance_change
+                }
+                if (Aval.remark){
+                    User_Info.remark=Aval.remark
+                }
 
                 // console.log("User_Info",User_Info)
-
 
                 $.ajax({
                     url: global_requestAddress+global_requestAddress_js_runnerOperation+"?action=update",

@@ -248,7 +248,7 @@
 
         var currParentDatas = eval('(' + parent.jsondata + ')')
 
-        console.log("currParentDatas",currParentDatas)
+        // console.log("currParentDatas",currParentDatas)
 
         var currChannelData = eval('(' + parent.jsonPayPaidData + ')')
         // channel = currChannelData.channelData
@@ -275,10 +275,19 @@
             var laydate = layui.laydate;
 
 
+
+
+
+
             $("#Username").text(currParentDatas.Username)//用户名
             var JuniorPoint = ''
             if(currParentDatas.JuniorPoint > 0) {
-                JuniorPoint = currParentDatas.JuniorPoint * 100 + "%"
+                if (currParentDatas.JuniorPoint == 0.07){
+                    JuniorPoint = currParentDatas.JuniorPoint +0.93+6 + "%"
+                }else {
+                    JuniorPoint = currParentDatas.JuniorPoint * 100 + "%"
+                }
+
             }else {
                 JuniorPoint = 0
             }
@@ -286,7 +295,11 @@
 
             var WithdrawCommission = ''
             if(currParentDatas.WithdrawCommission > 0) {
-                WithdrawCommission = currParentDatas.WithdrawCommission * 100 + "%"
+                if (currParentDatas.WithdrawCommission == 0.07){
+                    WithdrawCommission = currParentDatas.WithdrawCommission +0.93+6 + "%"
+                }else {
+                    WithdrawCommission = currParentDatas.WithdrawCommission * 100 + "%"
+                }
             }else {
                 WithdrawCommission = 0
             }
@@ -294,7 +307,12 @@
 
             var CollectionPoint = ''
             if(currParentDatas.CollectionPoint > 0) {
-                CollectionPoint = currParentDatas.CollectionPoint * 100 + "%"
+                if (currParentDatas.CollectionPoint == 0.07){
+                    CollectionPoint = currParentDatas.CollectionPoint +0.93+6 + "%"
+                }else {
+                    CollectionPoint = currParentDatas.CollectionPoint * 100 + "%"
+                }
+
             }else {
                 CollectionPoint = 0
             }
@@ -305,7 +323,12 @@
 
             var PayPoint = ''
             if(currParentDatas.PayPoint > 0) {
-                PayPoint = currParentDatas.PayPoint * 100 + "%"
+                if (currParentDatas.PayPoint == 0.07){
+                    PayPoint = currParentDatas.PayPoint +0.93+6 + "%"
+                }else {
+                    PayPoint = currParentDatas.PayPoint * 100 + "%"
+                }
+
             }else {
                 PayPoint = 0
             }

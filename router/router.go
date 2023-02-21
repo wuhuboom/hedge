@@ -99,6 +99,8 @@ func Setup() *gin.Engine {
 		ad.POST("/merChangeAmount", management.MerChangeAmount)
 		ad.POST("/getRecord", management.GetRecord)
 
+		ad.POST("/getAdminChangeAmount", management.GetAdminChangeAmount)
+
 	}
 
 	paid := r.Group("/paid/v1")

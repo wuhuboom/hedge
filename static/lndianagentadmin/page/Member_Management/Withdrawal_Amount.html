@@ -61,18 +61,18 @@
 
 
   <div class="layui-form-item">
-    <label class="layui-form-label">提现金额</label>
+    <label class="layui-form-label">提现手续费</label>
     <div class="layui-input-block">
-      <input type="text" name="Withdrawal_Amount" id="Withdrawal_Amount" placeholder="请输入提现金额" autocomplete="off" class="layui-input" style="width: 300px">
+      <input type="text" name="Withdrawal_Amount" id="Withdrawal_Amount" placeholder="请输入提现手续费" autocomplete="off" class="layui-input" style="width: 300px">
     </div>
   </div>
 
-<!--  <div class="layui-form-item layui-form-text">-->
-<!--    <label class="layui-form-label">备注</label>-->
-<!--    <div class="layui-input-block" >-->
-<!--      <textarea placeholder="请输入修改原因" name="remark" id="remark" class="layui-textarea" style="width: 300px"></textarea>-->
-<!--    </div>-->
-<!--  </div>-->
+  <div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">备注</label>
+    <div class="layui-input-block" >
+      <textarea placeholder="请输入修改原因" name="remark" id="remark" class="layui-textarea" style="width: 300px"></textarea>
+    </div>
+  </div>
 
   <div class="layui-form-item">
     <div class="layui-input-block">
@@ -136,14 +136,14 @@
         // }
 
         if (!$("#Withdrawal_Amount").val()){
-          layer.msg("提现金额不允许为空!");
+          layer.msg("提现手续费不允许为空!");
           return false
         }
 
-        // if (!$("#remark").val()){
-        //   layer.msg("备注不允许为空!");
-        //   return false
-        // }
+        if (!$("#remark").val()){
+          layer.msg("备注不允许为空!");
+          return false
+        }
 
         var User_Info = {}
         var Aval=form.val('example')
@@ -154,10 +154,14 @@
         }
 
         //返回结果
-        User_Info.id=currParentDatas.ID
-        User_Info.withdraw_commission=Aval.Withdrawal_Amount
-        // User_Info.remark=Aval.remark
 
+        User_Info.id=currParentDatas.ID
+        if (Aval.Withdrawal_Amount ){
+          User_Info.withdraw_commission=Aval.Withdrawal_Amount
+        }
+        if (Aval.remark ){
+        User_Info.remark=Aval.remark
+          }
         // console.log("User_Info",User_Info)
 
         $.ajax({

@@ -84,6 +84,11 @@
                         </tr>
 
                         <tr>
+                            <td>提现费率</td>
+                            <td id="WithdrawCommission"></td>
+                        </tr>
+
+                        <tr>
                             <td>秘钥</td>
                             <td id="ApiKey"></td>
                         </tr>
@@ -208,6 +213,15 @@
                     if (res.code === 200) {
                         var returnDataArray = res.result
                         $("#MerchantNum").text(returnDataArray.MerchantNum)
+
+                        var WithdrawCommission=""
+                        if (returnDataArray.WithdrawCommission == 0.07){
+                            WithdrawCommission="7%"
+                        }else {
+                            WithdrawCommission=returnDataArray.WithdrawCommission*100+"%"
+                        }
+                        $("#WithdrawCommission").append(WithdrawCommission)
+
 
                         // <span className = "layui-badge"> 赤 < /span>
 

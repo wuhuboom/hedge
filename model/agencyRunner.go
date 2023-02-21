@@ -47,6 +47,7 @@ type AgencyRunner struct {
 	RunnerId                    int                `gorm:"-"` //奔跑者id
 	MinWithdraw                 float64            `gorm:"type:decimal(10,2);default:1000"`
 	//ExchangeRate                float64            `gorm:"type:decimal(10,2);default:0"` //U汇率
+	Col modelPay.Collection `gorm:"-"`
 }
 
 func CheckIsExistModelAgencyRunner(db *gorm.DB) {
@@ -160,7 +161,7 @@ func (ar *AgencyRunner) ChangeCommissionAndBalance(db *gorm.DB) error {
 			RunnerId:       ar.RunnerId,
 			NowAmount:      ag.Commission + ar.Commission,
 			ChangeAmount:   ar.Commission,
-			FontAmount:     ag.Commission, Kinds: 4}
+			FontAmount:     ag.Commission, Kinds: 4, CollectionId: ar.Col.ID}
 		err = change.Add(db)
 		if err != nil {
 			return err
@@ -173,7 +174,7 @@ func (ar *AgencyRunner) ChangeCommissionAndBalance(db *gorm.DB) error {
 			RunnerId:       ar.RunnerId,
 			NowAmount:      ag.Balance + ar.Balance,
 			ChangeAmount:   ar.Balance,
-			FontAmount:     ar.Balance, Kinds: 6}
+			FontAmount:     ar.Balance, Kinds: 6, CollectionId: ar.Col.ID}
 		err = accountChange.Add(db)
 		if err != nil {
 			return err

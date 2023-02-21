@@ -64,6 +64,7 @@ type Commission struct {
 	PayType        int     //1  代收  1代付
 }
 
+// ChangeCommission 奔跑者改变佣金账变
 func (co *Commission) ChangeCommission(db *gorm.DB) error {
 	//三方普通单子
 	if co.Species == 1 {
@@ -81,7 +82,7 @@ func (co *Commission) ChangeCommission(db *gorm.DB) error {
 			return err
 		}
 		//不存在(代理就是其直属上级)
-		if co.PayType == 1 {
+		if co.PayType == 1 { //   代收
 			//更新玩家
 			var rate float64
 			rate = runner.CollectionPoint
@@ -91,7 +92,6 @@ func (co *Commission) ChangeCommission(db *gorm.DB) error {
 			if affected == 0 {
 				return eeor.OtherError("update is fail")
 			}
-
 			//生成账变(佣金账变)
 			change := RunnerAmountChange{RunnerId: runner.ID,
 				Kinds: 4, CollectionId: co.CollectionId,
@@ -118,37 +118,39 @@ func (co *Commission) ChangeCommission(db *gorm.DB) error {
 			//存在上级
 			if runner.Superior != 0 {
 				runner2 := Runner{}
-				rate = runner2.CollectionPoint - rate
 				err = db.Where("id=?", runner.Superior).First(&runner2).Error
 				if err != nil {
 					return err
 				}
-				affected = db.Model(&Runner{}).Where("id=? and  commission=?  and  balance=?", runner2.ID, runner2.Commission, runner2.Balance).
-					Update(map[string]interface{}{"Commission": runner2.Commission + rate*co.ActualAmount, "Balance": runner2.Balance + rate*co.ActualAmount}).RowsAffected
-				if affected == 0 {
-					return eeor.OtherError("update is fail")
-				}
-				//生成账变(佣金账变)
-				change := RunnerAmountChange{RunnerId: runner2.ID,
-					Kinds: 4, CollectionId: co.CollectionId,
-					NowAmount: runner.Commission + runner2.CollectionPoint*co.ActualAmount, FontAmount: runner2.Commission, ChangeAmount: runner2.CollectionPoint * co.ActualAmount}
-				err = change.Add(db)
-				if err != nil {
-					return err
-				}
-				//生成账变
-				amountChange := RunnerAmountChange{RunnerId: runner2.ID, Kinds: 6, CollectionId: co.CollectionId,
-					Remark: "rebate", NowAmount: runner2.Balance + runner2.CollectionPoint*co.ActualAmount, FontAmount: runner2.Balance, ChangeAmount: runner2.CollectionPoint * co.ActualAmount}
-				err = amountChange.Add(db)
-				if err != nil {
-					return err
-				}
+				rate = runner2.CollectionPoint - rate
+				if rate > 0 {
+					affected = db.Model(&Runner{}).Where("id=? and  commission=?  and  balance=?", runner2.ID, runner2.Commission, runner2.Balance).
+						Update(map[string]interface{}{"Commission": runner2.Commission + rate*co.ActualAmount, "Balance": runner2.Balance + rate*co.ActualAmount}).RowsAffected
+					if affected == 0 {
+						return eeor.OtherError("update is fail")
+					}
+					//生成账变(佣金账变)
+					change := RunnerAmountChange{RunnerId: runner2.ID,
+						Kinds: 4, CollectionId: co.CollectionId,
+						NowAmount: runner.Commission + runner2.CollectionPoint*co.ActualAmount, FontAmount: runner2.Commission, ChangeAmount: runner2.CollectionPoint * co.ActualAmount}
+					err = change.Add(db)
+					if err != nil {
+						return err
+					}
+					//生成账变
+					amountChange := RunnerAmountChange{RunnerId: runner2.ID, Kinds: 6, CollectionId: co.CollectionId,
+						Remark: "rebate", NowAmount: runner2.Balance + runner2.CollectionPoint*co.ActualAmount, FontAmount: runner2.Balance, ChangeAmount: runner2.CollectionPoint * co.ActualAmount}
+					err = amountChange.Add(db)
+					if err != nil {
+						return err
+					}
 
-				statistics := RunnerStatistics{RunnerId: runner.ID,
-					AgencyRunnerId: runner.AgencyRunnerId, CollectionAmount: co.ActualAmount, CollectionCount: 1, Commission: rate * co.ActualAmount}
-				err = statistics.Add(db)
-				if err != nil {
-					return err
+					statistics := RunnerStatistics{RunnerId: runner.ID,
+						AgencyRunnerId: runner.AgencyRunnerId, CollectionAmount: co.ActualAmount, CollectionCount: 1, Commission: rate * co.ActualAmount}
+					err = statistics.Add(db)
+					if err != nil {
+						return err
+					}
 				}
 				rate = runner2.CollectionPoint
 			}
@@ -159,42 +161,47 @@ func (co *Commission) ChangeCommission(db *gorm.DB) error {
 			if err != nil {
 				return err
 			}
-
 			rate = agencyRunner.CollectionPoint - rate
-			affected = db.Model(&AgencyRunner{}).Where("id=? and  commission=? and balance =?", agencyRunner.ID, agencyRunner.Commission, agencyRunner.Balance).
-				Update(map[string]interface{}{"Commission": agencyRunner.Commission + rate*co.ActualAmount, "Balance": agencyRunner.Balance + rate*co.ActualAmount}).RowsAffected
-			if affected == 0 {
-				return eeor.OtherError("update is fail")
-			}
-			//账变  佣金
-			accountChange := AgencyAccountChange{
-				RunnerId:       co.RunnerId,
-				AgencyRunnerId: co.AgencyRunnerId,
-				NowAmount:      agencyRunner.Commission + rate*co.ActualAmount,
-				FontAmount:     agencyRunner.Commission,
-				ChangeAmount:   rate * co.ActualAmount, CollectionId: co.CollectionId, Kinds: 4}
-			err = accountChange.Add(db)
-			if err != nil {
-				return err
-			}
-			//余额
-			agencyAccountChange := AgencyAccountChange{RunnerId: co.RunnerId,
-				AgencyRunnerId: co.AgencyRunnerId,
-				NowAmount:      agencyRunner.Commission + rate*co.ActualAmount,
-				FontAmount:     agencyRunner.Commission,
-				ChangeAmount:   rate * co.ActualAmount, CollectionId: co.CollectionId, Kinds: 6}
-			err = agencyAccountChange.Add(db)
-			if err != nil {
-				return err
+			if rate > 0 {
+				affected = db.Model(&AgencyRunner{}).Where("id=? and  commission=? and balance =?", agencyRunner.ID, agencyRunner.Commission, agencyRunner.Balance).
+					Update(map[string]interface{}{"Commission": agencyRunner.Commission + rate*co.ActualAmount, "Balance": agencyRunner.Balance + rate*co.ActualAmount}).RowsAffected
+				if affected == 0 {
+					return eeor.OtherError("update is fail")
+				}
+
+				//账变  佣金
+				accountChange := AgencyAccountChange{
+					RunnerId:       co.RunnerId,
+					AgencyRunnerId: co.AgencyRunnerId,
+					NowAmount:      agencyRunner.Commission + rate*co.ActualAmount,
+					FontAmount:     agencyRunner.Commission,
+					ChangeAmount:   rate * co.ActualAmount, CollectionId: co.CollectionId, Kinds: 4}
+				err = accountChange.Add(db)
+				if err != nil {
+					return err
+				}
+				//余额
+				agencyAccountChange := AgencyAccountChange{RunnerId: co.RunnerId,
+					AgencyRunnerId: co.AgencyRunnerId,
+					NowAmount:      agencyRunner.Commission + rate*co.ActualAmount,
+					FontAmount:     agencyRunner.Commission,
+					ChangeAmount:   rate * co.ActualAmount, CollectionId: co.CollectionId, Kinds: 6}
+				err = agencyAccountChange.Add(db)
+				if err != nil {
+					return err
+				}
+
 			}
 			//更新管理员
 			rate = co.MerRate - agencyRunner.CollectionPoint
-			admin := Admin{Profit: rate * co.ActualAmount, CollectionId: co.CollectionId}
-			err = admin.ChangeProfit(db)
-			if err != nil {
-				return err
-			}
+			if rate > 0 {
+				admin := Admin{Profit: rate * co.ActualAmount, CollectionId: co.CollectionId}
+				err = admin.ChangeProfit(db)
+				if err != nil {
+					return err
+				}
 
+			}
 		}
 	}
 

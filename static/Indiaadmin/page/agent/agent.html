@@ -261,7 +261,11 @@
                     {field: 'Commission', title: '佣金',  sort: true,align:"center",width: 150},
                     {field: 'CollectionPoint', title: '代收盈利点',  sort: true,align:"center",width: 150,templet:function (d) {
                             if (d.CollectionPoint !=0){
-                                var number=d.CollectionPoint*100+"%"
+                                if (d.CollectionPoint == 0.07){
+                                    var number="7%"
+                                }else {
+                                    var number=d.CollectionPoint*100+"%"
+                                }
                                 return number
                             }
                             return 0
@@ -271,8 +275,11 @@
                             if ((d.PayPoint*1) <=0){
                                 return 0
                             }
-
-                            var number=d.PayPoint*100+"%"
+                            if (d.PayPoint == 0.07){
+                                var number="7%"
+                            }else {
+                                var number=d.PayPoint*100+"%"
+                            }
                             return number
                         }},
                     {field: 'Status', title: '状态', sort: true,align:"center",templet:function(d){
@@ -975,7 +982,6 @@
 
             });
 
-
             // //触发行单击事件,这种点击整行都会提示复制,暂时去掉
             // table.on('row(userTable)', function(obj){
             //     // console.log(obj.tr) //得到当前行元素对象
@@ -1044,8 +1050,6 @@
             //
             //
             // })
-
-
 
             // 添加
             form.on('submit(addAdmin)', function (data) {

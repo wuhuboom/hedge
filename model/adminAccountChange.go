@@ -14,6 +14,7 @@ type AdminAccountChange struct {
 	Kinds        int     //类型 1盈利金额  2累计押金
 	CollectionId int     //订单金额
 	RecordId     int
+	Remark       string
 	Created      int64
 }
 

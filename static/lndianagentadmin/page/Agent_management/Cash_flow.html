@@ -298,7 +298,7 @@
                     //     }},
                     {field: 'ChangeAmount', title: '变动金额', sort: true,align:"center",width:180},
                     {field: 'FontAmount', title: '变动前的金额', sort: true,align:"center",width:130},
-                    {field: 'After', title: '变动后的金额',  sort: true,align:"center",width:130},
+                    {field: 'NowAmount', title: '变动后的金额',  sort: true,align:"center",width:130},
                     {field: 'Kinds', title: '类型',  sort: true,align:"center",width:130,templet:function (d) {//1押金 2代收额度  3代付额度 4佣金   5余额
                                     if(d.Kinds == "1"){//1等待支付
                                         return '<button class="layui-btn  layui-btn-sm" style="background-color: #337ab7;border-color: #337ab7;">'+'押金'+'</button>'
@@ -309,7 +309,7 @@
                                     }else if(d.Kinds == "4"){//已过期
                                         return '<button class="layui-btn  layui-btn-sm" style="background-color: #608dce;border-color: #608dce;">'+'佣金'+'</button>'
                                     }else if(d.Kinds == "5"){//已过期
-                                        return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">'+'余额'+'</button>'
+                                        return '<button class="layui-btn  layui-btn-sm" style="background-color: #465161;border-color: #465161;">'+'提现'+'</button>'
                                     }else{
                                         return ''
                                     }
@@ -437,7 +437,7 @@
                 // console.log("currTempObj",data.field.username)
                 // insTb.reload({where: data.field, page: {curr: 1}});
                 currTempObj = {}
-                currTempObj.kinds = 1
+                // currTempObj.kinds = 1
                 // currTempObj.token = $.cookie('tokenMyb');
 
                 if (data.field.username){

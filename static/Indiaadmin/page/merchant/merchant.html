@@ -329,7 +329,18 @@
                         }},
                     // {field: 'MinMoney', title: '最小充值金额',  sort: true,align:"center"},
                     {field: 'MaxMoney', title: '最大充值金额',  sort: true,align:"center",hide:true},
-                    {field: 'CollectionCommission', title: '代收手续费',  sort: true,align:"center",width: 150,hide:true},
+                    {field: 'CollectionCommission', title: '代收手续费',  sort: true,align:"center",width: 150,hide:true,templet:function (d) {
+                            if ((d.CollectionCommission*1) >0){
+                                if (d.CollectionCommission == 0.07){
+                                    var number="7%"
+                                }else {
+                                    var number=d.CollectionCommission*100+"%"
+                                }
+
+                                return number
+                            }
+                            return 0
+                        }},
                     // {field: 'Gateway', title: 'Gateway',  sort: true,align:"center",width: 150},
                     {field: 'GatewayId', title: '网关地址',  sort: true,align:"center",width: 300,hide:true,templet:function (d) {
                             if(gatewaydata.length !== 0){
@@ -356,10 +367,25 @@
                     {field: 'PaidChannel', title: '代付渠道',  sort: true,align:"center",width: 150,hide:true},
                     // {field: 'PayC', title: 'PayC',  sort: true,align:"center",width: 150},
                     {field: 'PayChannel', title: '代收渠道',  sort: true,align:"center",width: 150,hide:true},
-                    {field: 'PayCommission', title: '代付手续费',  sort: true,align:"center",width: 150,hide:true},
+                    {field: 'PayCommission', title: '代付手续费',  sort: true,align:"center",width: 150,hide:true,templet:function (d) {
+                            if ((d.PayCommission*1) >0){
+                                if (d.PayCommission == 0.07){
+                                    var number="7%"
+                                }else {
+                                    var number=d.PayCommission*100+"%"
+                                }
+                                return number
+                            }
+                            return 0
+                        }},
                     {field: 'WithdrawCommission', title: '提现手续费',  sort: true,align:"center",width: 150,hide:true,templet:function (d) {
                             if ((d.WithdrawCommission*1) >0){
-                                var number=d.WithdrawCommission*100+"%"
+                                if (d.WithdrawCommission == 0.07){
+                                    var number="7%"
+                                }else {
+                                    var number=d.WithdrawCommission*100+"%"
+                                }
+
                                 return number
                             }
                             return 0

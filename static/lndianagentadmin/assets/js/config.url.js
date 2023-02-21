@@ -1,5 +1,5 @@
 //
-global_requestAddress ="http://127.0.0.1:8080";
+global_requestAddress ="";
 //登录接口
 global_requestloginAddress_js="/agency/v2/login";
 // 获取日志
@@ -31,6 +31,9 @@ global_requestAddress_js_homePage="/agency/v2/homePage";
 
 //获取回 U 列表/提现
 global_requestAddress_js_getU="/agency/v2/getU";
+
+//会员列表 账变
+global_requestAddress_js_getRunnerAmountChange="/agency/v2/getRunnerAmountChange"
 
 
 const timeArr = [{

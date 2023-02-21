@@ -135,7 +135,7 @@
 
                     <tr>
                         <td>提现手续费</td>
-                        <td id="Withdrawal_fee"></td>
+                        <td id="WithdrawCommission"></td>
                         <td>代付额度</td>
                         <td id="PayLimit"></td>
                     </tr>
@@ -149,8 +149,6 @@
                     <tr>
                         <td>下级税点</td>
                         <td id="JuniorPoint"> </td>
-                        <td>提现手续费</td>
-                        <td id="WithdrawCommission"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -321,11 +319,24 @@
                 success:function (res) {
                     currParentDatas = res.result
 
+                    console.log('currParentDatas',currParentDatas)
 
                     //基本信息
                     $("#Username").text(currParentDatas.Username)//代理号
                     $("#Password").text(currParentDatas.Password)//登录密码
                     $("#AgencyRunnerId").text(currParentDatas.AgencyRunnerId)//代理id
+
+                    var WithdrawCommission = ''
+                    if ((currParentDatas.WithdrawCommission*1) >0){
+                        if ( currParentDatas.WithdrawCommission == 0.07){
+                                WithdrawCommission="7%"
+                        }else {
+                                WithdrawCommission=currParentDatas.WithdrawCommission*100+"%"
+                        }
+                    }else {
+                        WithdrawCommission =0
+                    }
+                    $("#WithdrawCommission").append(WithdrawCommission)//提现手续费
                     var statusHtml = ''
                     if(currParentDatas.Status === 1){
                         statusHtml ='<span class="layui-badge " style="background-color: #337ab7;border-color: #337ab7;">正常</span>'
@@ -357,7 +368,11 @@
 
                     var CollectionPoint = ''
                     if ((currParentDatas.CollectionPoint*1) >0){
-                        var CollectionPoint=currParentDatas.CollectionPoint*100+"%"
+                        if ( currParentDatas.CollectionPoint == 0.07){
+                                CollectionPoint="7%"
+                        }else {
+                                CollectionPoint=currParentDatas.CollectionPoint*100+"%"
+                        }
                     }else {
                         CollectionPoint =0
                     }
@@ -367,7 +382,11 @@
 
                     var PayPoint = ''
                     if ((currParentDatas.PayPoint*1) >0){
-                        var PayPoint=currParentDatas.PayPoint*100+"%"
+                        if (currParentDatas.PayPoint == 0.07){
+                                PayPoint="7%"
+                        }else {
+                                PayPoint=currParentDatas.PayPoint*100+"%"
+                        }
                     }else {
                         PayPoint =0
                     }
@@ -380,7 +399,12 @@
 
                     var JuniorPoint = ''
                     if ((currParentDatas.JuniorPoint*1) >0){
-                        var JuniorPoint=currParentDatas.JuniorPoint*100+"%"
+                        if (currParentDatas.JuniorPoint == 0.07){
+                                JuniorPoint="7%"
+                        }else {
+                                JuniorPoint=currParentDatas.JuniorPoint*100+"%"
+                        }
+
                     }else {
                         JuniorPoint =0
                     }
