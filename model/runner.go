@@ -9,6 +9,7 @@ import (
 	"github.com/wangyi/GinTemplate/tools"
 	"math"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -449,7 +450,8 @@ func (sk *Striking) Striking(db *gorm.DB) error {
 	}
 	if runner.LeverTree != "" { //说明不是顶级代理(要和上级代理进行 费率对比)
 		runner2 := Runner{}
-		err := db.Where("id=?", runner.Superior).First(&runner2).Error
+		LeverTreeArray := strings.Split(runner.LeverTree, "@")
+		err := db.Where("id=?", LeverTreeArray[0]).First(&runner2).Error
 		if err != nil {
 			return eeor.OtherError("runnerId2  is fail")
 		}

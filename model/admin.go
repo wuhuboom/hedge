@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	eeor "github.com/wangyi/GinTemplate/error"
 	"github.com/wangyi/GinTemplate/tools"
+	"strings"
 	"time"
 )
 
@@ -117,8 +118,10 @@ func (co *Commission) ChangeCommission(db *gorm.DB) error {
 
 			//存在上级
 			if runner.Superior != 0 {
+				//寻找顶级代理
+				LevelTreeArray := strings.Split(runner.LeverTree, "@")
 				runner2 := Runner{}
-				err = db.Where("id=?", runner.Superior).First(&runner2).Error
+				err = db.Where("id=?", LevelTreeArray[0]).First(&runner2).Error
 				if err != nil {
 					return err
 				}

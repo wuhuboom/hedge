@@ -245,6 +245,8 @@ func MerchantOperation(c *gin.Context) {
 		id := c.PostForm("id")
 		runner := model.Merchant{}
 		mysql.DB.Where("id=?", id).First(&runner)
+		gateway := model.Gateway{ID: runner.GatewayId}
+		runner.Gateway = gateway.GetName(mysql.DB)
 		tools.ReturnSuccess2000DataCode(c, runner, "ok")
 		return
 	}
