@@ -34,6 +34,10 @@ func GetSubordinate(c *gin.Context) {
 			tools.ReturnErr101Code(c, "the user is not exist")
 			return
 		}
+		if whoMap.Superior != 0 {
+			tools.ReturnErr101Code(c, "you is not have authority")
+			return
+		}
 
 		ups := map[string]interface{}{}
 		if rate, isE := c.GetPostForm("collection_point"); isE == true {

@@ -143,7 +143,7 @@ func (r *Runner) CheckInvitationCode(db *gorm.DB) (*Runner, error) {
 		r.CollectionPoint = agencyRunner.JuniorPoint
 		r.PayPoint = agencyRunner.JuniorPoint
 		r.WithdrawCommission = agencyRunner.JuniorWithdrawCommission
-		r.JuniorPoint = agencyRunner.JuniorPoint
+		r.JuniorPoint = agencyRunner.JuniorPoint - 0.01
 		return r, nil
 	} else {
 		return r, eeor.OtherError("The invitation code is invalid")
