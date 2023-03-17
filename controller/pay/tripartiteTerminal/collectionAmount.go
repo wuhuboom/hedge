@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/wangyi/GinTemplate/common"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/model"
 	"github.com/wangyi/GinTemplate/model/modelPay"
@@ -22,7 +23,6 @@ func CollectionAmount(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(cpd.Amount)
 	mer := model.Merchant{}
 	if err := mysql.DB.Where("merchant_num=?", cpd.MerChantNum).First(&mer).Error; err != nil {
 		tools.ReturnErr101Code(c, "Illegal request")
@@ -68,8 +68,8 @@ func CollectionAmount(c *gin.Context) {
 	//订单是否重复提交
 	collection := modelPay.Collection{MerchantOrderNum: cpd.MerchantOrderNum, MerChantNum: cpd.MerChantNum}
 	if err := collection.MerchantOrderNumIsExist(mysql.DB); err == nil {
-		//tools.ReturnErr101Code(c, "Order already exists")
-		//return
+		tools.ReturnErr101Code(c, "Order already exists")
+		return
 	}
 
 	config := model.Config{}
@@ -120,6 +120,8 @@ func CollectionAmount(c *gin.Context) {
 	//正常三方
 	if UpiString == "" {
 		ch2 := modelPay.Channel{ID: ch.ID}
+		common.BankCardLimitLock.Lock()
+		defer common.BankCardLimitLock.Unlock()
 		upiBank, err := ch2.GetUpi(mysql.DB)
 		if err != nil {
 			tools.ReturnErr101Code(c, err.Error())
