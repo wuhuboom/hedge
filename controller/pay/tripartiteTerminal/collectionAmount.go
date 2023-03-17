@@ -35,7 +35,7 @@ func CollectionAmount(c *gin.Context) {
 		tools.ReturnErr101Code(c, "Illegal request")
 		return
 	}
-	mer.Gateway = strings.Replace(ga.Gateway, "api", "", 1)
+	mer.Gateway = strings.Replace(ga.Gateway, "api.", "", 1)
 	if err := SignatureCollectionAmount(cpd, mer.ApiKey); err != nil {
 		tools.ReturnErr101Code(c, err.Error())
 		return
