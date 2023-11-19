@@ -85,6 +85,7 @@ func run(cmd *cobra.Command, args []string) {
 		return
 	}
 	defer redis.Close()
+
 	//go process.CheckExpirationPayOrder(mysql.DB)
 	go process.OverdueCollection(mysql.DB)
 	go process.CheckLastGetOrderTime(mysql.DB)
@@ -93,7 +94,7 @@ func run(cmd *cobra.Command, args []string) {
 	router.Setup()
 }
 
-//初始化目录
+// 初始化目录
 func initDir() {
 
 	if rootPath == "" {
@@ -108,7 +109,7 @@ func initDir() {
 
 }
 
-//初始化守护进程
+// 初始化守护进程
 func initDaemon() {
 	pids, err := ioutil.ReadFile("Project.sock")
 	if err != nil {

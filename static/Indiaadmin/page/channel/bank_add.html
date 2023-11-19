@@ -82,7 +82,10 @@
             $("#country_filter").empty();
             // $('#country_filter').append(new Option('全部', '999999'));// 下拉菜单里添加元素
             $.each(payArr, function (index, item) {
+                // console.log(item)
                 $('#country_filter').append(new Option(item.CountryName, item.CountryName));// 下拉菜单里添加元素
+                // $('#country_filter').append(new Option(item.CountryName2, item.CountryName2));// 下拉菜单里添加元素
+
             });
 
             //重新渲染 固定写法

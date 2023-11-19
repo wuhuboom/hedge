@@ -69,7 +69,7 @@ var anotherPayTypeList = [{
 
 
 var payArr = [{
-	CountryName:"印度"
+	CountryName:"巴基斯坦"
 }]
 
 var channelArr = [{
