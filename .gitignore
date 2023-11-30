@@ -1,5 +1,3 @@
 config.yaml
-web_app.log
-MgHash.sock
-record.txt
-static/h5/static/config.js
+Project.sock
+logs/project.log

@@ -158,6 +158,10 @@ func Setup() *gin.Engine {
 	us := r.Group("/user/v2", LimitIpRequestSameUrlForUser())
 	{
 		us.POST("/uploadCertificate", user.UploadCertificate)
+		us.POST("/uploadCertificateImageRrt", user.UploadCertificateForImageRtt)
+		//GetCertificateForImageRtt  获取凭证截图
+		us.POST("/getCertificateForImageRtt", user.GetCertificateForImageRtt)
+
 	}
 	//Runner
 	run := r.Group("/runner/v2", PermissionToCheckForRunner(), LimitIpRequestSameUrlForUser())

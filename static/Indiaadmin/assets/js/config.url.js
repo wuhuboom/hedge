@@ -40,6 +40,8 @@ global_requestAddress_js_merChangeAmount="/admin/v1/merChangeAmount";
 // 获取提现列表
 global_requestAddress_js_getRecord="/admin/v1/getRecord";
 
+//系统账变
+global_requestAddress_js_getRecord="/admin/v1/getAdminChangeAmount";
 
 
 
@@ -87,8 +89,9 @@ var anotherPayTypeList = [{
 
 
 var payArr = [{
-	CountryName:"巴基斯坦",
-	// CountryName2:"巴基斯坦"
+	CountryName:"印度"
+},{
+	CountryName:"巴基斯坦"
 }]
 
 var channelArr = [{

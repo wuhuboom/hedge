@@ -116,7 +116,7 @@
 <!-- js部分 -->
 <script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
 <script type="text/javascript" src="../../assets/js/common.js?v=318"></script>
-,'dropdown'
+
 <script type="text/javascript" src="../../assets/js/jquery.min.js"></script>
 <script type="text/javascript" src="../../assets/js/jquery.cookie.min.js"></script>
 <script type="text/javascript" src="../../assets/js/config.url.js"></script>
@@ -1150,7 +1150,10 @@
                         //利用laypage实现局部刷新,以下两种方式都可以
                         // $(".layui-laypage-btn").click()
                         //直接刷新当前修改的行
-                        $(".layui-laypage-btn")[0].click()
+                        // $(".layui-laypage-btn")[0].click()
+
+                        insTb.reload({})
+
                     }
                 })
 

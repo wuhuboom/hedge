@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/spf13/viper"
 	"github.com/wangyi/GinTemplate/common"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/model"
@@ -136,7 +137,19 @@ func CollectionAmount(c *gin.Context) {
 		}
 		//每日统计
 		mysql.DB.Model(&modelPay.ChannelBank{}).Where("bank_id=?", upiBank.ID).UpdateColumn("frequency", gorm.Expr("frequency + ?", 1))
-		tools.ReturnSuccess2000DataCode(c, fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", upiBank.Upi, cpd.Amount, collection.OwnOrder, is), "ok")
+
+		//?bankCode=xxxx&orderNumber=xxx&Date=xxx(时间戳)&expiration=xxx(时间戳)&amount=xxx
+
+		//tools.ReturnSuccess2000DataCode(c,
+		//	fmt.Sprintf(mer.Gateway+"/#/?upi=%s&amount=%s&order_num=%s&expiration=%s", upiBank.Upi, cpd.Amount, collection.OwnOrder, is), "ok")
+		//username=xxx&bankname=xxx
+
+		ban := modelPay.BankInformation{}
+		mysql.DB.Where("id=?", upiBank.BankInformationId).First(&ban)
+		tools.ReturnSuccess2000DataCode(
+			c,
+			fmt.Sprintf(viper.GetString("config.webUrl")+"?bankCode=%s&orderNumber=%s&Date=%s&expiration=%s&amount=%s&bankname=%s&username=%s",
+				upiBank.CardNum, collection.OwnOrder, time.Now().Format("2006-01-02"), is, cpd.Amount, ban.BankName, upiBank.Name), "ok")
 		sta := modelPay.Statistics{TodayAllAmount: amountFlot, MerchantNum: mer.MerchantNum, TodayAllCollection: 1}
 		sta.Add(mysql.DB, 3)
 		return

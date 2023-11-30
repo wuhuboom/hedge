@@ -49,14 +49,14 @@
                     <div class="layui-inline">
                         <label class="layui-form-label">商户号:</label>
                         <div class="layui-input-inline">
-                            <input name="merchant_num" class="layui-input" placeholder="请输入商户号"/>
+                            <input name="merchant_num" id="merchant_num" class="layui-input" placeholder="请输入商户号"/>
                         </div>
                     </div>
 
                     <div class="layui-inline">
                         <label class="layui-form-label">商户订单号:</label>
                         <div class="layui-input-inline">
-                            <input name="merchant_order_num" class="layui-input" placeholder="请输入商户订单号"/>
+                            <input name="merchant_order_num" id="merchant_order_num" class="layui-input" placeholder="请输入商户订单号"/>
                         </div>
                     </div>
 
@@ -64,20 +64,20 @@
                     <div class="layui-inline">
                         <label class="layui-form-label">平台订单号:</label>
                         <div class="layui-input-inline">
-                            <input name="own_order" class="layui-input" placeholder="请输入平台订单号"/>
+                            <input name="own_order" id="own_order" class="layui-input" placeholder="请输入平台订单号"/>
                         </div>
                     </div>
 
                     <div class="layui-inline">
                         <label class="layui-form-label">支付凭证:</label>
                         <div class="layui-input-inline">
-                            <input name="proof_of_payment" class="layui-input" placeholder="请输入支付凭证"/>
+                            <input name="proof_of_payment" id="proof_of_payment" class="layui-input" placeholder="请输入支付凭证"/>
                         </div>
                     </div>
                     <div class="layui-inline">
                         <label class="layui-form-label">Upi:</label>
                         <div class="layui-input-inline">
-                            <input name="upi" class="layui-input" placeholder="请输入支付凭证"/>
+                            <input name="upi" id="upi" class="layui-input" placeholder="请输入upi"/>
                         </div>
                     </div>
 
@@ -172,7 +172,7 @@
             class="layui-icon layui-icon-ok"></i>回调成功</a>
     <a class="layui-btn layui-btn-sm layui-btn-radius " lay-event="detailBtn" style="background-color: #6891f9 "><i
             class="layui-icon layui-icon-transfer"></i>详情</a>
-    {{#  if(d.Status == 1 || d.Status == 4 || d.Status == 5){ }}
+    {{#  if(d.Status == 1 || d.Status == 4 || d.Status == 5 || d.Status == 7){ }}
     <a class="layui-btn layui-btn-sm layui-btn-radius" lay-event="confirpay" style="background-color: #ee00ff"><i
             class="layui-icon layui-icon-windows"></i>审核</a>
     {{#  } else if(d.Status == 2 || d.Status == 3){ }}
@@ -242,9 +242,144 @@
             });
 
 
-            var log_login_request_param = {};
-            log_login_request_param['kinds'] = 1;
+            let loadU_startDate = localStorage.getItem('pay_order_where_startDate')
+            let loadU_endDate = localStorage.getItem('pay_order_where_endDate')
+            $("#startDate").val(loadU_startDate)
+            $("#endDate").val(loadU_endDate)
+
+            //分类--(可用)
+            let loadU_species = localStorage.getItem('pay_order_where_species')
+            $("#species").val(loadU_species)
+
+            //商户号
+            let loadU_merchant_num = localStorage.getItem('pay_order_where_merchant_num')
+            $("#merchant_num").val(loadU_merchant_num)
+
+            //商户订单号
+            let loadU_merchant_order_num = localStorage.getItem('pay_order_where_merchant_order_num')
+            $("#merchant_order_num").val(loadU_merchant_order_num)
+
+            //平台订单号
+            let loadU_own_order = localStorage.getItem('pay_order_where_own_order')
+            $("#own_order").val(loadU_own_order)
+
+            //支付凭证
+            let loadU_proof_of_payment = localStorage.getItem('pay_order_where_proof_of_payment')
+            $("#proof_of_payment").val(loadU_proof_of_payment)
+
+            //Upi
+            let loadU_upi = localStorage.getItem('pay_order_where_upi')
+            $("#upi").val(loadU_upi)
+
+            //状态
+            let loadU_status = localStorage.getItem('pay_order_where_status')
+            $("#status").val(loadU_status)
+
+            //回调状态
+            let loadU_callback = localStorage.getItem('pay_order_where_callback')
+            $("#callback").val(loadU_callback)
+
+            //重新渲染生效
+            form.render();
+            //
+            var request_param = {};
+            // request_param['kinds'] = 1;
             // log_login_request_param['token']= $.cookie('tokenMyb');
+            // var currTempObj = {}
+            request_param.kinds = 1
+            // currTempObj.token = $.cookie('tokenMyb');
+
+            //分类
+            if (loadU_species){
+                request_param.species = loadU_species
+            }
+            // localStorage.setItem('pay_order_where_species',data.field.species)
+
+            //商户号
+            if (loadU_merchant_num) {
+                request_param.merchant_num = loadU_merchant_num
+            }
+            // localStorage.setItem('pay_order_where_merchant_num',data.field.merchant_num)
+
+            //商户订单号
+            if (loadU_merchant_order_num) {
+                request_param.merchant_order_num = loadU_merchant_order_num
+            }
+            // localStorage.setItem('pay_order_where_merchant_order_num',data.field.merchant_order_num)
+
+            //平台订单号
+            if (loadU_own_order) {
+                request_param.own_order = loadU_own_order
+            }
+            // localStorage.setItem('pay_order_where_own_order',data.field.own_order)
+
+            //支付凭证
+            if (loadU_proof_of_payment) {
+                request_param.proof_of_payment = loadU_proof_of_payment
+            }
+            // localStorage.setItem('pay_order_where_proof_of_payment',data.field.proof_of_payment)
+
+            //Upi
+            if (loadU_upi){
+                request_param.upi =loadU_upi
+            }
+            // localStorage.setItem('pay_order_where_upi',data.field.upi)
+
+            //状态
+            if (loadU_status === "999") {
+
+
+            } else if (loadU_status != "999" && loadU_status){
+                request_param.status = loadU_status
+            }
+            // localStorage.setItem('pay_order_where_status',data.field.status)
+
+            //回调状态
+            if (loadU_callback === "777") {
+
+            } else if (loadU_callback != "777" && loadU_callback) {
+                request_param.callback = loadU_callback
+            }
+            // localStorage.setItem('pay_order_where_callback',data.field.callback)
+
+            var todayStartTime = new Date(new Date().toLocaleDateString()).getTime() / 1000 + 1
+            var todayEndTime = new Date(new Date().toLocaleDateString()).getTime() / 1000 + 24 * 60 * 60 - 1
+
+            if (loadU_startDate == '' && loadU_endDate == '') {
+
+                // request_param.start = todayStartTime
+                // request_param.end = todayEndTime
+
+            } else if (loadU_startDate != '' && loadU_endDate != '') {
+
+                var date_str_start = new Date(loadU_startDate)
+                request_param.start = Date.parse(date_str_start) / 1000
+
+                var date_str_end = new Date(loadU_endDate)
+                request_param.end = Date.parse(date_str_end) / 1000
+
+            } else {
+
+                if (loadU_startDate == "" && loadU_endDate != "") {
+
+                    request_param.start = 0
+                    var date_str_end = new Date(loadU_endDate)
+                    request_param.end = Date.parse(date_str_end) / 1000
+
+                } else if (loadU_startDate != "" && loadU_endDate == "") {
+
+                    var date_str_start = new Date(loadU_startDate)
+                    request_param.start = Date.parse(date_str_start) / 1000
+                    request_param.end = todayEndTime
+                }
+
+
+            }
+            // localStorage.setItem('pay_order_where_startDate',data.field.startDate)
+            // localStorage.setItem('pay_order_where_endDate',data.field.endDate)
+
+
+
             /* 渲染表格 */
             var tableCols = tableSetCol(getTableCols(), local_storage_key);
             var insTb = table.render({
@@ -260,7 +395,7 @@
                 },
                 toolbar: true,
                 defaultToolbar: ['filter'],
-                where: log_login_request_param,
+                where: request_param,
                 // toolbar: ['<p>',
                 //     '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
                 //     '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
@@ -334,8 +469,20 @@
                     {field: 'NoticeUrl', title: '回调地址', sort: true, align: "center", width: 180},
                     {field: 'Currency', title: '币种', sort: true, align: "center"},
                     {field: 'OwnOrder', title: '我方平台订单', sort: true, align: "center", width: 180},
-                    {field: 'ProofOfPayment', title: '支付凭证', sort: true, align: "center", width: 180},
-
+                    // {field: 'ProofOfPayment', title: '支付凭证', sort: true, align: "center", width: 180},
+                    {
+                        title: '支付凭证', templet: function (d) {
+                            if (d.ProofOfPaymentImageUrl) {
+                                let currImgStr = d.ProofOfPaymentImageUrl
+                                currImgStr =  currImgStr.replaceAll('./','')
+                                // var imageName = global_requestAddress + "/" + d.ProofOfPaymentImageUrl;
+                                let imageName = global_requestAddress+"/"+currImgStr;
+                                return '<div onclick="showImg(this)" ><img src="'+imageName+'" ' + 'alt="" width="60px" height="60px"></a></div>';
+                            }else{
+                                return ''
+                            }
+                        }, align: 'center', width: 100, unresize: true
+                    },
                     // {field: 'BankName', title: '银行名', width:130,sort: true,align:"center", templet: function (d) {
                     //         var vipHtml = '<div><div class="ew-select-fixed"><select lay-filter="templetBankSel">';
                     //         layui.each(bankListArr, function (i, item) {
@@ -480,45 +627,66 @@
             var bet_tb_this;
             form.on('submit(userTbSearch)', function (data) {
 
+
+                // console.log("dataa",dataa)
                 // console.log("currTempObj",data.field.username)
                 // insTb.reload({where: data.field, page: {curr: 1}});
                 currTempObj = {}
                 currTempObj.kinds = 1
                 // currTempObj.token = $.cookie('tokenMyb');
 
+                //分类
                 if (data.field.species){
                     currTempObj.species = data.field.species
                 }
+                localStorage.setItem('pay_order_where_species',data.field.species)
 
+                //商户号
                 if (data.field.merchant_num) {
                     currTempObj.merchant_num = data.field.merchant_num
                 }
+                localStorage.setItem('pay_order_where_merchant_num',data.field.merchant_num)
 
+                //商户订单号
                 if (data.field.merchant_order_num) {
                     currTempObj.merchant_order_num = data.field.merchant_order_num
                 }
+                localStorage.setItem('pay_order_where_merchant_order_num',data.field.merchant_order_num)
 
+                //平台订单号
                 if (data.field.own_order) {
                     currTempObj.own_order = data.field.own_order
                 }
+                localStorage.setItem('pay_order_where_own_order',data.field.own_order)
 
+                //支付凭证
                 if (data.field.proof_of_payment) {
                     currTempObj.proof_of_payment = data.field.proof_of_payment
                 }
+                localStorage.setItem('pay_order_where_proof_of_payment',data.field.proof_of_payment)
 
+                //Upi
+                if (data.field.upi){
+                    currTempObj.upi = data.field.upi
+                }
+                localStorage.setItem('pay_order_where_upi',data.field.upi)
+
+                //状态
                 if (data.field.status === "999") {
 
 
-                } else {
+                }  else if (data.field.status !== "999" && data.field.status) {
                     currTempObj.status = data.field.status
                 }
+                localStorage.setItem('pay_order_where_status',data.field.status)
 
+                //回调状态
                 if (data.field.callback === "777") {
 
-
-                } else {
+                } else if (data.field.callback !== "777" && data.field.callback) {
                     currTempObj.callback = data.field.callback
                 }
+                localStorage.setItem('pay_order_where_callback',data.field.callback)
 
                 var todayStartTime = new Date(new Date().toLocaleDateString()).getTime() / 1000 + 1
                 var todayEndTime = new Date(new Date().toLocaleDateString()).getTime() / 1000 + 24 * 60 * 60 - 1
@@ -553,6 +721,8 @@
 
 
                 }
+                localStorage.setItem('pay_order_where_startDate',data.field.startDate)
+                localStorage.setItem('pay_order_where_endDate',data.field.endDate)
 
 
                 //2.6.0之前清除保留之前的数据的最有用的方式
@@ -670,7 +840,6 @@
                 //通过相对位置找对应行数据
                 // 获取当前行第一和三列的值
                 var currentwx_id = parentTr.find(('td:eq(0)')).text().trim();
-                console.log("currentwx_id", currentwx_id)
 
 
                 var currStatusBool = obj.elem.checked;
@@ -942,6 +1111,52 @@
 
         });
 
+    }
+
+    /* 点击图片放大 */
+    function showImg(imgData){
+        var img = new Image();
+        // img.src = imgData.attr("src");
+        var ta = $(imgData).find("img");
+        img.src = ta.attr("src");
+        var height = img.height; // 原图片大小
+        var width = img.width; //原图片大小
+
+        var winHeight = $(window).height() - 80;  // 浏览器可视部分高度
+        var winWidth = $(window).width() - 100;  // 浏览器可视部分宽度
+
+        // 如果图片高度或者宽度大于限定的高度或者宽度则进行等比例尺寸压缩
+        if (height > winHeight || width > winWidth) {
+            // 1.原图片宽高比例 大于等于 图片框宽高比例
+            if (winWidth/ winHeight <= width / height) {
+                width = winWidth;   //以框的宽度为标准
+                height = winWidth * (height / width);
+            }
+
+            // 2.原图片宽高比例 小于 图片框宽高比例
+            if (winWidth/ winHeight > width / height) {
+                width = winHeight  * (width / height);
+                height = winHeight  ;   //以框的高度为标准
+            }
+        }
+
+        var imgHtml = "<img src='" + img.src + "' width='" + width + "px' height='" + height + "px' />";
+        //弹出层
+        layer.open({
+            type: 1,
+            shade:0,//shade值设为0即关闭遮罩功能
+            skin: 'layui-layer-rim', //加上边框
+            // offset: 'auto',
+            // area: [500 + 'px',550+'px'],
+            area: [width + 'px',(height + 50) + 'px'],  //原图显示,高度+50是为了去除掉滚动条
+            shadeClose:true,
+            scrollbar: false,
+            title: "支付凭证预览", //不显示标题
+            content: imgHtml, //捕获的元素，注意：最好该指定的元素要存放在body最外层，否则可能被其它的相对元素所影响
+            cancel: function () {
+                //layer.msg('捕获就是从页面已经存在的元素上，包裹layer的结构', { time: 5000, icon: 6 });
+            }
+        });
     }
 
 

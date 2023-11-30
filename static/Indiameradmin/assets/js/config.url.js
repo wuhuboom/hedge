@@ -82,7 +82,7 @@ var channelArr = [{
 
 
 var param={};
-var currTimeZoneValue = 8
+var currTimeZoneValue = 5
 let currTimeZoneNameStr
 // //获取配置数据
 // $.ajax({
