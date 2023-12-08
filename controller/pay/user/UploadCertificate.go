@@ -99,7 +99,7 @@ func UploadCertificateForImageRtt(c *gin.Context) {
 		}
 	}
 	if tools.IsChinese(nameArray[0]) == true {
-		tools.ReturnErr101Code(c, "Chinese illegality")
+		tools.ReturnErr101Code(c, "illegality")
 		return
 	}
 	path = path + time.Now().Format("20060102150405") + nameArray[0] + "." + nameArray[1]
