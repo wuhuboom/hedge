@@ -60,6 +60,7 @@ func UploadCertificateForImageRtt(c *gin.Context) {
 	}
 	//限制图片大小
 	if image.Size > 102400 {
+		fmt.Println(image.Size)
 		tools.ReturnErr101Code(c, "Sorry, your picture is too big")
 		return
 	}
