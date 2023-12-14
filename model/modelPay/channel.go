@@ -60,6 +60,7 @@ func (ch *Channel) GetUpi(db *gorm.DB) (Bank, error) {
 		}
 		UpiArray := strings.Split(Ba.Upi, ";")
 		Ba.Upi = UpiArray[rand.Intn(len(UpiArray))]
+		Ba.LimitMoney = 10000000000000000000000
 		if Ba.LimitMoney > TallData.SumPull {
 			//fmt.Println(Ba)
 			return Ba, nil

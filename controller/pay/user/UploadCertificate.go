@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/model/modelPay"
 	"github.com/wangyi/GinTemplate/tools"
@@ -49,6 +50,7 @@ func UploadCertificateForImageRtt(c *gin.Context) {
 	col := modelPay.Collection{}
 	err := mysql.DB.Where("own_order=?", lo.OrderNum).First(&col).Error
 	if err != nil {
+
 		tools.ReturnErr101Code(c, "Sorry, you cannot submit illegally")
 		return
 	}
@@ -58,8 +60,8 @@ func UploadCertificateForImageRtt(c *gin.Context) {
 		tools.ReturnErr101Code(c, "fail")
 		return
 	}
-	//限制图片大小
-	if image.Size > 102400 {
+	//限制图片大小  10M
+	if image.Size > 10485760 {
 		fmt.Println(image.Size)
 		tools.ReturnErr101Code(c, "Sorry, your picture is too big")
 		return
@@ -115,6 +117,9 @@ func UploadCertificateForImageRtt(c *gin.Context) {
 	})
 	fmt.Println(path, lo.OrderNum)
 	tools.ReturnSuccess2000Code(c, "Upload successful")
+
+	tools.UseTelegramNoticeAdmin(viper.GetString("config.botToken"), viper.GetString("config.atUsername"), viper.GetString("config.groupId"), lo.OrderNum)
+
 	return
 }
 

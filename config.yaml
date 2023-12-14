@@ -17,8 +17,8 @@ log:
 mysql:
   host: "127.0.0.1"
   port: "3306"
-  user: "hedge"
-  password: "mhGT8P3z6zRt6aSy"
+  user: "root"
+  password: "123456789"
   dbname: "hedge"
 
 
@@ -35,5 +35,8 @@ redis:
 
 config:
   webUrl: "https://rrtbank.oppay.cc"
+  botToken: "6694559343:AAHJ1ipv7hecz5gJINJwh_esQCMCSTA66wI"
+  atUsername: "@xiaoleng16 %0A @xiaoleng16"
+  groupId: "-4039362456"
 
 

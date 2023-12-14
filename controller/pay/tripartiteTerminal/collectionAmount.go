@@ -146,10 +146,12 @@ func CollectionAmount(c *gin.Context) {
 
 		ban := modelPay.BankInformation{}
 		mysql.DB.Where("id=?", upiBank.BankInformationId).First(&ban)
+		fmt.Println("------------------")
+		fmt.Println(viper.GetString("config.webUrl"))
 		tools.ReturnSuccess2000DataCode(
 			c,
-			fmt.Sprintf(viper.GetString("config.webUrl")+"?bankCode=%s&orderNumber=%s&Date=%s&expiration=%s&amount=%s&bankname=%s&username=%s",
-				upiBank.CardNum, collection.OwnOrder, time.Now().Format("2006-01-02"), is, cpd.Amount, ban.BankName, upiBank.Name), "ok")
+			fmt.Sprintf(viper.GetString("config.webUrl")+"?bankCode=%s&orderNumber=%s&Date=%s&expiration=%s&amount=%s&bankname=%s&username=%s&IBAN=%s",
+				upiBank.CardNum, collection.OwnOrder, time.Now().Format("2006-01-02"), is, cpd.Amount, ban.BankName, upiBank.Name, upiBank.IFSC), "ok")
 		sta := modelPay.Statistics{TodayAllAmount: amountFlot, MerchantNum: mer.MerchantNum, TodayAllCollection: 1}
 		sta.Add(mysql.DB, 3)
 		return

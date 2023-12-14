@@ -87,7 +87,7 @@ func UploadPayCertificate(c *gin.Context) {
 		return
 	}
 	//限制图片大小
-	if image.Size > 102400 {
+	if image.Size > 10240000 {
 		tools.ReturnErr101Code(c, "Sorry, your picture is too big")
 		return
 	}
@@ -128,7 +128,7 @@ func UploadPayCertificate(c *gin.Context) {
 	}
 
 	if tools.IsChinese(nameArray[0]) == true {
-		tools.ReturnErr101Code(c, "Chinese illegality")
+		tools.ReturnErr101Code(c, "illegality")
 		return
 	}
 

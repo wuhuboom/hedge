@@ -16,7 +16,7 @@ type Bank struct {
 	Status            int
 	Created           int64
 	Upi               string  //UPI地址  `gorm:"type:decimal(10,2)"`
-	LimitMoney        float64 `gorm:"type:decimal(10,2);default:50000"`
+	LimitMoney        float64 `gorm:"type:decimal(15,2);default:50000"` //1000000
 	BankCoding        string  `gorm:"-"`
 	BankName          string  `gorm:"-"`
 }

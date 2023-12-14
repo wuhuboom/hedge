@@ -44,6 +44,12 @@ func CollectionOperation(c *gin.Context) {
 				db = db.Where("created  <=  ? and created >=  ?", end, start)
 			}
 		}
+
+		//是否已经上传了凭证
+		if _, IsE := c.GetPostForm("ifUpload"); IsE == true {
+			db = db.Where("proof_of_payment_image_url !=", "")
+		}
+
 		//商家订单号
 		if status, IsE := c.GetPostForm("merchant_order_num"); IsE == true {
 			db = db.Where("merchant_order_num=?", status)
@@ -112,6 +118,7 @@ func CollectionOperation(c *gin.Context) {
 			tools.ReturnErr101Code(c, err.Error())
 			return
 		}
+
 		result, _ := redis.Rdb.Get("confirmationOfPayment" + id).Result()
 		if result != "" {
 			tools.ReturnErr101Code(c, "Don't do the deposit operation at the specified time")
@@ -123,6 +130,21 @@ func CollectionOperation(c *gin.Context) {
 		if sta != 2 && col.Kinds == 1 && col.Species == 1 {
 			tools.ReturnErr101Code(c, "Illegal request")
 			return
+		}
+
+		//判断支付凭证
+		proofOfPayment := c.PostForm("proof_of_payment")
+		if sta == 2 {
+			if proofOfPayment == "" {
+				tools.ReturnErr101Code(c, "proof_of_payment is cant not null")
+				return
+			} else {
+				err := mysql.DB.Where("proof_of_payment=?", proofOfPayment).First(&modelPay.Collection{}).Error
+				if err == nil {
+					tools.ReturnErr101Code(c, "proof_of_payment 不要重复提交")
+					return
+				}
+			}
 		}
 
 		if sta == col.Status {

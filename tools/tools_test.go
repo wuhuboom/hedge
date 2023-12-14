@@ -2,7 +2,6 @@ package tools
 
 import (
 	"fmt"
-	"net/http"
 	"testing"
 )
 
@@ -22,8 +21,6 @@ func B(a int, b ...int) {
 
 func TestName(t *testing.T) {
 
-	get, _ := http.Get("https://api.adminjjjjsdj.xyz/player/auth/sys_config")
-
-	fmt.Println(get.Status)
+	UseTelegramNoticeAdmin("6694559343:AAHJ1ipv7hecz5gJINJwh_esQCMCSTA66wI", " @xiaoleng16 %0A @xiaoleng16", "-4039362456", "565656")
 
 }

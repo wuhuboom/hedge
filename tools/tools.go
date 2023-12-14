@@ -294,3 +294,10 @@ func ForFunc(name func(db *gorm.DB, IfSystemDo bool, kinds int) error, db2 *gorm
 	zap.L().Error("ForFunc :" + err.Error())
 	return eeor.OtherError(err.Error())
 }
+
+func UseTelegramNoticeAdmin(token string, username string, groupId string, order string) {
+
+	fmt.Println("https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + groupId + "&text=@" + username + "%0A 您有新的转账凭证请注意查收")
+	http.Get("https://api.telegram.org/bot" + token + "/sendMessage?chat_id=" + groupId + "&text=" + username + "%0A 您有新的转账凭证请注意查收,订单号:%0A`" + order + "`")
+
+}
