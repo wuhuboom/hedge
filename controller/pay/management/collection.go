@@ -46,8 +46,8 @@ func CollectionOperation(c *gin.Context) {
 		}
 
 		//是否已经上传了凭证
-		if _, IsE := c.GetPostForm("ifUpload"); IsE == true {
-			db = db.Where("proof_of_payment_image_url !=", "")
+		if _, IsE := c.GetPostForm("proof_of_payment_image_url"); IsE == true {
+			db = db.Where("proof_of_payment_image_url != ?", "")
 		}
 
 		//商家订单号
@@ -141,7 +141,7 @@ func CollectionOperation(c *gin.Context) {
 			} else {
 				err := mysql.DB.Where("proof_of_payment=?", proofOfPayment).First(&modelPay.Collection{}).Error
 				if err == nil {
-					tools.ReturnErr101Code(c, "proof_of_payment 不要重复提交")
+					tools.ReturnErr101Code(c, "proof_of_payment Do not resubmit")
 					return
 				}
 			}

@@ -135,6 +135,18 @@
                                    placeholder="yyyy-MM-dd HH:mm:ss">
                         </div>
                     </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label" >上传支付凭证:</label>
+                        <div class="layui-input-inline">
+                            <select name="proof_of_payment_image_url" id="proof_of_payment_image_url">
+                                <option value="2">否</option>
+                                <option value="1">是</option>
+                            </select>
+                        </div>
+                    </div>
+
+
                     <div class="layui-inline">&emsp;
                         <!--                        <button class="layui-btn icon-btn currSerachBtn" lay-filter="addGropeTask" id="addGropeTask" lay-submit style="background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);">-->
                         <!--                            <i class="layui-icon">&#xe624;</i>添加-->
@@ -680,6 +692,11 @@
                 }
                 localStorage.setItem('pay_order_where_status',data.field.status)
 
+                // 上传支付凭证1是，2否
+                if(data.field.proof_of_payment_image_url == 1){
+                    currTempObj.proof_of_payment_image_url = data.field.proof_of_payment_image_url
+                }
+
                 //回调状态
                 if (data.field.callback === "777") {
 
@@ -1014,7 +1031,7 @@
 
                     jsondata = JSON.stringify(currDatas)
                     var index = layui.layer.open({
-                        area: ['500px', '300px'],
+                        area: ['500px', '350px'],
                         fixed: false, //不固定
                         maxmin: false,
                         title: "确认付款",

@@ -38,6 +38,14 @@
         </div>
     </div>
 
+    <div class="layui-form-item layui-row layui-col-xs12" id="proofID">
+        <label class="layui-form-label  layui-form-required">凭证码</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input" id="proof_of_payment" name="proof_of_payment" placeholder="请在此输入凭证码" >
+        </div>
+    </div>
+
+
     <div class="layui-form-item layui-row layui-col-xs12">
         <label class="layui-form-label  layui-form-required">备注</label>
         <div class="layui-input-block">
@@ -99,10 +107,11 @@
                     })
                     form.render();
 
-
+                    $("#proofID").show()
 
                 }else{
                     $("#remark").val("")
+                    $("#proofID").hide()
                 }
 
             })
@@ -118,11 +127,20 @@
                     return  false
                 }
 
+                if(selectValue == 2 && !data.field.proof_of_payment){
+                    layer.msg("支付凭证不能为空！", {icon: 2});
+                    return  false
+                }
+
+
                 var param = {};
 
                 param['id'] = currParentDatas.ID;
                 param['status'] = data.field.status;
                 param['remark'] = data.field.remark;
+                if(selectValue == 2){
+                    param['proof_of_payment'] = data.field.proof_of_payment;
+                }
                 param['actual_amount'] = data.field.actual_amount;
 
                 $.ajax({
