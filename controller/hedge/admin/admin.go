@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/wangyi/GinTemplate/dao/mysql"
 	"github.com/wangyi/GinTemplate/dao/redis"
@@ -26,6 +27,7 @@ func Login(c *gin.Context) {
 	}
 	lo.Password = tools.MD5(lo.Password)
 	admin := model.Admin{}
+	fmt.Println(lo.Password)
 	err11 := mysql.DB.Where("admin_username=? and admin_password= ?", lo.Username, lo.Password).First(&admin).Error
 	//谷歌开启
 	if config.IfUseGoogleCode == 1 {
