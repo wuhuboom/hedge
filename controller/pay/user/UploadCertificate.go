@@ -142,7 +142,7 @@ func GetCertificateForImageRtt(c *gin.Context) {
 	//}
 	//fmt.Println(mer)
 	DA := make(map[string]string)
-	DA["host"] = "https://admin.oppay.cc"
+	DA["host"] = viper.GetString("config.webUrl")
 	DA["imageUrl"] = col.ProofOfPaymentImageUrl
 	if col.ProofOfPaymentImageUrl == "" {
 		tools.ReturnErr101Code(c, "")
